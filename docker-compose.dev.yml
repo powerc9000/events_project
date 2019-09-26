@@ -1,0 +1,36 @@
+version: "2.2"
+services:
+  server:
+    build: .
+    ports:
+      - 8000:8000
+    command: nodemon /var/www/events/server/src/index.js --ignore /var/www/events/client
+    environment:
+      - NODE_ENV=develop
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_DATABASE=events
+      - AWS_ACCESS_KEY_ID=AKIAI5EWIGUGQVR6D6SQ
+      - AWS_SECRET_ACCESS_KEY=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
+    volumes:
+      - ./server/src:/var/www/events/server/src
+      - ./client:/var/www/events/client
+  postgres:
+    ports:
+      # psql -h localhost -p 9000 -U postgres -w -d airconfig
+      - 9000:5432
+    build:
+      context: .
+      dockerfile: postgres.dockerfile
+  redis:
+    image: redis
+  sqssns:
+    ports:
+      - 4100:4100
+    image: pafortin/goaws
+    networks:
+      default:
+        aliases:
+          - goaws
+          - sqs.us-east-1.goaws.com
