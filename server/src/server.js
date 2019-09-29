@@ -6,7 +6,52 @@ const services = require("./services");
 async function start() {
   const server = hapi.server({
     port: 8000,
-    host: "0.0.0.0"
+    host: "0.0.0.0",
+    routes: {
+      cors: {
+        origin: ["*"],
+        credentials: true
+      },
+      response: {
+        failAction: "log"
+      },
+      validate: {
+        failAction: async (request, h, err) => {
+          if (process.env.NODE_ENV === "production") {
+            // In prod, log a limited error message and throw the default Bad Request error.
+            console.error("ValidationError:", err.message); // Better to use an actual logger here.
+            throw Boom.badRequest(`Invalid request payload input`);
+          } else {
+            // During development, log and respond with the full error.
+            console.error(err);
+            throw err;
+          }
+        }
+      }
+    }
+  });
+
+  server.events.on("response", function(request) {
+    if (!request.response) {
+      return;
+    }
+    request.log("info", {
+      method: request.method.toUpperCase(),
+      path: request.url.pathname,
+      status: request.response.statusCode
+    });
+  });
+
+  server.events.on("request", (event, tags) => {
+    // if we ever need to log deep objects, see https://stackoverflow.com/questions/10729276/how-can-i-get-the-full-object-in-node-jss-console-log-rather-than-object
+
+    if (tags.error) {
+      console.log(tags);
+    } else {
+      // For `request`, the `event` contains mostly information about the
+      // the request, which is not very interesting if we just `request.log` something.
+      console.log(tags);
+    }
   });
 
   await server.register(api, {
