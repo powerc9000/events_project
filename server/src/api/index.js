@@ -1,10 +1,20 @@
+const joi = require("joi");
+
 module.exports = {
   name: "Api",
   register: async function(server, options) {
     server.route({
       method: "POST",
       path: "/events",
-      handler: createEvent
+      handler: createEvent,
+      options: {
+        validate: {
+          payload: {
+            name: joi.string().required(),
+            description: joi.string()
+          }
+        }
+      }
     });
   }
 };

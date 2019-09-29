@@ -13,3 +13,9 @@ CREATE TABLE events (
 	creator uuid references users(id)
 );
 
+
+CREATE TABLE migrations (
+       id uuid default uuid_generate_v4() PRIMARY KEY,
+       version text UNIQUE not null,
+       created timestamp with time zone default now()
+);
