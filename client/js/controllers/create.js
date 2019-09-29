@@ -9,11 +9,12 @@ export default class extends ApplicationController {
     e.preventDefault();
     const form = this.targets.find("form");
 
-    const name = form.name;
+    const name = form.name.value;
 
-    const description = form.description;
+    const description = form.description.value;
 
-    const res = await this.api.Post("/api/create", {
+    console.log(name, description);
+    const res = await this.api.Post("/api/events", {
       name,
       description
     });
