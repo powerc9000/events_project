@@ -1,0 +1,10 @@
+@tailwind base;
+
+@tailwind components;
+
+
+body {
+	@apply flex;
+}
+
+@tailwind utilities;

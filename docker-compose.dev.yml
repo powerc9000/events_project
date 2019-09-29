@@ -15,6 +15,7 @@ services:
       - AWS_SECRET_ACCESS_KEY=RteGR/Ml5RN76LYkBITcK13GZLdKuau6uVjyoGkO
     volumes:
       - ./server/src:/var/www/events/server/src
+      - ./server/package.json:/var/www/events/server/package.json
       - ./client:/var/www/events/client
   postgres:
     ports:
