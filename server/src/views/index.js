@@ -50,6 +50,12 @@ module.exports = {
       path: "/create",
       handler: createEvent
     });
+
+    server.route({
+      method: "GET",
+      path: "/login",
+      handler: login
+    });
   }
 };
 
@@ -63,4 +69,8 @@ async function homepage(req, h) {
 
 async function createEvent(req, h) {
   return h.view("create");
+}
+
+async function login(req, h) {
+  return h.view("login");
 }
