@@ -1,18 +1,19 @@
-const joi = require("joi");
-
+const joi = require("@hapi/joi");
+let server;
 module.exports = {
   name: "Api",
-  register: async function(server, options) {
+  register: async function(hapiServer, options) {
+    server = hapiServer;
     server.route({
       method: "POST",
       path: "/events",
       handler: createEvent,
       options: {
         validate: {
-          payload: {
+          payload: joi.object({
             name: joi.string().required(),
             description: joi.string()
-          }
+          })
         }
       }
     });

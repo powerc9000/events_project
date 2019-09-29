@@ -12,6 +12,17 @@ async function getAllEventsForUser(user) {
   return data.rows;
 }
 
+async function createEvent(user, event) {
+  const result = await server.app.db.query(
+    `
+	INSERT into events (name, description) VALUES ($1, $2) returning *
+	`,
+    [event.name, event.description]
+  );
+
+  return result.rows[0];
+}
+
 function init(hapiServer) {
   server = hapiServer;
   //set up database
@@ -21,6 +32,7 @@ function init(hapiServer) {
 module.exports = {
   getAllEventsForUser,
   getAllEvents,
+  createEvent,
   init,
   name: "events"
 };

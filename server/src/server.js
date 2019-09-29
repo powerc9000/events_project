@@ -23,6 +23,14 @@ async function start() {
   console.log("server running");
 }
 
+process.on("uncaughtException", (e) => {
+  console.log(e);
+});
+
+process.on("unhandledRejection", (e) => {
+  console.log(e);
+});
+
 module.exports = {
   start
 };

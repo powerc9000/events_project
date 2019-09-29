@@ -18,6 +18,9 @@ module.exports = {
       relativeTo: path.join(__dirname, "../../../", "templates"),
       isCached: process.env.NODE_ENV !== "develop"
     });
+
+    //The source map url gets mapped wrong from parcel...
+    //I still like source maps so here it is
     server.route({
       method: "GET",
       path: "/static/main.css.map",
@@ -54,7 +57,7 @@ async function homepage(req, h) {
   const events = await server
     .getService("events")
     .getAllEventsForUser(req.app.user);
-
+  console.log(events);
   return h.view("homepage");
 }
 
