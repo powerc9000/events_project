@@ -16,7 +16,8 @@ services:
     volumes:
       - ./server/src:/var/www/events/server/src
       - ./server/package.json:/var/www/events/server/package.json
-      - ./client:/var/www/events/client
+      - ./client/build:/var/www/events/client
+      - ./client/templates:/var/www/events/templates
   postgres:
     ports:
       # psql -h localhost -p 9000 -U postgres -w -d airconfig

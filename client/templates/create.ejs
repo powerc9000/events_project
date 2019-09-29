@@ -1,0 +1,25 @@
+<html>
+	<head>
+		<title>Create a new event</title>
+		<link rel="stylesheet" href="/static/css/main.css" />
+		<script src="/static/js/index.js"></script>
+	</head>
+	<body>
+		<h1>Create an event</h1>
+		<form data-controller="create" data-action="create#createEvent" data-target="create.form">
+			<div>
+				<input type="text" name="name" placeholder="name" />
+			</div>
+
+			<div>
+				<textarea name="description" placeholder="description"></textarea>
+			</div>
+			<div>
+				<button type="submit" class="bg-red-600 p-1 text-white rounded">
+					Create
+				</button>
+			</div>
+
+		</form>
+	</body>
+</html>

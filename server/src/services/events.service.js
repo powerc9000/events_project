@@ -9,8 +9,7 @@ async function getAllEventsForUser(user) {
 	SELECT * from events
 	`);
 
-  console.log(data);
-  return [];
+  return data.rows;
 }
 
 function init(hapiServer) {

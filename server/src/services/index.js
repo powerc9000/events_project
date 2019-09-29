@@ -1,13 +1,18 @@
 const services = [require("./events.service")];
+const _ = require("lodash");
 const pg = require("pg");
 
 module.exports = {
   name: "services",
-  register: async server => {
+  register: async (server) => {
     server.app.services = {};
-    services.forEach(service => {
+    services.forEach((service) => {
       service.init(server);
       server.app.services[service.name] = service;
+    });
+
+    server.decorate("server", "getService", (name) => {
+      return _.get(server, ["app", "services", name]);
     });
 
     initDb(server);
