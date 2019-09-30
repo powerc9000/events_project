@@ -2,8 +2,14 @@
 	<head>
 		<title>Login</title>
 		<link rel="stylesheet" href="/static/css/main.css" />
+		<script src="/static/js/index.js"></script>
+		<meta name="google-signin-client_id" content="634779035671-htqj3sdamedg2bldv6fa85dr9qv3hh0f.apps.googleusercontent.com">
 	</head>	
 	<body>
 		<h1>Login</h1>
+
+
+		<div class="g-signin2" data-onsuccess="onSignIn" data-controller="login-with-google"></div>
+		<script src="https://apis.google.com/js/platform.js" async defer></script>
 	</body>
 </html>
