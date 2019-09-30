@@ -60,6 +60,21 @@ async function start() {
     }
   });
 
+  const Minute = 1000 * 60;
+  const Hour = Minute * 60;
+  const Day = Hour * 24;
+  const _2Weeks = Day * 14;
+  server.state("user", {
+    ttl: _2Weeks,
+    isSecure: false, //This server will never be listening on https the load balancer will handle that
+    isHttpOnly: true,
+    isSameSite: false,
+    path: "/",
+    encoding: "base64json",
+    clearInvalid: false, // remove invalid cookies
+    strictHeader: true // don't allow violations of RFC 6265
+  });
+
   await server.register(views);
   await server.register(services);
 

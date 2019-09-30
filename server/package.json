@@ -17,6 +17,8 @@
     "ejs": "^2.7.1",
     "google-auth-library": "^5.3.0",
     "lodash": "^4.17.15",
+    "login-with-twitter": "^1.2.2",
+    "node-fetch": "^2.6.0",
     "pg": "^7.12.1"
   }
 }

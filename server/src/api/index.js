@@ -3,6 +3,7 @@ const { OAuth2Client } = require("google-auth-library");
 const CLIENT_ID =
   "634779035671-htqj3sdamedg2bldv6fa85dr9qv3hh0f.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
+const LoginWithTwitter = require("login-with-twitter");
 let server;
 module.exports = {
   name: "Api",
@@ -33,6 +34,12 @@ module.exports = {
       path: "/login/google",
       handler: loginWithGoogle
     });
+
+    server.route({
+      method: "GET",
+      path: "/login/twitter/callback",
+      handler: twitterCallback
+    });
   }
 };
 
@@ -59,4 +66,37 @@ async function loginWithGoogle(req, h) {
   return h.response().code(204);
 }
 
-async function loginWithTwitter(req, h) {}
+const tw = new LoginWithTwitter({
+  consumerKey: "zsGP1PcSGDT1DL4HD8snUvqJG",
+  consumerSecret: "lHNvtemSECLj891PJXvKZAfPfEDl26Pj5n7hqr8QbY7q1XnZ3c",
+  callbackUrl: "http://localhost:8000/api/login/twitter/callback"
+});
+
+async function twitterCallback(req, h) {
+  return new Promise((resolve, reject) => {
+    tw.callback(
+      {
+        oauth_token: req.query.oauth_token,
+        oauth_verifier: req.query.oauth_verifier
+      },
+      req.state.user.twitterToken,
+      (err, user) => {
+        console.log(user);
+
+        resolve(h.redirect("/"));
+      }
+    );
+  });
+}
+
+async function loginWithTwitter(req, h) {
+  return new Promise((resolve, reject) => {
+    tw.login((err, tokenSecret, url) => {
+      const state = req.state.user || {};
+
+      state.twitterToken = tokenSecret;
+      h.state("user", state);
+      resolve(h.redirect(url));
+    });
+  });
+}
