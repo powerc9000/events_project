@@ -61,9 +61,20 @@ async function loginWithGoogle(req, h) {
 
   const payload = ticket.getPayload();
 
-  console.log(payload);
+  let user = await server.getService("user").findUserByEmail(payload.email);
 
-  return h.response().code(204);
+  if (!user) {
+    //create the user;
+    user = await server.getService("user").createUser({
+      provider: {
+        google: payload.sub
+      },
+      email: payload.email,
+      name: payload.name
+    });
+  }
+
+  return h.loginUser(user);
 }
 
 const tw = new LoginWithTwitter({
@@ -81,8 +92,7 @@ async function twitterCallback(req, h) {
       },
       req.state.user.twitterToken,
       (err, user) => {
-        console.log(user);
-
+        console.log(user, req.query);
         resolve(h.redirect("/"));
       }
     );

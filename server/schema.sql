@@ -47,6 +47,18 @@ CREATE TABLE public.events (
 
 
 --
+-- Name: logins; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.logins (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    user_id uuid NOT NULL,
+    created timestamp with time zone DEFAULT now(),
+    expires timestamp with time zone NOT NULL
+);
+
+
+--
 -- Name: migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -64,7 +76,9 @@ CREATE TABLE public.migrations (
 CREATE TABLE public.users (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     provider jsonb DEFAULT '{}'::jsonb,
-    name text NOT NULL
+    name text NOT NULL,
+    email text,
+    phone text
 );
 
 
@@ -106,6 +120,14 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.events
     ADD CONSTRAINT events_creator_fkey FOREIGN KEY (creator) REFERENCES public.users(id);
+
+
+--
+-- Name: logins logins_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.logins
+    ADD CONSTRAINT logins_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --

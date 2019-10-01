@@ -1,4 +1,4 @@
-const services = [require("./events.service")];
+const services = [require("./events.service"), require("./user.service")];
 const _ = require("lodash");
 const pg = require("pg");
 
@@ -13,6 +13,12 @@ module.exports = {
 
     server.decorate("server", "getService", (name) => {
       return _.get(server, ["app", "services", name]);
+    });
+
+    server.decorate("toolkit", "loginUser", async function(user) {
+      const token = await server.getService("user").generateLoginToken(user.id);
+      this.state("user", token);
+      return this.response().code(204);
     });
 
     initDb(server);
