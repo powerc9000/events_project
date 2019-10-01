@@ -11,6 +11,14 @@ module.exports = {
       server.app.services[service.name] = service;
     });
 
+    server.ext({
+      type: "onPreHandler",
+      method: async function(req, h) {
+        await req.getLoggedInUser();
+        return h.continue;
+      }
+    });
+
     server.decorate("server", "getService", (name) => {
       return _.get(server, ["app", "services", name]);
     });
@@ -19,6 +27,31 @@ module.exports = {
       const token = await server.getService("user").generateLoginToken(user.id);
       this.state("user", token);
       return this.response().code(204);
+    });
+
+    server.decorate("request", "getLoggedInUser", async function() {
+      if (this.app.user) {
+        return this.app.user;
+      }
+      const token = _.get(this, "state.user.token.id", null);
+      let user = null;
+      if (!token) {
+        try {
+          const tokenQuery = await this.server.app.db.query(
+            "select * from logins where id = $1 and expires > now()",
+            [token]
+          );
+
+          if (tokenQuery.rows.length) {
+            user = await server.services("user").findById(tokenQuery.user_id);
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+
+      this.app.user = user;
+      return this.app.user;
     });
 
     initDb(server);

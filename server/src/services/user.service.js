@@ -34,12 +34,21 @@ async function findUserByEmail(email) {
   return query.rows[0];
 }
 
+async function findById(id) {
+  const query = await server.app.db.query(`SELECT * FROM users where id = $1`, [
+    id
+  ]);
+
+  return query.rows[0];
+}
+
 function init(hapiServer) {
   server = hapiServer;
 }
 
 module.exports = {
   findUserByEmail,
+  findById,
   generateLoginToken,
   createUser,
   init,
