@@ -42,7 +42,28 @@ CREATE TABLE public.events (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     name text NOT NULL,
     description text,
-    creator uuid
+    creator uuid,
+    is_private boolean DEFAULT true,
+    show_participants boolean DEFAULT false,
+    allow_comments boolean DEFAULT true,
+    date timestamp with time zone,
+    location text
+);
+
+
+--
+-- Name: invites; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.invites (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    user_id uuid NOT NULL,
+    event_id uuid NOT NULL,
+    invite_key text NOT NULL,
+    status text NOT NULL,
+    show_name boolean DEFAULT false,
+    created timestamp with time zone DEFAULT now(),
+    updated timestamp with time zone DEFAULT now()
 );
 
 
@@ -91,6 +112,14 @@ ALTER TABLE ONLY public.events
 
 
 --
+-- Name: invites invites_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invites
+    ADD CONSTRAINT invites_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: migrations migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -120,6 +149,22 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.events
     ADD CONSTRAINT events_creator_fkey FOREIGN KEY (creator) REFERENCES public.users(id);
+
+
+--
+-- Name: invites invites_event_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invites
+    ADD CONSTRAINT invites_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id);
+
+
+--
+-- Name: invites invites_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invites
+    ADD CONSTRAINT invites_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
