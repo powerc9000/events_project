@@ -14,7 +14,8 @@ module.exports = {
     server.ext({
       type: "onPreHandler",
       method: async function(req, h) {
-        await req.getLoggedInUser();
+        const user = await req.getLoggedInUser();
+        console.log(user);
         return h.continue;
       }
     });
@@ -35,7 +36,7 @@ module.exports = {
       }
       const token = _.get(this, "state.user.token.id", null);
       let user = null;
-      if (!token) {
+      if (token) {
         try {
           const tokenQuery = await this.server.app.db.query(
             "select * from logins where id = $1 and expires > now()",
@@ -43,7 +44,9 @@ module.exports = {
           );
 
           if (tokenQuery.rows.length) {
-            user = await server.services("user").findById(tokenQuery.user_id);
+            user = await server
+              .getService("user")
+              .findById(tokenQuery.rows[0].user_id);
           }
         } catch (e) {
           console.log(e);

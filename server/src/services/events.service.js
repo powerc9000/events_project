@@ -1,5 +1,6 @@
 let server;
-
+const slugify = require("slugify");
+const crypto = require("crypto");
 function getAllEvents() {
   return [];
 }
@@ -13,11 +14,14 @@ async function getAllEventsForUser(user) {
 }
 
 async function createEvent(user, event) {
+  const user_id = user.id;
+  const id = crypto.randomBytes(4).toString("hex");
+  const slug = `${slugify(event.name, { lower: true })}-${id}`;
   const result = await server.app.db.query(
     `
-	INSERT into events (name, description) VALUES ($1, $2) returning *
+	INSERT into events (name, description, creator, slug) VALUES ($1, $2, $3, $4) returning *
 	`,
-    [event.name, event.description]
+    [event.name, event.description, user_id, slug]
   );
 
   return result.rows[0];

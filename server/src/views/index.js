@@ -72,7 +72,8 @@ async function createEvent(req, h) {
 }
 
 async function login(req, h) {
-  if (req.app.user) {
+  console.log(req.app);
+  if (!req.app.user) {
     return h.view("login");
   } else {
     return h.redirect("/");
