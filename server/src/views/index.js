@@ -56,8 +56,26 @@ module.exports = {
       path: "/login",
       handler: login
     });
+
+    server.route({
+      method: "GET",
+      path: "/events/{slug}",
+      handler: eventDetail
+    });
   }
 };
+
+async function eventDetail(req, h) {
+  const eventService = server.getService("events");
+  const canView = await eventService.canUserViewEvent(req.app.user);
+  const event = eventService.getEventBySlug(req.app.user, req.params.slug);
+
+  if (!event) {
+    return "NO EVENT";
+  }
+
+  return h.view("event_detail", { event });
+}
 
 async function homepage(req, h) {
   const events = await server

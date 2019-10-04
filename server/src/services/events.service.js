@@ -5,6 +5,20 @@ function getAllEvents() {
   return [];
 }
 
+async function canUserViewEvent(user) {
+  return true;
+}
+async function getEventBySlug(slug) {
+  const data = await server.app.db.query(
+    "SELECT * from events where slug = $1",
+    [slug]
+  );
+  if (!data.rows.length) {
+    return null;
+  }
+  return data.rows[0];
+}
+
 async function getAllEventsForUser(user) {
   const data = await server.app.db.query(`
 	SELECT * from events
@@ -37,6 +51,8 @@ module.exports = {
   getAllEventsForUser,
   getAllEvents,
   createEvent,
+  getEventBySlug,
+  canUserViewEvent,
   init,
   name: "events"
 };

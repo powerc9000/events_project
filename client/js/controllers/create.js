@@ -1,10 +1,6 @@
 import { ApplicationController } from "../helpers/application_controller";
 
 export default class extends ApplicationController {
-  connect() {
-    console.log("hello");
-  }
-
   async createEvent(e) {
     e.preventDefault();
     const form = this.targets.find("form");
@@ -13,10 +9,14 @@ export default class extends ApplicationController {
 
     const description = form.description.value;
 
-    console.log(name, description);
     const res = await this.api.Post("/api/events", {
       name,
       description
     });
+
+    if (res.ok) {
+      const data = await res.json();
+      this.page.visit(`/events/${data.slug}`);
+    }
   }
 }
