@@ -15,7 +15,6 @@ module.exports = {
       type: "onPreHandler",
       method: async function(req, h) {
         const user = await req.getLoggedInUser();
-        console.log(user);
         return h.continue;
       }
     });

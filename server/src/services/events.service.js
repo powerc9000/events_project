@@ -13,10 +13,14 @@ async function getEventBySlug(slug) {
     "SELECT * from events where slug = $1",
     [slug]
   );
+  const userService = server.getService("user");
+
   if (!data.rows.length) {
     return null;
   }
-  return data.rows[0];
+  const event = data.rows[0];
+  event.creator = await userService.findById(event.creator);
+  return event;
 }
 
 async function getAllEventsForUser(user) {

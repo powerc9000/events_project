@@ -5,6 +5,17 @@
 		<link rel="stylesheet" href="/static/css/main.css" />
 	</head>
 	<body>
-		<h1>Event</h1>
+		<div class="container mx-auto">
+			<h1 class="font-bold text-2xl"><%=event.name%></h1>
+			<div>
+				created by: <%=event.creator.name%>
+			</div>
+			<div>
+				<%=event.description%>
+			</div>
+			<div>
+				<%=JSON.stringify(event) %>
+			</div>
+		</div>
 	</body>
 </html>

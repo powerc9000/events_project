@@ -68,7 +68,7 @@ module.exports = {
 async function eventDetail(req, h) {
   const eventService = server.getService("events");
   const canView = await eventService.canUserViewEvent(req.app.user);
-  const event = eventService.getEventBySlug(req.app.user, req.params.slug);
+  const event = await eventService.getEventBySlug(req.params.slug);
 
   if (!event) {
     return "NO EVENT";
@@ -81,7 +81,6 @@ async function homepage(req, h) {
   const events = await server
     .getService("events")
     .getAllEventsForUser(req.app.user);
-  console.log(events);
   return h.view("homepage");
 }
 
@@ -90,7 +89,6 @@ async function createEvent(req, h) {
 }
 
 async function login(req, h) {
-  console.log(req.app);
   if (!req.app.user) {
     return h.view("login");
   } else {

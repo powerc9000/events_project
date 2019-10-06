@@ -5,6 +5,7 @@
 
 body {
 	@apply flex;
+	font-family: monospace;
 }
 
 @tailwind utilities;
