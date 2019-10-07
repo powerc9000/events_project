@@ -12,8 +12,7 @@ async function createUser({ provider, email, name }) {
 
 async function generateLoginToken(userId) {
   const insert = await server.app.db.query(
-    "insert into logins (user_id, expires) VALUES ($1, now() + interval '2w') returning id, expires",
-    [userId]
+    sql`insert into logins (user_id, expires) VALUES (${userId}, now() + interval '2w') returning id, expires`
   );
   const tokenData = insert.rows[0];
   const result = {
@@ -28,8 +27,7 @@ async function generateLoginToken(userId) {
 
 async function findUserByEmail(email) {
   const query = await server.app.db.query(
-    `SELECT * FROM users where email = $1`,
-    [email]
+    sql`SELECT * FROM users where email = ${email}`
   );
 
   return query.rows[0];
