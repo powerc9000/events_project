@@ -2,6 +2,7 @@ const hapi = require("@hapi/hapi");
 const api = require("./api");
 const views = require("./views");
 const services = require("./services");
+const tasks = require("./tasks");
 
 async function start() {
   const server = hapi.server({
@@ -77,6 +78,7 @@ async function start() {
 
   await server.register(views);
   await server.register(services);
+  await server.register(tasks);
 
   await server.start();
 

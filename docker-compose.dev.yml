@@ -7,6 +7,8 @@ services:
     command: nodemon /var/www/events/server/src/index.js --ignore /var/www/events/client
     environment:
       - NODE_ENV=develop
+      - REDIS_PORT=6379
+      - REDIS_HOST=redis
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USER=postgres
@@ -27,12 +29,3 @@ services:
       dockerfile: postgres.dockerfile
   redis:
     image: redis
-  sqssns:
-    ports:
-      - 4100:4100
-    image: pafortin/goaws
-    networks:
-      default:
-        aliases:
-          - goaws
-          - sqs.us-east-1.goaws.com
