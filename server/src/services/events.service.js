@@ -20,7 +20,23 @@ async function getEventBySlug(slug) {
   }
   const event = data.rows[0];
   event.creator = await userService.findById(event.creator);
+  event.invites = await getEventInvites(event.id);
   return event;
+}
+
+async function getEventInvites(id) {
+  const attendees = await server.app.db.query(
+    "SELECT * from invites where event_id = $1",
+    [id]
+  );
+
+  return attendees.rows;
+}
+
+async function findEvents(constraints) {
+  const events = await server.app.db.query("SELECT * from events");
+
+  return events.rows;
 }
 
 async function getAllEventsForUser(user) {
@@ -56,6 +72,7 @@ module.exports = {
   getAllEvents,
   createEvent,
   getEventBySlug,
+  findEvents,
   canUserViewEvent,
   init,
   name: "events"

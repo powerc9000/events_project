@@ -2,6 +2,7 @@ const vision = require("@hapi/vision");
 const inert = require("@hapi/inert");
 const ejs = require("ejs");
 const path = require("path");
+const fns = require("date-fns");
 
 let server;
 
@@ -16,6 +17,9 @@ module.exports = {
     server.views({
       engines: { ejs },
       relativeTo: path.join(__dirname, "../../../", "templates"),
+      context: {
+        date: fns
+      },
       isCached: process.env.NODE_ENV !== "develop"
     });
 
@@ -74,14 +78,20 @@ async function eventDetail(req, h) {
     return "NO EVENT";
   }
 
-  return h.view("event_detail", { event });
+  const statuses = { going: [], maybe: [], declined: [] };
+
+  event.invites.reduce((carry, invite) => {
+    carry[invite.status].push(invite);
+
+    return carry;
+  }, statuses);
+
+  return h.view("event_detail", { event: { ...event, ...statuses } });
 }
 
 async function homepage(req, h) {
-  const events = await server
-    .getService("events")
-    .getAllEventsForUser(req.app.user);
-  return h.view("homepage");
+  const events = await server.getService("events").findEvents();
+  return h.view("homepage", { events });
 }
 
 async function createEvent(req, h) {

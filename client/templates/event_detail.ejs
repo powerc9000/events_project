@@ -12,7 +12,14 @@
 				created by: <%=event.creator.name%>
 			</div>
 			<div>
+				<%=event.is_private ? "Private": "Public"%> event
+			</div>
+			<div>
 				<%=event.description%>
+			</div>
+			<div>
+				<%=event.going.length%> Attending
+
 			</div>
 			<div>
 				<%=JSON.stringify(event) %>
