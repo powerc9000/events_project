@@ -48,7 +48,8 @@ CREATE TABLE public.events (
     allow_comments boolean DEFAULT true,
     date timestamp with time zone,
     location text,
-    slug text
+    slug text,
+    can_invite boolean DEFAULT false
 );
 
 

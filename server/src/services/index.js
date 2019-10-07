@@ -1,4 +1,5 @@
 const services = [require("./events.service"), require("./user.service")];
+const slonik = require("slonik");
 const _ = require("lodash");
 const pg = require("pg");
 
@@ -38,8 +39,7 @@ module.exports = {
       if (token) {
         try {
           const tokenQuery = await this.server.app.db.query(
-            "select * from logins where id = $1 and expires > now()",
-            [token]
+            slonik.sql`select * from logins where id = ${token} and expires > now()`
           );
 
           if (tokenQuery.rows.length) {
@@ -61,13 +61,19 @@ module.exports = {
 };
 
 async function initDb(server) {
-  const db = new pg.Pool({
+  const config = {
     user: process.env["DB_USER"],
     host: process.env["DB_HOST"],
     password: process.env["DB_PASSWORD"],
     database: process.env["DB_DATABASE"],
     port: process.env["DB_PORT"],
     connectionTimeoutMillis: 60000
+  };
+
+  const connection = `postgres://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}`;
+
+  const db = slonik.createPool(connection, {
+    connectionTimeout: config.connectionTimoutMillis
   });
 
   server.app.db = db;

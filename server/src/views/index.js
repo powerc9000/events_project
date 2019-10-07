@@ -90,7 +90,9 @@ async function eventDetail(req, h) {
 }
 
 async function homepage(req, h) {
-  const events = await server.getService("events").findEvents();
+  const events = await server
+    .getService("events")
+    .findEvents({ user: req.app.user.id });
   return h.view("homepage", { events });
 }
 

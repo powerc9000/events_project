@@ -1,8 +1,9 @@
 let server;
+const sql = require("slonik").sql;
 
 async function createUser({ provider, email, name }) {
   const query = await server.app.db.query(
-    `INSERT INTO users (provider, email, name) values ($1, $2, $3) returning *`,
+    sql`INSERT INTO users (provider, email, name) values ($1, $2, $3) returning *`,
     [provider, email, name]
   );
 
@@ -35,9 +36,9 @@ async function findUserByEmail(email) {
 }
 
 async function findById(id) {
-  const query = await server.app.db.query(`SELECT * FROM users where id = $1`, [
-    id
-  ]);
+  const query = await server.app.db.query(
+    sql`SELECT * FROM users where id = ${id}`
+  );
 
   return query.rows[0];
 }

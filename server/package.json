@@ -21,6 +21,7 @@
     "login-with-twitter": "^1.2.2",
     "node-fetch": "^2.6.0",
     "pg": "^7.12.1",
+    "slonik": "^19.0.1",
     "slugify": "^1.3.5"
   }
 }

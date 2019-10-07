@@ -1,6 +1,7 @@
 let server;
 const slugify = require("slugify");
 const crypto = require("crypto");
+const sql = require("slonik").sql;
 function getAllEvents() {
   return [];
 }
@@ -10,8 +11,7 @@ async function canUserViewEvent(user) {
 }
 async function getEventBySlug(slug) {
   const data = await server.app.db.query(
-    "SELECT * from events where slug = $1",
-    [slug]
+    sql`SELECT * from events where slug = ${slug}`
   );
   const userService = server.getService("user");
 
@@ -26,15 +26,32 @@ async function getEventBySlug(slug) {
 
 async function getEventInvites(id) {
   const attendees = await server.app.db.query(
-    "SELECT * from invites where event_id = $1",
-    [id]
+    sql`SELECT * from invites where event_id = ${id}`
   );
 
   return attendees.rows;
 }
 
 async function findEvents(constraints) {
-  const events = await server.app.db.query("SELECT * from events");
+  const where = [sql`where is_private = false`];
+
+  if (constraints) {
+    if (constraints.user) {
+      where.push(
+        sql.join(
+          [
+            sql`creator = ${constraints.user}`,
+            sql`id in (select event_id from invites where user = ${constraints.user})`
+          ],
+          sql` OR `
+        )
+      );
+    }
+  }
+  const query = sql`SELECT * from events e ${sql.join(where, sql` OR `)}`;
+  console.log(query);
+
+  const events = await server.app.db.query(query);
 
   return events.rows;
 }
@@ -52,10 +69,9 @@ async function createEvent(user, event) {
   const id = crypto.randomBytes(4).toString("hex");
   const slug = `${slugify(event.name, { lower: true })}-${id}`;
   const result = await server.app.db.query(
-    `
-	INSERT into events (name, description, creator, slug) VALUES ($1, $2, $3, $4) returning *
-	`,
-    [event.name, event.description, user_id, slug]
+    sql`
+	INSERT into events (name, description, creator, slug) VALUES (${event.name}, ${event.description}, ${user_id}, ${slug}) returning *
+	`
   );
 
   return result.rows[0];
