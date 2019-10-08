@@ -10,7 +10,7 @@ module.exports = {
       redis: { port: process.env.REDIS_PORT, host: process.env.REDIS_HOST }
     });
 
-    emailQueue.process(email);
+    emailQueue.process(email(server));
 
     queues.push(emailQueue);
 

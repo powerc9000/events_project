@@ -4,6 +4,8 @@ const views = require("./views");
 const services = require("./services");
 const tasks = require("./tasks");
 
+global.__projectdir = "/var/www/events";
+
 async function start() {
   const server = hapi.server({
     port: 8000,
