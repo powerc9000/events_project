@@ -56,6 +56,42 @@ async function findEvents(constraints) {
   return events.rows;
 }
 
+async function inviteUsersToEvent(event, users) {
+  const userQuery = sql`SELECT * from users where email = ANY (${(sql.array(
+    users
+      .map((user) => {
+        return user.email;
+      })
+      .filter((value) => !!value)
+  ),
+  "text")}) or phone = ANY (${(sql.array(
+    users
+      .map((user) => {
+        return user.phone;
+      })
+      .filter((value) => !!value)
+  ),
+  "text")})`;
+
+  //If we don't have a user entry for someone we need to create it...
+
+  const eventQuery = server.app.db.query(
+    sql`SELECT * from events where id = ${event.id}`
+  );
+  if (!eventQuery.rows) {
+    return null;
+  }
+  const data = await server.app.db.query(query);
+
+  const foundUsers = [];
+  foundUsers.forEach(() => {
+    server.createTask("invite-user-to-event", {
+      event,
+      user
+    });
+  });
+}
+
 async function getAllEventsForUser(user) {
   const data = await server.app.db.query(`
 	SELECT * from events
@@ -85,6 +121,7 @@ function init(hapiServer) {
 
 module.exports = {
   getAllEventsForUser,
+  inviteUsersToEvent,
   getAllEvents,
   createEvent,
   getEventBySlug,
