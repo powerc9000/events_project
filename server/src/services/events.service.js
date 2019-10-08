@@ -56,6 +56,23 @@ async function findEvents(constraints) {
   return events.rows;
 }
 
+async function canInviteToEvent(event, user) {
+  const event = await server.app.db.maybeOne(
+    sql`SELECT * from events where id=$1`
+  );
+  if (!event) {
+    return false;
+  }
+
+  if (event.creator === user) {
+    return true;
+  } else if (event.can_invite) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 async function inviteUsersToEvent(event, users) {
   const userQuery = sql`SELECT * from users where email = ANY (${(sql.array(
     users
