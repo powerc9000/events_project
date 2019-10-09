@@ -114,6 +114,22 @@ ALTER TABLE ONLY public.events
 
 
 --
+-- Name: invites invites_event_id_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invites
+    ADD CONSTRAINT invites_event_id_user_id_key UNIQUE (event_id, user_id);
+
+
+--
+-- Name: invites invites_id_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.invites
+    ADD CONSTRAINT invites_id_user_id_key UNIQUE (id, user_id);
+
+
+--
 -- Name: invites invites_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 

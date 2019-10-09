@@ -4,6 +4,7 @@ const CLIENT_ID =
   "634779035671-htqj3sdamedg2bldv6fa85dr9qv3hh0f.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
 const LoginWithTwitter = require("login-with-twitter");
+const Boom = require("@hapi/boom");
 let server;
 module.exports = {
   name: "Api",
@@ -18,6 +19,27 @@ module.exports = {
           payload: joi.object({
             name: joi.string().required(),
             description: joi.string()
+          })
+        }
+      }
+    });
+
+    server.route({
+      method: "POST",
+      path: "/events/{id}/invite",
+      handler: inviteToEvent,
+      options: {
+        validate: {
+          payload: joi.object({
+            invites: joi.array().items(
+              joi
+                .object({
+                  name: joi.string(),
+                  email: joi.string(),
+                  phone: joi.string()
+                })
+                .or("email", "phone")
+            )
           })
         }
       }
@@ -109,4 +131,22 @@ async function loginWithTwitter(req, h) {
       resolve(h.redirect(url));
     });
   });
+}
+
+async function inviteToEvent(req, h) {
+  const events = server.getService("events");
+  if (!req.loggedIn()) {
+    return Boom.unauthorized();
+  }
+  const canInvite = await events.canInviteToEvent(
+    req.params.id,
+    req.app.user.id
+  );
+  if (!canInvite) {
+    return Boom.unauthorized();
+  }
+
+  events.inviteUsersToEvent(req.params.id, req.payload.invites);
+
+  return h.response().code(204);
 }

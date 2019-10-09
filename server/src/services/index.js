@@ -30,6 +30,10 @@ module.exports = {
       return this.response().code(204);
     });
 
+    server.decorate("request", "loggedIn", function() {
+      return !!this.app.user;
+    });
+
     server.decorate("request", "getLoggedInUser", async function() {
       if (this.app.user) {
         return this.app.user;

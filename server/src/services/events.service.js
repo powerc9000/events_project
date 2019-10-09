@@ -2,6 +2,7 @@ let server;
 const slugify = require("slugify");
 const crypto = require("crypto");
 const sql = require("slonik").sql;
+
 function getAllEvents() {
   return [];
 }
@@ -56,9 +57,9 @@ async function findEvents(constraints) {
   return events.rows;
 }
 
-async function canInviteToEvent(event, user) {
+async function canInviteToEvent(eventId, user) {
   const event = await server.app.db.maybeOne(
-    sql`SELECT * from events where id=$1`
+    sql`SELECT * from events where id=${eventId}`
   );
   if (!event) {
     return false;
@@ -73,37 +74,83 @@ async function canInviteToEvent(event, user) {
   }
 }
 
-async function inviteUsersToEvent(event, users) {
-  const userQuery = sql`SELECT * from users where email = ANY (${(sql.array(
-    users
-      .map((user) => {
-        return user.email;
-      })
-      .filter((value) => !!value)
-  ),
-  "text")}) or phone = ANY (${(sql.array(
-    users
-      .map((user) => {
-        return user.phone;
-      })
-      .filter((value) => !!value)
-  ),
-  "text")})`;
-
-  //If we don't have a user entry for someone we need to create it...
-
-  const eventQuery = server.app.db.query(
-    sql`SELECT * from events where id = ${event.id}`
+async function inviteUsersToEvent(eventId, users) {
+  const eventQuery = await server.app.db.query(
+    sql`SELECT * from events where id = ${eventId}`
   );
   if (!eventQuery.rows) {
     return null;
   }
-  const data = await server.app.db.query(query);
 
-  const foundUsers = [];
-  foundUsers.forEach(() => {
+  const userQuery = sql`SELECT * from users where email = ANY (${sql.array(
+    users
+      .map((user) => {
+        return user.email;
+      })
+      .filter((value) => !!value),
+    "text"
+  )}) or phone = ANY (${sql.array(
+    users
+      .map((user) => {
+        return user.phone;
+      })
+      .filter((value) => !!value),
+    "text"
+  )})`;
+
+  const existing = await server.app.db.query(userQuery);
+
+  //If we don't have a user entry for someone we need to create it...
+  //
+  const notFound = users.filter((user) => {
+    const found = existing.rows.find((queryUser) => {
+      return queryUser.phone === user.phone || queryUser.email === user.email;
+    });
+
+    return !found;
+  });
+
+  let newUsers = [];
+  if (notFound.length) {
+    const queried = notFound.map((user) => {
+      return [user.name, user.email, user.phone];
+    });
+
+    const otherUsers = await server.app.db.query(
+      sql`INSERT INTO users (name, email, phone) select * from ${sql.unnest(
+        queried,
+        ["text", "text", "text"]
+      )} returning *`
+    );
+    newUsers = otherUsers.rows;
+  }
+
+  console.log(existing.rows, newUsers);
+
+  const allUsers = [...existing.rows, ...newUsers];
+  const allUsersFragment = allUsers.map((user) => {
+    const key = crypto.randomBytes(16).toString("hex");
+    const result = [user.id, eventId, key, "invited"];
+    return result;
+  });
+  console.log("hello");
+  console.log(allUsersFragment);
+  const inviteesQuery = sql`INSERT INTO invites (user_id, event_id, invite_key, status) select * from ${sql.unnest(
+    allUsersFragment,
+    ["uuid", "uuid", "text", "text"]
+  )} ON CONFLICT DO NOTHING returning *`;
+
+  const invitees = await server.app.db.query(inviteesQuery);
+
+  console.log(invitees.rows);
+
+  allUsers.forEach((user) => {
+    console.log(user);
     server.createTask("invite-user-to-event", {
-      event,
+      event: eventQuery.rows[0],
+      invite: invitees.rows.find((invite) => {
+        return invite.user_id === user.id;
+      }),
       user
     });
   });
@@ -139,6 +186,7 @@ function init(hapiServer) {
 module.exports = {
   getAllEventsForUser,
   inviteUsersToEvent,
+  canInviteToEvent,
   getAllEvents,
   createEvent,
   getEventBySlug,
