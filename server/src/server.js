@@ -1,6 +1,7 @@
 const hapi = require("@hapi/hapi");
 const api = require("./api");
 const views = require("./views");
+const aws = require("aws-sdk");
 const services = require("./services");
 const tasks = require("./tasks");
 
@@ -77,6 +78,10 @@ async function start() {
     clearInvalid: false, // remove invalid cookies
     strictHeader: true // don't allow violations of RFC 6265
   });
+
+  server.app.aws = {
+    ses: new aws.SES({ region: "us-east-1" })
+  };
 
   await server.register(views);
   await server.register(services);

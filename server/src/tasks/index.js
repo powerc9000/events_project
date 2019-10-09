@@ -14,9 +14,12 @@ module.exports = {
 
     queues.push(emailQueue);
 
-    server.decorate("server", "createTask", function(data) {
+    server.decorate("server", "createTask", function(type, data) {
       queues.forEach((queue) => {
-        queue.add(data);
+        queue.add({
+          type: type,
+          taskData: data
+        });
       });
     });
   }

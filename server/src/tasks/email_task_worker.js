@@ -1,12 +1,14 @@
 const mustache = require("mustache");
 const fs = require("fs");
 const mjml = require("mjml");
-
-module.exports = (server) => async (job) => {
+const path = require("path");
+let server;
+module.exports = (hapiServer) => async (job) => {
+  server = hapiServer;
   const type = job.data.type;
   const data = job.data.taskData;
 
-  if (data.type === "invite-user") {
+  if (type === "invite-user-to-event") {
     const user = data.user;
 
     if (user.email) {
@@ -23,37 +25,44 @@ module.exports = (server) => async (job) => {
 };
 
 async function sendEmail(templateName, payload) {
-  const templateString = await getTemplate(templateName);
-  const template = mustache.render(templateString, payload.data);
-  const subject = mustach.render(payload.subject, payload.data);
-  const html = mjml(template).html;
-  const params = {
-    Destination: {
-      ToAddresses: [payload.to]
-    },
-    Source: "clay.murray8@gmail.com",
-    Message: {
-      Body: {
-        Html: {
-          Data: html
-        }
+  try {
+    const templateString = await getTemplate(templateName);
+    const template = mustache.render(templateString, payload.data);
+    const subject = mustache.render(payload.subject, payload.data);
+    const html = mjml(template).html;
+    const params = {
+      Destination: {
+        ToAddresses: [payload.to]
       },
-      Subject: {
-        Data: subject
+      Source: "clay.murray8@gmail.com",
+      Message: {
+        Body: {
+          Html: {
+            Data: html
+          }
+        },
+        Subject: {
+          Data: subject
+        }
       }
-    }
-  };
+    };
 
-  await server.aws.ses.sendEmail(params).promise();
+    console.log(params);
+
+    const res = await server.app.aws.ses.sendEmail(params).promise();
+    console.log(res);
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 function getTemplate(name) {
   return new Promise((resolve, reject) => {
     fs.readFile(
-      path.join(__dirname, "../email_templates/", name, ".mjml"),
+      path.join(__dirname, "../email_templates/", `${name}.mjml`),
       (err, data) => {
         if (!err) {
-          return data.toString("utf-8");
+          resolve(data.toString("utf-8"));
         } else {
           reject(err);
         }

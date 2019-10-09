@@ -125,24 +125,18 @@ async function inviteUsersToEvent(eventId, users) {
     newUsers = otherUsers.rows;
   }
 
-  console.log(existing.rows, newUsers);
-
   const allUsers = [...existing.rows, ...newUsers];
   const allUsersFragment = allUsers.map((user) => {
     const key = crypto.randomBytes(16).toString("hex");
     const result = [user.id, eventId, key, "invited"];
     return result;
   });
-  console.log("hello");
-  console.log(allUsersFragment);
   const inviteesQuery = sql`INSERT INTO invites (user_id, event_id, invite_key, status) select * from ${sql.unnest(
     allUsersFragment,
     ["uuid", "uuid", "text", "text"]
   )} ON CONFLICT DO NOTHING returning *`;
 
   const invitees = await server.app.db.query(inviteesQuery);
-
-  console.log(invitees.rows);
 
   allUsers.forEach((user) => {
     console.log(user);
