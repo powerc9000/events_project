@@ -18,8 +18,13 @@ module.exports = {
         validate: {
           payload: joi.object({
             name: joi.string().required(),
-            description: joi.string(),
-            private: joi.boolean()
+            date: joi.date().timestamp(),
+            description: joi.string().required(),
+            is_private: joi.boolean(),
+            show_participants: joi.boolean(),
+            allow_comments: joi.boolean(),
+            can_invite: joi.boolean(),
+            location: joi.string().allow(null, "")
           })
         }
       }

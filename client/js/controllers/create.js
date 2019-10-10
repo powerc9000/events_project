@@ -3,7 +3,6 @@ import flatpickr from "flatpickr";
 
 export default class extends ApplicationController {
   connect() {
-    console.log(flatpickr);
     flatpickr(this.targets.find("datepicker"), {
       enableTime: true,
       dateFormat: "Y-m-d H:i"
@@ -19,7 +18,13 @@ export default class extends ApplicationController {
 
     const res = await this.api.Post("/api/events", {
       name,
-      description
+      description,
+      can_invite: form.can_invite.checked,
+      date: new Date(form.date.value).getTime(),
+      show_participants: form.show_participants.checked,
+      allow_comments: form.allow_comments.checked,
+      is_private: form.is_private.checked,
+      location: form.location.value
     });
 
     if (res.ok) {

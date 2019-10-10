@@ -160,9 +160,16 @@ async function createEvent(user, event) {
   const user_id = user.id;
   const id = crypto.randomBytes(4).toString("hex");
   const slug = `${slugify(event.name, { lower: true })}-${id}`;
+  const values = sql`(${event.name}, ${
+    event.description
+  }, ${user_id}, ${slug}, ${event.location}, to_timestamp(${event.date /
+    1000}), ${event.is_private}, ${event.allow_comments}, ${
+    event.show_participants
+  })`;
+  console.log(values);
   const result = await server.app.db.query(
     sql`
-	INSERT into events (name, description, creator, slug) VALUES (${event.name}, ${event.description}, ${user_id}, ${slug}) returning *
+	INSERT into events (name, description, creator, slug, location, date, is_private, allow_comments, show_participants) VALUES ${values} returning *
 	`
   );
 
