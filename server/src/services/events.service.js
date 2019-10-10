@@ -27,7 +27,7 @@ async function getEventBySlug(slug) {
 
 async function getEventInvites(id) {
   const attendees = await server.app.db.query(
-    sql`SELECT * from invites where event_id = ${id}`
+    sql`SELECT *, row_to_json((select d from (select * from users where id = i.user_id) d)) as user from invites i where event_id = ${id}`
   );
 
   return attendees.rows;
@@ -50,7 +50,6 @@ async function findEvents(constraints) {
     }
   }
   const query = sql`SELECT * from events e ${sql.join(where, sql` OR `)}`;
-  console.log(query);
 
   const events = await server.app.db.query(query);
 
@@ -139,7 +138,6 @@ async function inviteUsersToEvent(eventId, users) {
   const invitees = await server.app.db.query(inviteesQuery);
 
   allUsers.forEach((user) => {
-    console.log(user);
     server.createTask("invite-user-to-event", {
       event: eventQuery.rows[0],
       invite: invitees.rows.find((invite) => {

@@ -78,7 +78,7 @@ async function eventDetail(req, h) {
     return "NO EVENT";
   }
 
-  const statuses = { going: [], maybe: [], declined: [] };
+  const statuses = { going: [], maybe: [], declined: [], invited: [] };
 
   event.invites.reduce((carry, invite) => {
     carry[invite.status].push(invite);

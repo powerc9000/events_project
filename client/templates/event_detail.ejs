@@ -9,20 +9,24 @@
 		<div class="container mx-auto">
 			<h1 class="font-bold text-2xl"><%=event.name%></h1>
 			<div>
-				created by: <%=event.creator.name%>
+				 
+				<span class="p-1 bg-green-500 mr-2">
+					<%=event.going.length%> Attending
+				</span>
+				<span class="p-1 bg-gray-300">
+					<%=event.invited.length%> Invited
+				</span>
+
+			</div>
+			<div class="mt-2">
+				Created by: <%=event.creator.name%>
 			</div>
 			<div>
 				<%=event.is_private ? "Private": "Public"%> event
 			</div>
-			<div>
+			<hr/>
+			<div class="mt-2">
 				<%=event.description%>
-			</div>
-			<div>
-				<%=event.going.length%> Attending
-
-			</div>
-			<div>
-				<%=JSON.stringify(event) %>
 			</div>
 		</div>
 	</body>

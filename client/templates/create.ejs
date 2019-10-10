@@ -2,24 +2,71 @@
 	<head>
 		<title>Create a new event</title>
 		<link rel="stylesheet" href="/static/css/main.css" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 		<script src="/static/js/index.js"></script>
 	</head>
 	<body>
-		<h1>Create an event</h1>
-		<form data-controller="create" data-action="create#createEvent" data-target="create.form">
-			<div>
-				<input type="text" name="name" placeholder="name" />
-			</div>
+		<%-include("partials/header")%>
+		<div class="container mx-auto">
+			<h1 class="text-xl font-bold">Create an event</h1>
+			<form data-controller="create" data-action="create#createEvent" data-target="create.form">
+				<div>
+					<label class="font-bold">
+						Event Name
+						<input class="p-1 border border-gray-500 w-full"type="text" name="name" placeholder="Event Name" required/>
+					</label>
+				</div>
+				<div class="mt-2">
+					<label class="font-bold">
+						Event Date
+					<input type="datetime-local" name="date" class="p-1 border border-gray-500" data-target="create.datepicker" />
+					</label>
+				</div>
+				<div class="mt-2" >
+					<label class="font-bold">
+						Event Location
+						<input class="p-1 border border-gray-500 w-full"type="text" name="location" placeholder="Event Location" />
+					</label>
+				</div>
+				<div class="mt-2">
+					<label class="font-bold">
+						Event Description
+						<textarea name="description" placeholder="description" class="w-full p-1 border border-gray-500" required></textarea>
+					</label>
+				</div>
+				<div class="mt-2 font-bold">
+					<label class="cursor-pointer">
+						Private:
+						<input type="checkbox" name="is_private" checked class="cursor-pointer"/>
+					</label>
+				</div>
+				<div class="font-bold">
+					<label class="cursor-pointer">
+						Show Participants:
+						<input type="checkbox" name="show_participants" class="cursor-pointer"/>
+					</label>
+				</div>
+				<div class="font-bold">
+					<label class="cursor-pointer">
+						Allow Comments:
+						<input type="checkbox" name="private" class="cursor-pointer"/>
+					</label>
+				</div>
+				<div class="font-bold">
+					<label class="cursor-pointer">
+						Allow Participants to invite others:
+						<input type="checkbox" name="private" class="cursor-pointer"/>
+					</label>
+				</div>
 
-			<div>
-				<textarea name="description" placeholder="description"></textarea>
-			</div>
-			<div>
-				<button type="submit" class="bg-red-600 p-1 text-white rounded">
-					Create
-				</button>
-			</div>
+				<hr />
+				<div class="mt-2">
+					<button type="submit" class="bg-green-500 text-md p-2">
+						Create
+					</button>
+				</div>
 
-		</form>
+			</form>
+		</div>
 	</body>
 </html>
