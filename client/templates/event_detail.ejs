@@ -11,6 +11,7 @@
 			<div class="text-lg">
 				<span data-controller="format-date" data-format-date-epoch="<%=event.date%>" data-target="format-date.date"><%=new Date(event.date)%></span>
 			</div>
+
 			<div class="mt-2">
 				 
 				<span class="p-1 bg-green-500 mr-2">
@@ -21,7 +22,13 @@
 				</span>
 
 			</div>
+			<%if(!event.is_private){%>
 			<div class="mt-2">
+				<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-text="<%=event.name%>" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+			</div>
+			<%}%>
+			<div class="mt-2">
+
 				Created by: <%=event.creator.name%>
 			</div>
 			<div>

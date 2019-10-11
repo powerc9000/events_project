@@ -1,9 +1,20 @@
 <header class="border-b border-gray-400 mb-4">
-	<nav class="container mx-auto py-2">
-		<ul>
+	<nav class="container mx-auto py-2 flex justify-between items-center">
+		<ul class="flex">
 			<li>
 				<a href="/" class="text-blue-500 text-lg hover:underline">Home</a>
 			</li>
+
+			<%if(loggedIn){%>
+			<li class="ml-4">
+				<a href="/create" class="text-blue-500 text-lg hover:underline">Create Event</a>
+			</li>
+			<%}%>
 		</ul>
+		<%if(!loggedIn){%>
+		<div>
+			<a href="/login" class="text-blue-500 text-lg hover:underline">Login</a>
+		</div>
+		<%}%>
 	</nav>
 </header>

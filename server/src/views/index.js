@@ -17,9 +17,11 @@ module.exports = {
     server.views({
       engines: { ejs },
       relativeTo: path.join(__dirname, "../../../", "templates"),
-      context: {
-        date: fns
-      },
+      context: (req) => ({
+        date: fns,
+        user: req.app.user,
+        loggedIn: !!req.app.user
+      }),
       isCached: process.env.NODE_ENV !== "develop"
     });
 
