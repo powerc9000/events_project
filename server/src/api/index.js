@@ -6,6 +6,7 @@ const CLIENT_ID =
 const client = new OAuth2Client(CLIENT_ID);
 const LoginWithTwitter = require("login-with-twitter");
 const Boom = require("@hapi/boom");
+const sql = require("slonik").sql;
 let server;
 module.exports = {
   name: "Api",
@@ -95,8 +96,41 @@ async function createEvent(req, h) {
 
 async function loginWithEmail(req, h) {
   const key = crypto.randomBytes(16).toString("hex");
+  const userService = server.getService("user");
 
-  h.state("session_key", key);
+  let user = await userService.findUserByEmail(req.payload.email);
+
+  if (!user) {
+    //Create the user;
+    user = await userService.createUser({
+      email: req.pay.load.email,
+      name: ""
+    });
+  }
+
+  const codeArr = [];
+
+  for (let i = 0; i < 6; i++) {
+    codeArr.push(Math.floor(Math.random() * 10));
+  }
+
+  const code = codeArr.join("");
+
+  console.log(code);
+
+  const loginCode = await server.app.db.one(sql`
+	INSERT into login_codes (code, user_id) VALUES (${code}, ${user.id}) returning *
+	`);
+
+  console.log(code, loginCode);
+
+  // h.state("session_key", loginCode.id);
+
+  // server.createTask("send-code", {
+  //   code_type: "email",
+  //   user,
+  //   code
+  // });
 
   return h.redirect("/login/email");
 }
@@ -142,7 +176,6 @@ async function twitterCallback(req, h) {
       },
       req.state.user.twitterToken,
       (err, user) => {
-        console.log(user, req.query);
         resolve(h.redirect("/"));
       }
     );

@@ -25,6 +25,7 @@ module.exports = (hapiServer) => async (job) => {
 
   if (type === "send-code") {
     if (data.code_type === "email") {
+      const user = data.user;
       if (user.email) {
         await sendEmail("login_code", {
           to: user.email,

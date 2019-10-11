@@ -70,6 +70,19 @@ CREATE TABLE public.invites (
 
 
 --
+-- Name: login_codes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.login_codes (
+    id uuid DEFAULT public.uuid_generate_v4(),
+    code text NOT NULL,
+    user_id uuid NOT NULL,
+    created timestamp with time zone DEFAULT now(),
+    used timestamp with time zone
+);
+
+
+--
 -- Name: logins; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -199,6 +212,14 @@ ALTER TABLE ONLY public.invites
 
 ALTER TABLE ONLY public.invites
     ADD CONSTRAINT invites_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: login_codes login_codes_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.login_codes
+    ADD CONSTRAINT login_codes_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
