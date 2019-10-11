@@ -7,4 +7,8 @@ body {
 	font-family: monospace;
 }
 
+.event-link:hover {
+	@apply underline;
+}
+
 @tailwind utilities;

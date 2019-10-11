@@ -18,11 +18,11 @@
 				</div>
 			</div>
 			<div class="mt-4">
-				<ul class="list-disc">
+				<ul class="">
 					<%events.forEach((event)=>{%>
 						<li class="py-2">
 							<h3>
-							<a href="/events/<%=event.slug%>" class="underline text-md"><%=event.name%>
+							<a href="/events/<%=event.slug%>" class="bg-black p-1 text-white relative event-link"><%=event.name%>
 								- <%=date.format(date.addDays(new Date(), 2), "PP")%></a>
 							</h3>
 							<p>
