@@ -13,10 +13,10 @@
 					<label for="email">
 						Login with your email
 					</label>
-					<div class="flex">
-					<input type="email" placeholder="Email" class="border border-gray-500 p-1 w-full" id="email"/>
-					<button class="bg-black text-white hover:underline p-2">Login</button>
-					</div>
+						<form method="POST" action="/api/login/email" class="flex">
+							<input type="email" placeholder="Email" class="border border-gray-500 p-1 w-full" id="email" name="email" required/>
+							<button class="bg-black text-white hover:underline p-2" type="submit">Login</button>
+						</form>
 				</div>
 				<hr />
 				<div class="mt-2 mb-2">

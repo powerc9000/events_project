@@ -79,6 +79,17 @@ async function start() {
     strictHeader: true // don't allow violations of RFC 6265
   });
 
+  server.state("session_key", {
+    ttl: Hour,
+    isSecure: false, //This server will never be listening on https the load balancer will handle that
+    isHttpOnly: true,
+    isSameSite: false,
+    path: "/",
+    encoding: "base64",
+    clearInvalid: false, // remove invalid cookies
+    strictHeader: true // don't allow violations of RFC 6265
+  });
+
   server.app.aws = {
     ses: new aws.SES({ region: "us-east-1" })
   };

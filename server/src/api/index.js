@@ -1,4 +1,5 @@
 const joi = require("@hapi/joi");
+const crypto = require("crypto");
 const { OAuth2Client } = require("google-auth-library");
 const CLIENT_ID =
   "634779035671-htqj3sdamedg2bldv6fa85dr9qv3hh0f.apps.googleusercontent.com";
@@ -59,6 +60,19 @@ module.exports = {
 
     server.route({
       method: "POST",
+      path: "/login/email",
+      options: {
+        validate: {
+          payload: joi.object({
+            email: joi.string().email()
+          })
+        }
+      },
+      handler: loginWithEmail
+    });
+
+    server.route({
+      method: "POST",
       path: "/login/google",
       handler: loginWithGoogle
     });
@@ -77,6 +91,14 @@ async function createEvent(req, h) {
   const result = await events.createEvent(req.app.user, req.payload);
 
   return result;
+}
+
+async function loginWithEmail(req, h) {
+  const key = crypto.randomBytes(16).toString("hex");
+
+  h.state("session_key", key);
+
+  return h.redirect("/login/email");
 }
 
 async function loginWithGoogle(req, h) {

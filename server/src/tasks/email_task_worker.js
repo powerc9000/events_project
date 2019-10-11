@@ -22,6 +22,20 @@ module.exports = (hapiServer) => async (job) => {
       });
     }
   }
+
+  if (type === "send-code") {
+    if (data.code_type === "email") {
+      if (user.email) {
+        await sendEmail("login_code", {
+          to: user.email,
+          subject: "Your login code",
+          data: {
+            code: data.code
+          }
+        });
+      }
+    }
+  }
 };
 
 async function sendEmail(templateName, payload) {
