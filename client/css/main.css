@@ -11,4 +11,17 @@ body {
 	@apply underline;
 }
 
+.twitter-login {
+	color: white;
+	background: #1DA1F2;
+	
+	&:hover {
+		@apply underline;
+	}
+}
+
+.login-container {
+	width: 500px;
+}
+
 @tailwind utilities;

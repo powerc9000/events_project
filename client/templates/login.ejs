@@ -6,11 +6,42 @@
 		<meta name="google-signin-client_id" content="634779035671-htqj3sdamedg2bldv6fa85dr9qv3hh0f.apps.googleusercontent.com">
 	</head>	
 	<body>
-		<h1>Login</h1>
+		<div class="container mx-auto flex items-center flex-col login-container">
+			<h1 class="text-xl p-1 bg-black text-white">Login</h1>
+			<div class="w-full">
+				<div class="mt-2 mb-2">
+					<label for="email">
+						Login with your email
+					</label>
+					<div class="flex">
+					<input type="email" placeholder="Email" class="border border-gray-500 p-1 w-full" id="email"/>
+					<button class="bg-black text-white hover:underline p-2">Login</button>
+					</div>
+				</div>
+				<hr />
+				<div class="mt-2 mb-2">
+					<label for="phone">
+						Login with your password
 
+					</label>
+					<div class="flex">
+						<input type="phone" placeholder="Phone" class="border border-gray-500 p-1 w-full" id="phone"/>
+						<button class="bg-black text-white hover:underline p-2"> Login</button>
+					</div>
+				</div>
+				<hr />
+			</div>
+			<div class="flex items-center mt-2">
+				<div class="g-signin2 mr-2" data-onsuccess="onSignIn" data-controller="login-with-google"></div>
+				<div>
+					<a href="/api/login/twitter" class="flex items-center twitter-login p-1">
+						<img src="/static/img/twitter.svg" width="32px" class="mr-2"/>
+						Log in with Twitter
+					</a>
+				</div>
+			</div>
+		</div>
 
-		<div class="g-signin2" data-onsuccess="onSignIn" data-controller="login-with-google"></div>
 		<script src="https://apis.google.com/js/platform.js" async defer></script>
-		<a href="/api/login/twitter">Log in with Twitter</a>
 	</body>
 </html>

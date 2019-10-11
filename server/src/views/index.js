@@ -92,9 +92,11 @@ async function eventDetail(req, h) {
 }
 
 async function homepage(req, h) {
-  const events = await server
-    .getService("events")
-    .findEvents({ user: req.app.user.id });
+  const options = {};
+  if (req.app.user) {
+    options.user = req.app.user.id;
+  }
+  const events = await server.getService("events").findEvents(options);
   return h.view("homepage", { events });
 }
 
