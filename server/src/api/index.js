@@ -124,13 +124,13 @@ async function loginWithEmail(req, h) {
 
   console.log(code, loginCode);
 
-  // h.state("session_key", loginCode.id);
+  h.state("session_key", loginCode.id);
 
-  // server.createTask("send-code", {
-  //   code_type: "email",
-  //   user,
-  //   code
-  // });
+  server.createTask("send-code", {
+    code_type: "email",
+    user,
+    code
+  });
 
   return h.redirect("/login/email");
 }
