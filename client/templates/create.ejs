@@ -7,7 +7,7 @@
 	</head>
 	<body>
 		<%-include("partials/header")%>
-		<div class="container mx-auto">
+		<div class="container mx-auto content">
 			<h1 class="text-xl font-bold">Create an event</h1>
 			<form data-controller="create" data-action="create#createEvent" data-target="create.form">
 				<div>
@@ -68,5 +68,6 @@
 
 			</form>
 		</div>
+		<%-include("partials/footer")%>
 	</body>
 </html>

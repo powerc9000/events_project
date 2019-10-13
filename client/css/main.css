@@ -5,10 +5,15 @@
 
 body {
 	font-family: monospace;
+	@apply flex flex-col h-full;
 }
 
 .event-link:hover {
 	@apply underline;
+}
+.content {
+	flex-grow: 1;
+	@apply mx-auto;
 }
 
 .twitter-login {
