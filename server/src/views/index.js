@@ -65,11 +65,26 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/login/{type}",
+      handler: loginWithOTP
+    });
+
+    server.route({
+      method: "GET",
       path: "/events/{slug}",
       handler: eventDetail
     });
   }
 };
+
+async function loginWithOTP(req, h) {
+  const type = req.params.type;
+  let codeSource = "Phone";
+  if (type === "email") {
+    codeSource = "Email";
+  }
+  return h.view("login_otp", { codeSource });
+}
 
 async function eventDetail(req, h) {
   const eventService = server.getService("events");

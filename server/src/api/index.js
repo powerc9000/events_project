@@ -1,4 +1,5 @@
 const joi = require("@hapi/joi");
+const PhoneNumber = require("awesome-phonenumber");
 const crypto = require("crypto");
 const { OAuth2Client } = require("google-auth-library");
 const CLIENT_ID =
@@ -65,11 +66,27 @@ module.exports = {
       options: {
         validate: {
           payload: joi.object({
-            email: joi.string().email()
+            email: joi
+              .string()
+              .email()
+              .required()
           })
         }
       },
       handler: loginWithEmail
+    });
+
+    server.route({
+      method: "POST",
+      path: "/login/phone",
+      options: {
+        validate: {
+          payload: joi.object({
+            phone: joi.string().required()
+          })
+        }
+      },
+      handler: loginWithPhone
     });
 
     server.route({
@@ -83,6 +100,12 @@ module.exports = {
       path: "/login/twitter/callback",
       handler: twitterCallback
     });
+
+    server.route({
+      method: "POST",
+      path: "/login/otp",
+      handler: validateOTPLogin
+    });
   }
 };
 
@@ -94,8 +117,66 @@ async function createEvent(req, h) {
   return result;
 }
 
+async function loginWithPhone(req, h) {
+  const userService = server.getService("user");
+  const phone = new PhoneNumber(
+    req.payload.phone,
+    PhoneNumber.getRegionCodeForCountryCode(1)
+  );
+
+  if (!phone.isValid()) {
+    return "Invalid Phone";
+  }
+
+  const number = phone.getNumber("e164");
+
+  let user = await userService.findUserByPhone(number);
+  if (!user) {
+    //Create the user;
+    user = await userService.createUser({
+      phone: number,
+      name: ""
+    });
+  }
+
+  const { session_key, code } = await userService.generateOTP(user);
+
+  h.state("session_key", session_key);
+
+  server.createTask("send-code", {
+    code_type: "sms",
+    user,
+    code
+  });
+
+  return h.redirect("/login/phone");
+}
+
+async function validateOTPLogin(req, h) {
+  const otp = req.payload.code;
+  const token = await server.app.db.query(
+    sql`SELECT * from login_codes where code=${otp} and id=${req.state.session_key} and used is null`
+  );
+
+  if (!token.rows.length) {
+    return Boom.unauthorized();
+  } else {
+    const userService = server.getService("user");
+    const userId = token.rows[0].user_id;
+    const user = await userService.findById(userId);
+
+    await server.app.db.query(
+      sql`Update login_codes set used = now() where id=${token.rows[0].id}`
+    );
+
+    await h.loginUser(user, false);
+    h.unstate("session_key");
+
+    return h.redirect("/");
+  }
+}
+
 async function loginWithEmail(req, h) {
-  const key = crypto.randomBytes(16).toString("hex");
   const userService = server.getService("user");
 
   let user = await userService.findUserByEmail(req.payload.email);
@@ -103,28 +184,14 @@ async function loginWithEmail(req, h) {
   if (!user) {
     //Create the user;
     user = await userService.createUser({
-      email: req.pay.load.email,
+      email: req.payload.email,
       name: ""
     });
   }
 
-  const codeArr = [];
+  const { session_key, code } = await userService.generateOTP(user);
 
-  for (let i = 0; i < 6; i++) {
-    codeArr.push(Math.floor(Math.random() * 10));
-  }
-
-  const code = codeArr.join("");
-
-  console.log(code);
-
-  const loginCode = await server.app.db.one(sql`
-	INSERT into login_codes (code, user_id) VALUES (${code}, ${user.id}) returning *
-	`);
-
-  console.log(code, loginCode);
-
-  h.state("session_key", loginCode.id);
+  h.state("session_key", session_key);
 
   server.createTask("send-code", {
     code_type: "email",

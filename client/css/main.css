@@ -21,7 +21,7 @@ body {
 }
 
 .login-container {
-	width: 500px;
+	max-width: 500px;
 }
 
 @tailwind utilities;

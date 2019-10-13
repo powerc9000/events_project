@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<title>Create a new event</title>
+		<link rel="stylesheet" href="/static/css/main.css" />
+		<script src="/static/js/index.js"></script>
+	</head>
+	<body>
+		<%-include("partials/header")%>
+		<div class="container mx-auto login-container">
+			<h1 class="text-xl">We sent a login code to your <%=codeSource%></h1>
+
+			<form method="POST" action="/api/login/otp" class="mt-4">
+				<label>
+					Enter Code
+				</label>
+				<div class="flex">
+
+					<input 
+						type="text" 
+						name="code" 
+						pattern="[0-9]{6}"
+						class="border border-gray-500 w-full p-1 text-xl" 
+						minlength="6" maxlength="6" required/>
+					<button type="submit" class="text-white bg-black p-1">
+						Login
+					</button>
+				</div>
+
+			</form>
+		</div>
+	</body>
+</html>

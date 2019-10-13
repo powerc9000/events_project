@@ -62,8 +62,6 @@ async function sendEmail(templateName, payload) {
       }
     };
 
-    console.log(params);
-
     const res = await server.app.aws.ses.sendEmail(params).promise();
     console.log(res);
   } catch (e) {

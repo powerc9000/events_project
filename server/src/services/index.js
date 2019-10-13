@@ -24,10 +24,15 @@ module.exports = {
       return _.get(server, ["app", "services", name]);
     });
 
-    server.decorate("toolkit", "loginUser", async function(user) {
+    server.decorate("toolkit", "loginUser", async function(
+      user,
+      response = true
+    ) {
       const token = await server.getService("user").generateLoginToken(user.id);
       this.state("user", token);
-      return this.response().code(204);
+      if (response) {
+        return this.response().code(204);
+      }
     });
 
     server.decorate("request", "loggedIn", function() {

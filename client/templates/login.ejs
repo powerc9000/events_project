@@ -24,10 +24,10 @@
 						Login with your phone number 
 
 					</label>
-					<div class="flex">
-						<input type="phone" placeholder="Phone" class="border border-gray-500 p-1 w-full" id="phone"/>
+					<form class="flex" method="POST" action="/api/login/phone">
+						<input type="phone" placeholder="Phone" class="border border-gray-500 p-1 w-full" id="phone" name="phone" required/>
 						<button class="bg-black text-white hover:underline p-2"> Login</button>
-					</div>
+					</form>
 				</div>
 				<hr />
 			</div>

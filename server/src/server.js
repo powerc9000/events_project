@@ -91,7 +91,8 @@ async function start() {
   });
 
   server.app.aws = {
-    ses: new aws.SES({ region: "us-east-1" })
+    ses: new aws.SES({ region: "us-east-1" }),
+    sns: new aws.SNS({ region: "us-east-1" })
   };
 
   await server.register(views);
