@@ -212,7 +212,9 @@ async function loginWithGoogle(req, h) {
 
   const payload = ticket.getPayload();
 
-  let user = await server.getService("user").findUserByEmail(payload.email);
+  let user = await server
+    .getService("user")
+    .findUserByProvider("google", payload.sub);
 
   if (!user) {
     //create the user;

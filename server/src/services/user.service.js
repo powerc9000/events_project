@@ -34,6 +34,13 @@ async function generateLoginToken(userId) {
   return result;
 }
 
+async function findUserByProvider(providerName, providerId) {
+  const query = sql`select * from users where provider->>${providerName}=${providerId}`;
+  const data = await server.app.db.query(query);
+
+  return data.rows[0];
+}
+
 async function findUserByEmail(email) {
   const query = await server.app.db.query(
     sql`SELECT * FROM users where email = ${email}`
@@ -81,6 +88,7 @@ function init(hapiServer) {
 module.exports = {
   findUserByEmail,
   findUserByPhone,
+  findUserByProvider,
   generateOTP,
   findById,
   generateLoginToken,
