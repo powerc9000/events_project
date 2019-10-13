@@ -55,12 +55,6 @@ module.exports = {
     });
 
     server.route({
-      method: "GET",
-      path: "/login/twitter",
-      handler: loginWithTwitter
-    });
-
-    server.route({
       method: "POST",
       path: "/login/email",
       options: {
@@ -93,12 +87,6 @@ module.exports = {
       method: "POST",
       path: "/login/google",
       handler: loginWithGoogle
-    });
-
-    server.route({
-      method: "GET",
-      path: "/login/twitter/callback",
-      handler: twitterCallback
     });
 
     server.route({
@@ -235,33 +223,6 @@ const tw = new LoginWithTwitter({
   consumerSecret: "lHNvtemSECLj891PJXvKZAfPfEDl26Pj5n7hqr8QbY7q1XnZ3c",
   callbackUrl: "http://localhost:8000/api/login/twitter/callback"
 });
-
-async function twitterCallback(req, h) {
-  return new Promise((resolve, reject) => {
-    tw.callback(
-      {
-        oauth_token: req.query.oauth_token,
-        oauth_verifier: req.query.oauth_verifier
-      },
-      req.state.user.twitterToken,
-      (err, user) => {
-        resolve(h.redirect("/"));
-      }
-    );
-  });
-}
-
-async function loginWithTwitter(req, h) {
-  return new Promise((resolve, reject) => {
-    tw.login((err, tokenSecret, url) => {
-      const state = req.state.user || {};
-
-      state.twitterToken = tokenSecret;
-      h.state("user", state);
-      resolve(h.redirect(url));
-    });
-  });
-}
 
 async function inviteToEvent(req, h) {
   const events = server.getService("events");
