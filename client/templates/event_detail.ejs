@@ -6,7 +6,7 @@
 	</head>
 	<body>
 		<%-include("partials/header")%>
-		<div class="container mx-auto">
+		<div class="container mx-auto" data-controller="event-detail">
 			<h1 class="font-bold text-3xl"><%=event.name%></h1>
 			<div class="text-lg">
 				<span data-controller="format-date" data-format-date-epoch="<%=event.date%>" data-target="format-date.date"><%=new Date(event.date)%></span>
@@ -17,11 +17,48 @@
 				<span class="p-1 bg-green-500 mr-2">
 					<%=event.going.length%> Attending
 				</span>
-				<span class="p-1 bg-gray-300">
+				<span class="p-1 bg-gray-300 mr-2">
 					<%=event.invited.length%> Invited
 				</span>
+				<%if(canInvite){%>
+				<button href="#" class="bg-black text-white hover:underline p-1" data-action="event-detail#toggleInviteForm">Invite People</button>
+				<%}%>
 
 			</div>
+			<form class="hidden p-4 bg-pink-200 mt-4" data-target="event-detail.inviteForm" data-action="event-detail#sendInvite">
+				<input type="hidden" name="eventId" value="<%=event.id%>" />
+				<div class="flex flex-col">
+					<label class="font-bold">
+						Name <span class="font-normal text-xs">(Optional)</span>
+					</label>
+					<input type="text" name="name" class="border-gray-300 border p-1 "/>
+				</div>
+				<div class="mt-2 flex flex-col">
+					<label class="font-bold">
+						Email
+
+					</label>
+					<input type="text" name="email" class="border-gray-300 border p-1"/>
+				</div>
+				<div class="mt-2 flex flex-col">
+					<label class="font-bold">
+						Phone
+
+					</label>
+					<input type="text" name="phone" class="border-gray-300 border p-1"/>
+
+				</div>
+				<p class="mt-1">
+				<span>Email OR phone is required</span>
+				</p>
+
+				<div class="mt-2">
+					<button class="p-1 bg-black text-white hover:underline" type="submit">
+						Invite
+					</button>
+					<span class="" data-target="event-detail.inviteSent">Invite sent!</span>
+				</div>
+			</form>
 			<%if(!event.is_private){%>
 			<div class="mt-2">
 				<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-text="<%=event.name%>" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>

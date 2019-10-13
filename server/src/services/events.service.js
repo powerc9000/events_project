@@ -2,6 +2,7 @@ let server;
 const slugify = require("slugify");
 const crypto = require("crypto");
 const sql = require("slonik").sql;
+const PhoneNumber = require("awesome-phonenumber");
 
 function getAllEvents() {
   return [];
@@ -75,7 +76,7 @@ async function canInviteToEvent(eventId, user) {
 
 async function inviteUsersToEvent(eventId, users) {
   const eventQuery = await server.app.db.query(
-    sql`SELECT * from events where id = ${eventId}`
+    sql`SELECT e.*, row_to_json((select d from (select * from users where id = e.creator) d)) as creator from events e where id = ${eventId}`
   );
   if (!eventQuery.rows) {
     return null;
@@ -91,7 +92,16 @@ async function inviteUsersToEvent(eventId, users) {
   )}) or phone = ANY (${sql.array(
     users
       .map((user) => {
-        return user.phone;
+        if (user.phone) {
+          const phone = new PhoneNumber(
+            user.phone,
+            PhoneNumber.getRegionCodeForCountryCode(1)
+          );
+          if (phone.isValid()) {
+            return phone.getNumber("e164");
+          }
+          return null;
+        }
       })
       .filter((value) => !!value),
     "text"
@@ -112,7 +122,15 @@ async function inviteUsersToEvent(eventId, users) {
   let newUsers = [];
   if (notFound.length) {
     const queried = notFound.map((user) => {
-      return [user.name, user.email, user.phone];
+      let phone = null;
+      if (user.phone) {
+        const number = new PhoneNumber(
+          user.phone,
+          PhoneNumber.getRegionCodeForCountryCode(1)
+        );
+        phone = number.getNumber("e164");
+      }
+      return [user.name || "", user.email, phone];
     });
 
     const otherUsers = await server.app.db.query(
@@ -138,11 +156,18 @@ async function inviteUsersToEvent(eventId, users) {
   const invitees = await server.app.db.query(inviteesQuery);
 
   allUsers.forEach((user) => {
+    const invite = invitees.rows.find((invite) => {
+      return invite.user_id === user.id;
+    });
+    if (!invite) {
+      //They were likely invited before
+      console.log("no invite");
+      return;
+    }
     server.createTask("invite-user-to-event", {
       event: eventQuery.rows[0],
-      invite: invitees.rows.find((invite) => {
-        return invite.user_id === user.id;
-      }),
+      invite,
+      link: `http://example.com/events/${eventQuery.rows[0].slug}?invite_key=${invite.invite_key}`,
       user
     });
   });

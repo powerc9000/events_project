@@ -43,7 +43,7 @@ module.exports = {
             invites: joi.array().items(
               joi
                 .object({
-                  name: joi.string(),
+                  name: joi.string().allow(null, ""),
                   email: joi.string(),
                   phone: joi.string()
                 })

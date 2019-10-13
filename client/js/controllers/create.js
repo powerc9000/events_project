@@ -5,7 +5,7 @@ export default class extends ApplicationController {
   connect() {
     flatpickr(this.targets.find("datepicker"), {
       enableTime: true,
-      dateFormat: "Y-m-d H:i"
+      dateFormat: "m/d/Y h:i K"
     });
   }
   async createEvent(e) {

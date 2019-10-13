@@ -2,21 +2,20 @@
   <mj-body>
     <mj-section>
       <mj-column>
-
-        <mj-image width="300" src="https://static.dropconfig.com/dropconfig_color.png"></mj-image>
-
-        <mj-divider border-color="#000000"></mj-divider>
-
+        <mj-text>You were invited to an event!</mj-text>
       </mj-column>
     </mj-section>
     <mj-section>
       <mj-column>
-        <mj-text>You created an org {{event.org.name}}.</mj-text>
+        <mj-text>{{event.description}}</mj-text>
+        <mj-text>Created by {{event.creator.name}}</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
         <mj-text>
-          You can now
-          <a href="https://app.dropconfig.com/orgs/{{event.org.name}}/settings/invite">invite your colleagues</a>
-          and
-          <a href="https://app.dropconfig.com/orgs/{{event.org.name}}/repos/create">create your first repo</a>.</mj-text>
+          <a href="{{link}}">View Event</a>
+        </mj-text>
       </mj-column>
     </mj-section>
   </mj-body>

@@ -15,10 +15,7 @@ module.exports = (hapiServer) => async (job) => {
       await sendEmail("user_invite", {
         to: user.email,
         subject: "You were invited to an event",
-        data: {
-          user,
-          event: data.event
-        }
+        data
       });
     }
   }

@@ -1,4 +1,5 @@
 const vision = require("@hapi/vision");
+const _ = require("lodash");
 const inert = require("@hapi/inert");
 const ejs = require("ejs");
 const path = require("path");
@@ -90,6 +91,7 @@ async function eventDetail(req, h) {
   const eventService = server.getService("events");
   const canView = await eventService.canUserViewEvent(req.app.user);
   const event = await eventService.getEventBySlug(req.params.slug);
+  const userId = _.get(req, "app.user.id");
 
   if (!event) {
     return "NO EVENT";
@@ -103,7 +105,14 @@ async function eventDetail(req, h) {
     return carry;
   }, statuses);
 
-  return h.view("event_detail", { event: { ...event, ...statuses } });
+  const isPublic = !event.is_private;
+  const isOwner = event.owner === userId;
+  const canInvite = !event.is_private || isOwner || event.can_invite;
+
+  return h.view("event_detail", {
+    event: { ...event, ...statuses },
+    canInvite
+  });
 }
 
 async function homepage(req, h) {
