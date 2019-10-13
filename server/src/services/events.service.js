@@ -3,6 +3,7 @@ const slugify = require("slugify");
 const crypto = require("crypto");
 const sql = require("slonik").sql;
 const PhoneNumber = require("awesome-phonenumber");
+const { normalizePhone } = require("../utils");
 
 function getAllEvents() {
   return [];
@@ -93,14 +94,7 @@ async function inviteUsersToEvent(eventId, users) {
     users
       .map((user) => {
         if (user.phone) {
-          const phone = new PhoneNumber(
-            user.phone,
-            PhoneNumber.getRegionCodeForCountryCode(1)
-          );
-          if (phone.isValid()) {
-            return phone.getNumber("e164");
-          }
-          return null;
+          return normalizePhone(user.phone);
         }
       })
       .filter((value) => !!value),
@@ -110,10 +104,11 @@ async function inviteUsersToEvent(eventId, users) {
   const existing = await server.app.db.query(userQuery);
 
   //If we don't have a user entry for someone we need to create it...
-  //
   const notFound = users.filter((user) => {
     const found = existing.rows.find((queryUser) => {
-      return queryUser.phone === user.phone || queryUser.email === user.email;
+      const phone = normalizePhone(queryUser.phone);
+      const userPhone = normalizePhone(user.phone);
+      return phone === userPhone || queryUser.email === user.email;
     });
 
     return !found;
@@ -124,11 +119,7 @@ async function inviteUsersToEvent(eventId, users) {
     const queried = notFound.map((user) => {
       let phone = null;
       if (user.phone) {
-        const number = new PhoneNumber(
-          user.phone,
-          PhoneNumber.getRegionCodeForCountryCode(1)
-        );
-        phone = number.getNumber("e164");
+        phone = normalizePhone(user.phone);
       }
       return [user.name || "", user.email, phone];
     });

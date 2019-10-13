@@ -17,4 +17,21 @@ module.exports = (server) => async (job) => {
       }
     }
   }
+
+  if (type === "invite-user-to-event") {
+    const user = data.user;
+    if (user.phone) {
+      console.log("hello ran", data);
+      try {
+        await server.app.aws.sns
+          .publish({
+            Message: `You have been invited to an event: ${data.link}`,
+            PhoneNumber: user.phone
+          })
+          .promise();
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
 };
