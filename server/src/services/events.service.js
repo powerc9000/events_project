@@ -44,7 +44,7 @@ async function findEvents(constraints) {
         sql.join(
           [
             sql`creator = ${constraints.user}`,
-            sql`id in (select event_id from invites where user = ${constraints.user})`
+            sql`id in (select event_id from invites where user_id = ${constraints.user})`
           ],
           sql` OR `
         )
@@ -229,11 +229,13 @@ async function rsvpToEvent(eventId, userId, status, show_name) {
     sql`select * from invites where user_id = ${userId} and event_id=${eventId}`
   );
 
+  console.log(invite);
+
   if (!invite && event.is_private) {
     return;
   }
 
-  if (invite && !event.is_private) {
+  if (invite) {
     await server.app.db.query(
       sql`UPDATE invites set status = ${status}, show_name = ${show_name} where id=${invite.id}`
     );

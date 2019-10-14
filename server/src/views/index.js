@@ -113,15 +113,13 @@ async function eventDetail(req, h) {
   }, statuses);
 
   const isPublic = !event.is_private;
-  const isOwner = event.owner === userId;
+  const isOwner = event.creator.id === userId;
   const canInvite = !event.is_private || isOwner || event.can_invite;
 
   const invite =
     event.invites.find((invite) => {
       return invite.user_id === userId;
     }) || {};
-
-  console.log(event.invites);
 
   return h.view("event_detail", {
     event: { ...event, ...statuses },
