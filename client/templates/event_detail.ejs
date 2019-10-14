@@ -6,7 +6,7 @@
 	</head>
 	<body>
 		<%-include("partials/header")%>
-		<div class="container mx-auto" data-controller="event-detail">
+		<div class="container mx-auto content" data-controller="event-detail">
 			<h1 class="font-bold text-3xl"><%=event.name%></h1>
 			<div class="text-lg">
 				<span data-controller="format-date" data-format-date-epoch="<%=event.date%>" data-target="format-date.date"><%=new Date(event.date)%></span>
@@ -56,9 +56,37 @@
 					<button class="p-1 bg-black text-white hover:underline" type="submit">
 						Invite
 					</button>
-					<span class="" data-target="event-detail.inviteSent">Invite sent!</span>
+					<span class="hidden" data-target="event-detail.inviteSent">Invite sent!</span>
 				</div>
 			</form>
+			<%if(invite || !event.is_private){%>
+				<div class="mt-2 bg-gray-200 p-2">
+					<p class="text-lg font-bold">RSVP</p>
+					<form data-target="event-detail.rsvpForm" data-action="change->event-detail#rsvp" autocomplete="off">
+						<input type="hidden" name="eventId" value="<%=event.id%>" />
+						<div>
+							<label class="font-bold cursor-pointer">
+								<span class="">Going</span> <input type="radio" name="rsvp" value="going" <%=_checked(invite.status === "going")%>/>
+							</label>
+							-
+							<label class="font-bold cursor-pointer">
+								<span class="">Maybe</span> <input type="radio" name="rsvp" value="maybe" <%=_checked(invite.status === "maybe")%>/>
+							</label>
+							-
+
+							<label class="font-bold cursor-pointer">
+								<span class="">Not Going</span> <input type="radio" name="rsvp" value="declined" <%=_checked(invite.status === "declined") %>/>
+							</label>
+						</div>
+						<div class="mt-1">
+							<label class="cursor-pointer">
+								Keep my RSVP private
+								<input type="checkbox" name="show_name" <%=_checked(!invite.show_name)%>/>
+							</label>
+						</div>
+					</form>
+				</div>	
+			<%}%>
 			<%if(!event.is_private){%>
 			<div class="mt-2">
 				<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-text="<%=event.name%>" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
@@ -76,5 +104,6 @@
 				<%=event.description%>
 			</div>
 		</div>
+		<%-include("partials/footer")%>
 	</body>
 </html>

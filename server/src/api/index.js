@@ -94,8 +94,37 @@ module.exports = {
       path: "/login/otp",
       handler: validateOTPLogin
     });
+
+    server.route({
+      method: "POST",
+      path: "/events/{id}/rsvp",
+      handler: rsvpToEvent
+    });
   }
 };
+
+async function rsvpToEvent(req, h) {
+  const user = req.app.user;
+  const events = server.getService("events");
+
+  if (!user) {
+    return Boom.unauthorized();
+  }
+
+  const canInvite = await events.canRSVPToEvent(req.params.id, user.id);
+  if (!canInvite) {
+    return Boom.unauthorized();
+  }
+
+  await events.rsvpToEvent(
+    req.params.id,
+    user.id,
+    req.payload.status,
+    req.payload.show_name
+  );
+
+  return h.response().code(204);
+}
 
 async function createEvent(req, h) {
   const events = server.getService("events");

@@ -46,4 +46,23 @@ export default class extends ApplicationController {
       form.reset();
     }
   }
+
+  async rsvp() {
+    const form = this.targets.find("rsvpForm");
+
+    const rsvp = form.rsvp.value;
+    const show_name = form.show_name.checked;
+    const eventId = form.eventId.value;
+
+    await this.api.Post(`/api/events/${eventId}/rsvp`, {
+      status: rsvp,
+      show_name: !show_name
+    });
+
+    this.page.reload();
+  }
+
+  disconnect() {
+    this.hideTarget("inviteSent");
+  }
 }

@@ -21,6 +21,13 @@ module.exports = {
       context: (req) => ({
         date: fns,
         user: req.app.user,
+        _checked: (value) => {
+          if (value) {
+            return "checked";
+          } else {
+            return "";
+          }
+        },
         loggedIn: !!req.app.user
       }),
       isCached: process.env.NODE_ENV !== "develop"
@@ -109,8 +116,16 @@ async function eventDetail(req, h) {
   const isOwner = event.owner === userId;
   const canInvite = !event.is_private || isOwner || event.can_invite;
 
+  const invite =
+    event.invites.find((invite) => {
+      return invite.user_id === userId;
+    }) || {};
+
+  console.log(event.invites);
+
   return h.view("event_detail", {
     event: { ...event, ...statuses },
+    invite,
     canInvite
   });
 }

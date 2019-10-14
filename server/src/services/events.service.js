@@ -192,6 +192,60 @@ async function createEvent(user, event) {
   return result.rows[0];
 }
 
+async function canRSVPToEvent(eventId, userId) {
+  const eventQuery = await server.app.db.query(
+    sql`SELECT * from events where id = ${eventId}`
+  );
+
+  const event = eventQuery.rows;
+
+  const invites = await server.app.db.any(
+    sql`SELECt * from invites where event_id=${eventId}`
+  );
+
+  if (!event) {
+    return false;
+  }
+
+  const isOwner = event.owner === userId;
+
+  const isInvited = invites.find((invite) => {
+    return invite.user_id === userId;
+  });
+
+  const isPublic = !event.is_private;
+
+  return isOwner || isInvited || isPublic;
+}
+
+async function rsvpToEvent(eventId, userId, status, show_name) {
+  const event = await server.app.db.maybeOne(
+    sql`select * from events where id=${eventId}`
+  );
+  if (!event) {
+    return;
+  }
+  const invite = await server.app.db.maybeOne(
+    sql`select * from invites where user_id = ${userId} and event_id=${eventId}`
+  );
+
+  if (!invite && event.is_private) {
+    return;
+  }
+
+  if (invite && !event.is_private) {
+    await server.app.db.query(
+      sql`UPDATE invites set status = ${status}, show_name = ${show_name} where id=${invite.id}`
+    );
+  }
+
+  //Create an invite
+  const key = crypto.randomBytes(16).toString("hex");
+  await server.app.db.query(
+    sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name) values (${userId}, ${eventId}, ${key}, ${status}, ${show_name})`
+  );
+}
+
 function init(hapiServer) {
   server = hapiServer;
   //set up database
@@ -202,6 +256,8 @@ module.exports = {
   getAllEventsForUser,
   inviteUsersToEvent,
   canInviteToEvent,
+  canRSVPToEvent,
+  rsvpToEvent,
   getAllEvents,
   createEvent,
   getEventBySlug,
