@@ -49,7 +49,36 @@ CREATE TABLE public.events (
     date timestamp with time zone,
     location text,
     slug text,
-    can_invite boolean DEFAULT false
+    can_invite boolean DEFAULT false,
+    group_id uuid
+);
+
+
+--
+-- Name: group_members; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.group_members (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    user_id uuid,
+    group_id uuid,
+    role text DEFAULT 'member'::text
+);
+
+
+--
+-- Name: groups; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.groups (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    name text NOT NULL,
+    custom_path text,
+    description text,
+    allow_inviting boolean DEFAULT false,
+    is_private boolean DEFAULT true,
+    created timestamp with time zone DEFAULT now() NOT NULL,
+    creator uuid NOT NULL
 );
 
 
@@ -127,6 +156,38 @@ ALTER TABLE ONLY public.events
 
 
 --
+-- Name: group_members group_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.group_members
+    ADD CONSTRAINT group_members_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: group_members group_members_user_id_group_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.group_members
+    ADD CONSTRAINT group_members_user_id_group_id_key UNIQUE (user_id, group_id);
+
+
+--
+-- Name: groups groups_custom_path_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.groups
+    ADD CONSTRAINT groups_custom_path_key UNIQUE (custom_path);
+
+
+--
+-- Name: groups groups_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.groups
+    ADD CONSTRAINT groups_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: invites invites_event_id_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -196,6 +257,38 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.events
     ADD CONSTRAINT events_creator_fkey FOREIGN KEY (creator) REFERENCES public.users(id);
+
+
+--
+-- Name: events events_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.events
+    ADD CONSTRAINT events_group_id_fkey FOREIGN KEY (group_id) REFERENCES public.groups(id);
+
+
+--
+-- Name: group_members group_members_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.group_members
+    ADD CONSTRAINT group_members_group_id_fkey FOREIGN KEY (group_id) REFERENCES public.groups(id);
+
+
+--
+-- Name: group_members group_members_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.group_members
+    ADD CONSTRAINT group_members_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: groups groups_creator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.groups
+    ADD CONSTRAINT groups_creator_fkey FOREIGN KEY (creator) REFERENCES public.users(id);
 
 
 --

@@ -100,8 +100,44 @@ module.exports = {
       path: "/events/{id}/rsvp",
       handler: rsvpToEvent
     });
+
+    server.route({
+      method: "POST",
+      path: "/groups",
+      handler: createGroup,
+      options: {
+        validate: {
+          payload: joi.object({
+            name: joi.string().required(),
+            descirption: joi.string(),
+            allow_inviting: joi.boolean(),
+            is_private: joi.boolean(),
+            custom_path: joi.string()
+          })
+        }
+      }
+    });
   }
 };
+
+async function createGroup(req, h) {
+  const user = req.app.user;
+
+  if (!user) {
+    return Boom.unauthorized();
+  }
+
+  const payload = {
+    creator: user.id,
+    ...req.payload
+  };
+
+  const data = await server.getService("groups").createGroup(payload);
+
+  console.log(data);
+
+  return data;
+}
 
 async function rsvpToEvent(req, h) {
   const user = req.app.user;

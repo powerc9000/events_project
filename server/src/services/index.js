@@ -1,7 +1,12 @@
-const services = [require("./events.service"), require("./user.service")];
 const slonik = require("slonik");
 const _ = require("lodash");
 const pg = require("pg");
+
+const services = [
+  require("./events.service"),
+  require("./user.service"),
+  require("./groups.service")
+];
 
 module.exports = {
   name: "services",
