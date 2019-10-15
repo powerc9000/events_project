@@ -82,8 +82,24 @@ module.exports = {
       path: "/events/{slug}",
       handler: eventDetail
     });
+
+    server.route({
+      method: "GET",
+      path: "/groups",
+      handler: userGroups
+    });
   }
 };
+
+async function userGroups(req, h) {
+  if (!req.app.user) {
+    return h.redirect("/login");
+  }
+
+  const groups = server.getService("groups").getGroupsForUser(req.app.user.id);
+
+  return groups;
+}
 
 async function loginWithOTP(req, h) {
   const type = req.params.type;
@@ -96,12 +112,16 @@ async function loginWithOTP(req, h) {
 
 async function eventDetail(req, h) {
   const eventService = server.getService("events");
-  const canView = await eventService.canUserViewEvent(req.app.user);
   const event = await eventService.getEventBySlug(req.params.slug);
   const userId = _.get(req, "app.user.id");
 
   if (!event) {
     return "NO EVENT";
+  }
+  const canViewEvent = await eventService.canUserViewEvent(userId, event.id);
+
+  if (!canViewEvent) {
+    return "NOT ALLOWED";
   }
 
   const statuses = { going: [], maybe: [], declined: [], invited: [] };

@@ -35,12 +35,23 @@ async function createGroup(options) {
   return group;
 }
 
+async function getGroupsForUser(userId) {
+  const groups = await server.app.db.any(
+    sql`SELECT groups.* from groups inner join group_members gm on gm.group_id = groups.id where gm.user_id=${userId}`
+  );
+
+  console.log(groups);
+
+  return groups;
+}
+
 function init(hapiServer) {
   server = hapiServer;
 }
 
 module.exports = {
   createGroup,
+  getGroupsForUser,
   init,
   name: "groups"
 };

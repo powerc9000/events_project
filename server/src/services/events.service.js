@@ -9,8 +9,44 @@ function getAllEvents() {
   return [];
 }
 
-async function canUserViewEvent(user) {
-  return true;
+async function canUserViewEvent(userId, eventId) {
+  const event = await server.app.db.maybeOne(
+    sql`select id, is_private, creator from events where id=${eventId}`
+  );
+
+  if (!event) {
+    return false;
+  }
+
+  if (!event.is_private) {
+    return true;
+  }
+
+  if (!userId) {
+    return false;
+  }
+
+  if (event.creator === userId) {
+    return true;
+  }
+
+  const invited = await server.app.db.maybeOne(
+    sql`select * from invites where user_id=${userId} and event_id=${eventId}`
+  );
+
+  if (invited) {
+    return true;
+  }
+
+  const inGroup = await server.app.db.maybeOne(
+    sql`select * from events e inner join groups g on g.id = e.group_id inner join group_members gm on gm.group_id = g.id where gm.user_id=${userId}`
+  );
+
+  if (inGroup) {
+    return true;
+  }
+
+  return false;
 }
 async function getEventBySlug(slug) {
   const data = await server.app.db.query(
@@ -258,6 +294,7 @@ async function rsvpToEvent(eventId, userId, status, show_name) {
   const event = await server.app.db.maybeOne(
     sql`select * from events where id=${eventId}`
   );
+
   if (!event) {
     return;
   }
@@ -265,9 +302,7 @@ async function rsvpToEvent(eventId, userId, status, show_name) {
     sql`select * from invites where user_id = ${userId} and event_id=${eventId}`
   );
 
-  console.log(invite);
-
-  if (!invite && event.is_private) {
+  if (!invite && event.is_private && event.creator !== userId) {
     return;
   }
 

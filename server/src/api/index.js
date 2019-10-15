@@ -154,6 +154,8 @@ async function rsvpToEvent(req, h) {
     return Boom.unauthorized();
   }
 
+  console.log(req.params);
+
   await events.rsvpToEvent(
     req.params.id,
     user.id,

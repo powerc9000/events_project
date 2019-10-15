@@ -1,7 +1,16 @@
 import { ApplicationController } from "../helpers/application_controller";
 
 export default class extends ApplicationController {
-  connect() {}
+  connect() {
+    const form = this.targets.find("rsvpForm");
+    const show_name = form.show_name.checked;
+    const hasRSVPd = form.rsvp.value;
+    if (show_name && hasRSVPd) {
+      this.showTarget("privateInfo");
+    } else {
+      this.hideTarget("privateInfo");
+    }
+  }
   toggleInviteForm() {
     this.toggleTarget("inviteForm");
   }
