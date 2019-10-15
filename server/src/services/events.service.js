@@ -232,7 +232,8 @@ async function createEvent(user, event) {
       if (f !== "date") {
         values.push(event[f]);
       } else {
-        values.push(event["date"] / 1000);
+        console.log(event["date"] / 1000);
+        values.push(sql`to_timestamp(${event["date"] / 1000})`);
       }
     }
   });

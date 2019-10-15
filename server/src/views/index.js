@@ -21,6 +21,13 @@ module.exports = {
       context: (req) => ({
         date: fns,
         user: req.app.user,
+        _boolAttr: (name, value) => {
+          if (value) {
+            return name;
+          } else {
+            return "";
+          }
+        },
         _checked: (value) => {
           if (value) {
             return "checked";
@@ -158,7 +165,12 @@ async function homepage(req, h) {
 }
 
 async function createEvent(req, h) {
-  return h.view("create");
+  const groups = await server
+    .getService("groups")
+    .getGroupsForUser(req.app.user.id);
+  return h.view("create", {
+    groups
+  });
 }
 
 async function login(req, h) {

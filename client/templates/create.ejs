@@ -34,6 +34,20 @@
 						<textarea name="description" placeholder="description" class="w-full p-1 border border-gray-500" required></textarea>
 					</label>
 				</div>
+				<%if(groups.length){%>
+				<div class="mt-2">
+					<label class="font-bold">
+					Create event in group
+					<select name="group_id" class="p-1 border-gray-500 border">
+						<option value="">No Group</option>
+						<%groups.forEach((group)=>{%>
+						<option value="<%=group.id%>"><%=group.name%></option>
+						<%})%>
+					</select>
+					</label>
+					
+				</div>
+				<%}%>
 				<div class="mt-2 font-bold">
 					<label class="cursor-pointer">
 						Private:
