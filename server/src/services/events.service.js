@@ -176,20 +176,56 @@ async function createEvent(user, event) {
   const user_id = user.id;
   const id = crypto.randomBytes(4).toString("hex");
   const slug = `${slugify(event.name, { lower: true })}-${id}`;
-  const values = sql`(${event.name}, ${
-    event.description
-  }, ${user_id}, ${slug}, ${event.location}, to_timestamp(${event.date /
-    1000}), ${event.is_private}, ${event.allow_comments}, ${
-    event.show_participants
-  })`;
-  console.log(values);
+
+  const validFields = [
+    "name",
+    "description",
+    "location",
+    "date",
+    "is_private",
+    "allow_comments",
+    "show_participants",
+    "group_id"
+  ];
+  const fields = [sql.identifier(["slug"]), sql.identifier(["creator"])];
+  const values = [slug, user_id];
+
+  validFields.forEach((f) => {
+    if (event.hasOwnProperty(f)) {
+      fields.push(sql.identifier([f]));
+      if (f !== "date") {
+        values.push(event[f]);
+      } else {
+        values.push(event["date"] / 1000);
+      }
+    }
+  });
+
   const result = await server.app.db.query(
     sql`
-	INSERT into events (name, description, creator, slug, location, date, is_private, allow_comments, show_participants) VALUES ${values} returning *
+	INSERT into events (${sql.join(fields, sql`, `)}) VALUES (${sql.join(
+      values,
+      `, `
+    )}) returning *
 	`
   );
 
   return result.rows[0];
+}
+
+async function canCreateForGroup(user, group) {
+  if (!group) {
+    return true;
+  }
+  const data = await server.app.db.maybeOne(
+    sql`SELECT * from group_members where group_id=${group} and user_id=${user} and role > 'moderator'`
+  );
+
+  if (!data) {
+    return false;
+  }
+
+  return true;
 }
 
 async function canRSVPToEvent(eventId, userId) {
@@ -265,6 +301,7 @@ module.exports = {
   getEventBySlug,
   findEvents,
   canUserViewEvent,
+  canCreateForGroup,
   init,
   name: "events"
 };

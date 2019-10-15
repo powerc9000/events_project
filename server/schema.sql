@@ -30,6 +30,18 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA public;
 COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UUIDs)';
 
 
+--
+-- Name: group_role; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.group_role AS ENUM (
+    'member',
+    'moderator',
+    'admin',
+    'owner'
+);
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -62,7 +74,7 @@ CREATE TABLE public.group_members (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id uuid,
     group_id uuid,
-    role text DEFAULT 'member'::text
+    role public.group_role DEFAULT 'member'::public.group_role
 );
 
 

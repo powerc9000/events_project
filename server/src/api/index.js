@@ -27,7 +27,11 @@ module.exports = {
             show_participants: joi.boolean(),
             allow_comments: joi.boolean(),
             can_invite: joi.boolean(),
-            location: joi.string().allow(null, "")
+            location: joi.string().allow(null, ""),
+            group_id: joi
+              .string()
+              .uuid()
+              .allow(null)
           })
         }
       }
@@ -134,8 +138,6 @@ async function createGroup(req, h) {
 
   const data = await server.getService("groups").createGroup(payload);
 
-  console.log(data);
-
   return data;
 }
 
@@ -164,6 +166,17 @@ async function rsvpToEvent(req, h) {
 
 async function createEvent(req, h) {
   const events = server.getService("events");
+
+  const canCreate = await events.canCreateForGroup(
+    req.app.user.id,
+    req.payload.group_id
+  );
+
+  console.log("CAN CREATE", canCreate);
+
+  if (!canCreate) {
+    return Boom.unauthorized();
+  }
 
   const result = await events.createEvent(req.app.user, req.payload);
 
