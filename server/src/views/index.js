@@ -168,7 +168,14 @@ async function createEvent(req, h) {
   const groups = await server
     .getService("groups")
     .getGroupsForUser(req.app.user.id);
+
+  let forGroup = null;
+
+  if (req.query.group) {
+    forGroup = req.query.group;
+  }
   return h.view("create", {
+    forGroup,
     groups
   });
 }

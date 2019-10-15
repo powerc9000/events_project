@@ -41,7 +41,7 @@
 					<select name="group_id" class="p-1 border-gray-500 border">
 						<option value="">No Group</option>
 						<%groups.forEach((group)=>{%>
-						<option value="<%=group.id%>"><%=group.name%></option>
+						<option value="<%=group.id%>" <%=_boolAttr("selected", group.id === forGroup)%>><%=group.name%></option>
 						<%})%>
 					</select>
 					</label>
