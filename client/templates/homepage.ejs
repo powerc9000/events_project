@@ -23,7 +23,7 @@
 						<li class="py-2">
 							<h3>
 							<a href="/events/<%=event.slug%>" class="bg-black p-1 text-white relative event-link"><%=event.name%>
-								- <%=date.format(date.addDays(new Date(), 2), "PP")%></a>
+								- <%=date.format(new Date(event.date), "PP")%></a>
 							</h3>
 							<p>
 								<%=event.description%>

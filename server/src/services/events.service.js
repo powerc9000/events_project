@@ -5,10 +5,6 @@ const sql = require("slonik").sql;
 const PhoneNumber = require("awesome-phonenumber");
 const { normalizePhone } = require("../utils");
 
-function getAllEvents() {
-  return [];
-}
-
 async function canUserViewEvent(userId, eventId) {
   const event = await server.app.db.maybeOne(
     sql`select id, is_private, creator from events where id=${eventId}`
@@ -72,22 +68,28 @@ async function getEventInvites(id) {
 }
 
 async function findEvents(constraints) {
-  const where = [sql`where is_private = false`];
-
+  const orWhere = [sql`is_private = false`];
   if (constraints) {
     if (constraints.user) {
-      where.push(
-        sql.join(
+      orWhere.push(
+        sql`(${sql.join(
           [
             sql`creator = ${constraints.user}`,
             sql`id in (select event_id from invites where user_id = ${constraints.user})`
           ],
           sql` OR `
-        )
+        )})`
       );
     }
   }
-  const query = sql`SELECT * from events e ${sql.join(where, sql` OR `)}`;
+  const orJoin = sql.join(orWhere, sql` OR `);
+  const where = [sql`(${orJoin})`, sql`Date > now()`];
+  const query = sql`SELECT * from events e where ${sql.join(
+    where,
+    sql` AND `
+  )}  order by date`;
+
+  console.log(query);
 
   const events = await server.app.db.query(query);
 
@@ -155,6 +157,14 @@ async function inviteUsersToEvent(eventId, users) {
     const queried = notFound.map((user) => {
       let phone = null;
       if (user.phone) {
+        async function getAllEventsForUser(user) {
+          const data = await server.app.db.query(`
+	SELECT * from events 
+	`);
+
+          return data.rows;
+        }
+
         phone = normalizePhone(user.phone);
       }
       return [user.name || "", user.email, phone];
@@ -198,14 +208,6 @@ async function inviteUsersToEvent(eventId, users) {
       user
     });
   });
-}
-
-async function getAllEventsForUser(user) {
-  const data = await server.app.db.query(`
-	SELECT * from events
-	`);
-
-  return data.rows;
 }
 
 async function createEvent(user, event) {
@@ -327,12 +329,10 @@ function init(hapiServer) {
 }
 
 module.exports = {
-  getAllEventsForUser,
   inviteUsersToEvent,
   canInviteToEvent,
   canRSVPToEvent,
   rsvpToEvent,
-  getAllEvents,
   createEvent,
   getEventBySlug,
   findEvents,
