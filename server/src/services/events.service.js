@@ -68,22 +68,28 @@ async function getEventInvites(id) {
 }
 
 async function findEvents(constraints) {
-  const orWhere = [sql`is_private = false`];
+  const where = [sql`is_private = false`];
   if (constraints) {
     if (constraints.user) {
-      orWhere.push(
+      where.pop();
+      where.push(
         sql`(${sql.join(
           [
             sql`creator = ${constraints.user}`,
-            sql`id in (select event_id from invites where user_id = ${constraints.user})`
+            sql`id in (select event_id from invites where user_id = ${constraints.user})`,
+            sql`is_private = false`
           ],
           sql` OR `
         )})`
       );
+    } else {
+      where.push(sql`is_private = false`);
+    }
+
+    if (constraints.future) {
+      where.push(sql`date > now()`);
     }
   }
-  const orJoin = sql.join(orWhere, sql` OR `);
-  const where = [sql`(${orJoin})`, sql`Date > now()`];
   const query = sql`SELECT * from events e where ${sql.join(
     where,
     sql` AND `

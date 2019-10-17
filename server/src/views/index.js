@@ -176,7 +176,7 @@ async function eventDetail(req, h) {
 }
 
 async function homepage(req, h) {
-  const options = {};
+  const options = { future: true };
   if (req.app.user) {
     options.user = req.app.user.id;
   }
