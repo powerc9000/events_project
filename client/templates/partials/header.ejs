@@ -1,19 +1,19 @@
-<header class="border-b border-black mb-4">
+<header class="border-b-2 border-green-500 mb-4">
 	<nav class="container mx-auto py-2 flex justify-between items-center">
 		<ul class="flex">
-			<li>
-				<a href="/" class="text-white bg-black p-1 text-lg hover:underline">Home</a>
+			<li class="mr-2">
+				<a href="/" class="text-lg hover:underline">Home</a>
 			</li>
 
 			<%if(loggedIn){%>
-			<li class="ml-4">
-				<a href="/create" class="text-white bg-black p-1 text-lg hover:underline">Create Event</a>
+			<li class="pl-2 border-l border-black">
+				<a href="/create" class="text-lg hover:underline">Create Event</a>
 			</li>
 			<%}%>
 		</ul>
 		<%if(!loggedIn){%>
 		<div>
-			<a href="/login" class="text-blue-500 text-lg hover:underline">Login</a>
+			<a href="/login" class="text-lg hover:underline">Login</a>
 		</div>
 		<%}%>
 	</nav>

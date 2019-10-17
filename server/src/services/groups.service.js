@@ -40,9 +40,15 @@ async function getGroupsForUser(userId) {
     sql`SELECT groups.* from groups inner join group_members gm on gm.group_id = groups.id where gm.user_id=${userId}`
   );
 
-  console.log(groups);
-
   return groups;
+}
+
+async function getGroup(idOrCustom) {
+  const group = await server.app.db.maybeOne(
+    sql`SELECT * from groups where custom_path=${idOrCustom} or id=${idOrCustom}`
+  );
+
+  return group;
 }
 
 function init(hapiServer) {
@@ -51,6 +57,7 @@ function init(hapiServer) {
 
 module.exports = {
   createGroup,
+  getGroup,
   getGroupsForUser,
   init,
   name: "groups"

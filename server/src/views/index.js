@@ -40,6 +40,10 @@ module.exports = {
       isCached: process.env.NODE_ENV !== "develop"
     });
 
+    server.decorate("toolkit", "layout", function(name, data) {
+      return this.view("layout", { __body: name, ...data });
+    });
+
     //The source map url gets mapped wrong from parcel...
     //I still like source maps so here it is
     server.route({
@@ -95,17 +99,33 @@ module.exports = {
       path: "/groups",
       handler: userGroups
     });
+
+    server.route({
+      method: "GET",
+      path: "/groups/{idOrCustom}",
+      handler: groupDetail
+    });
   }
 };
+
+async function groupDetail(req, h) {
+  const groupService = server.getService("groups");
+
+  const group = await groupService.getGroup(req.params.idOrCustom);
+  console.log(group);
+
+  return h.layout("group_detail");
+}
 
 async function userGroups(req, h) {
   if (!req.app.user) {
     return h.redirect("/login");
   }
 
-  const groups = server.getService("groups").getGroupsForUser(req.app.user.id);
-
-  return groups;
+  const groups = await server
+    .getService("groups")
+    .getGroupsForUser(req.app.user.id);
+  return h.layout("groups", { groups });
 }
 
 async function loginWithOTP(req, h) {
