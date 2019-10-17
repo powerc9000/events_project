@@ -28,11 +28,25 @@ async function createGroup(options) {
   const group = await server.app.db.one(query);
 
   //Make the creator an admin
-  await server.app.db.query(
-    sql`INSERT INTO group_members (user_id, group_id, role) VALUES (${options.creator}, ${group.id}, 'owner')`
-  );
+  await addUserToGroup(options.creator, group.id, "owner");
 
   return group;
+}
+
+async function canAddUserToGroup(userId, groupId, role) {
+  const user = server.app.db.maybeOne(
+    sql`SELECT gm.user_id from group_members gm
+		inner join groups g on g.id = gm.group_id
+		where gm.user_id=${userId} and gm.group_id=${groupId} and role > ${role} and (g.can_invite or role >= 'admin')`
+  );
+
+  return !!user;
+}
+
+async function addUserToGroup(userId, groupId, role = "member") {
+  await server.app.db.query(
+    sql`INSERT INTO group_members (user_id, group_id, role) VALUES (${userId}, ${groupID}, ${role})`
+  );
 }
 
 async function getGroupsForUser(userId) {
