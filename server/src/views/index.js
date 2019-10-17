@@ -114,7 +114,7 @@ async function groupDetail(req, h) {
   const group = await groupService.getGroup(req.params.idOrCustom);
   console.log(group);
 
-  return h.layout("group_detail");
+  return h.layout("group_detail", { group });
 }
 
 async function userGroups(req, h) {

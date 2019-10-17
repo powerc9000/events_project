@@ -6,9 +6,13 @@
 			</li>
 
 			<%if(loggedIn){%>
-			<li class="pl-2 border-l border-black">
+			<li class="border-l border-black px-2">
 				<a href="/create" class="text-lg hover:underline">Create Event</a>
 			</li>
+			<li class="pl-2 border-l border-black">
+				<a href="/groups" class="text-lg hover:underline">Groups</a>
+			</li>
+
 			<%}%>
 		</ul>
 		<%if(!loggedIn){%>
