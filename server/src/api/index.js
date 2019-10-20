@@ -116,7 +116,11 @@ module.exports = {
             descirption: joi.string(),
             allow_inviting: joi.boolean(),
             is_private: joi.boolean(),
-            custom_path: joi.string()
+            custom_path: joi
+              .string()
+              .pattern(/^[a-z0-9\-]+$/, { name: "Path" })
+              .min(3)
+              .max(20)
           })
         }
       }
@@ -136,8 +140,10 @@ async function createGroup(req, h) {
     ...req.payload
   };
 
-  const data = await server.getService("groups").createGroup(payload);
-
+  const [err, data] = await server.getService("groups").createGroup(payload);
+  if (err) {
+    return Boom.badRequest(err);
+  }
   return data;
 }
 
@@ -173,8 +179,6 @@ async function createEvent(req, h) {
     req.app.user.id,
     req.payload.group_id
   );
-
-  console.log("CAN CREATE", canCreate);
 
   if (!canCreate) {
     return Boom.unauthorized();

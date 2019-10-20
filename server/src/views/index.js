@@ -102,11 +102,21 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/groups/create",
+      handler: createGroup
+    });
+
+    server.route({
+      method: "GET",
       path: "/groups/{idOrCustom}",
       handler: groupDetail
     });
   }
 };
+
+async function createGroup(req, h) {
+  return h.layout("create_group");
+}
 
 async function groupDetail(req, h) {
   const groupService = server.getService("groups");

@@ -1,5 +1,8 @@
 <div class="container content mx-auto">
-	<h1 class="text-2xl">Your Groups</h1>
+	<div class="flex justify-between items-center">
+		<h1 class="text-2xl">Your Groups</h1>
+		<a href="/groups/create" class="text-lg bg-teal-300 p-1 hover:underline">Create a group</a>
+	</div>
 	<ul class="mt-4">
 		<%groups.forEach((group)=>{%>
 		<li class="mb-2">

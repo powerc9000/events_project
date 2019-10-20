@@ -20,6 +20,18 @@ async function createGroup(options) {
     }
   });
 
+  if (options.custom_path) {
+    //Check if custom_path unique
+    //
+    const path = await server.app.db.maybeOne(
+      sql`SELECT * FROM groups where custom_path=${options.custom_path}`
+    );
+
+    if (path) {
+      return ["Custom Path is not unique", null];
+    }
+  }
+
   const query = sql`INSERT INTO groups (${sql.join(
     fields,
     sql`, `
@@ -30,7 +42,7 @@ async function createGroup(options) {
   //Make the creator an admin
   await addUserToGroup(options.creator, group.id, "owner");
 
-  return group;
+  return [null, group];
 }
 
 async function canAddUserToGroup(userId, groupId, role) {
@@ -45,7 +57,7 @@ async function canAddUserToGroup(userId, groupId, role) {
 
 async function addUserToGroup(userId, groupId, role = "member") {
   await server.app.db.query(
-    sql`INSERT INTO group_members (user_id, group_id, role) VALUES (${userId}, ${groupID}, ${role})`
+    sql`INSERT INTO group_members (user_id, group_id, role) VALUES (${userId}, ${groupId}, ${role})`
   );
 }
 
@@ -59,7 +71,7 @@ async function getGroupsForUser(userId) {
 
 async function getGroup(idOrCustom) {
   const group = await server.app.db.maybeOne(
-    sql`SELECT * from groups where custom_path=${idOrCustom} or id=${idOrCustom}`
+    sql`SELECT * from groups where custom_path=${idOrCustom} or id::text=${idOrCustom}`
   );
 
   return group;
