@@ -95,5 +95,6 @@ module.exports = {
   getGroup,
   getGroupsForUser,
   init,
+  canAddUserToGroup,
   name: "groups"
 };

@@ -35,7 +35,7 @@ module.exports = {
     ) {
       const token = await server.getService("user").generateLoginToken(user.id);
       this.state("user", token);
-      const redirectPath = this.request.state("redirect") || "";
+      const redirectPath = this.request.state.redirect || "";
       this.unstate("redirect");
       if (!redirect) {
         return this.response({

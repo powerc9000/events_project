@@ -129,7 +129,13 @@ async function groupDetail(req, h) {
   );
   const members = await groupService.getGroupMembers(group.id);
 
-  return h.layout("group_detail", { group, events, members });
+  const canInvite = await groupService.canAddUserToGroup(
+    group.id,
+    req.app.user.id,
+    "member"
+  );
+
+  return h.layout("group_detail", { group, events, members, canInvite });
 }
 
 async function userGroups(req, h) {
