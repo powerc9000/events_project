@@ -120,11 +120,16 @@ async function createGroup(req, h) {
 
 async function groupDetail(req, h) {
   const groupService = server.getService("groups");
+  const eventService = server.getService("events");
 
   const group = await groupService.getGroup(req.params.idOrCustom);
-  console.log(group);
+  const events = await eventService.getGroupEventsForUser(
+    group.id,
+    req.app.user.id
+  );
+  const members = await groupService.getGroupMembers(group.id);
 
-  return h.layout("group_detail", { group });
+  return h.layout("group_detail", { group, events, members });
 }
 
 async function userGroups(req, h) {
@@ -212,6 +217,9 @@ async function createEvent(req, h) {
 
 async function login(req, h) {
   if (!req.app.user) {
+    if (req.query.redirect_to) {
+      h.state("redirect", req.query.redirect_to);
+    }
     return h.view("login");
   } else {
     return h.redirect("/");

@@ -8,19 +8,11 @@
 		<div class="md:w-3/4 p-4">
 			<h3 class="text-xl">Events</h3>
 			<ul class="mt-4">
+				<%events.forEach((event)=>{%>
 				<li class="mb-2">
-					<a href="#" class="text-white bg-black p-1 hover:underline">Event</a>
+					<a href="/events/<%=event.slug%>" class="text-white bg-black p-1 hover:underline"><%=event.name%></a>
 				</li>
-
-				<li class="mb-2">
-					<a href="#" class="text-white bg-black p-1 hover:underline">Event</a>
-				</li>
-
-
-				<li class="mb-2">
-					<a href="#" class="text-white bg-black p-1 hover:underline">Event</a>
-				</li>
-
+				<%})%>
 			</ul>
 		</div>
 		<div class="md:w-1/4 border-l border-black p-4">

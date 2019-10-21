@@ -31,12 +31,18 @@ module.exports = {
 
     server.decorate("toolkit", "loginUser", async function(
       user,
-      response = true
+      redirect = false
     ) {
       const token = await server.getService("user").generateLoginToken(user.id);
       this.state("user", token);
-      if (response) {
-        return this.response().code(204);
+      const redirectPath = this.request.state("redirect") || "";
+      this.unstate("redirect");
+      if (!redirect) {
+        return this.response({
+          path: redirectPath
+        }).code(200);
+      } else {
+        return this.redirect(redirectPath);
       }
     });
 

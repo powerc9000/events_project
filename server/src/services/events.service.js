@@ -77,7 +77,8 @@ async function findEvents(constraints) {
           [
             sql`creator = ${constraints.user}`,
             sql`id in (select event_id from invites where user_id = ${constraints.user})`,
-            sql`is_private = false`
+            sql`is_private = false`,
+            sql`${constraints.user} in (select gm.user_id from group_members gm where gm.group_id = e.group_id)`
           ],
           sql` OR `
         )})`
@@ -95,11 +96,37 @@ async function findEvents(constraints) {
     sql` AND `
   )}  order by date`;
 
-  console.log(query);
-
   const events = await server.app.db.query(query);
 
   return events.rows;
+}
+
+async function getGroupEventsForUser(groupId, userId) {
+  const group = await server.app.db.maybeOne(
+    sql`Select * from groups where id=${groupId}`
+  );
+
+  if (!group) {
+    return [];
+  }
+
+  const inGroup = await server.app.db.maybeOne(
+    sql`select * from group_members where group_id=${groupId} and user_id=${userId}`
+  );
+
+  if (inGroup) {
+    return server.app.db.any(
+      sql`select * from events where group_id = ${groupId}`
+    );
+  } else {
+    if (!group.is_private) {
+      return server.app.db.any(
+        sql`select * from events where group_id=${groupId} and is_private=FALSE`
+      );
+    } else {
+      return [];
+    }
+  }
 }
 
 async function canInviteToEvent(eventId, user) {
@@ -345,5 +372,6 @@ module.exports = {
   canUserViewEvent,
   canCreateForGroup,
   init,
+  getGroupEventsForUser,
   name: "events"
 };

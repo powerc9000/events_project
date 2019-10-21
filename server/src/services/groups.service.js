@@ -77,12 +77,21 @@ async function getGroup(idOrCustom) {
   return group;
 }
 
+async function getGroupMembers(groupId) {
+  const members = await server.app.db.any(
+    sql`select * from users where id in (select gm.user_id from group_members gm where gm.group_id = ${groupId})`
+  );
+
+  return members;
+}
+
 function init(hapiServer) {
   server = hapiServer;
 }
 
 module.exports = {
   createGroup,
+  getGroupMembers,
   getGroup,
   getGroupsForUser,
   init,
