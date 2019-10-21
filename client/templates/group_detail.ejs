@@ -6,12 +6,12 @@
 	<%=group.description%>
 	</p>
 	<%if(canInvite){%>
-	<div>
+	<div class="mt-2">
 		<button class="p-1 text-white bg-black hover:underline" data-action="group-detail#toggleInvite">Add someone to group</button>
 	</div>
 	<%}%>
 
-	<form class="hidden p-4 bg-green-200 mt-4" data-target="group-detail.inviteForm" data-action="group-detail#sendInvite">
+	<form class="hidden p-4 bg-gray-300 mt-4" data-target="group-detail.inviteForm" data-action="group-detail#sendInvite">
 		<input type="hidden" name="groupId" value="<%=group.id%>" />
 		<div class="flex flex-col">
 			<label class="font-bold">
@@ -40,9 +40,9 @@
 
 		<div class="mt-2">
 			<button class="p-1 bg-black text-white hover:underline" type="submit">
-				Invite
+			Add	
 			</button>
-			<span class="hidden" data-target="event-detail.inviteSent">Invite sent!</span>
+			<span class="hidden" data-target="group-detail.inviteSent">Added!</span>
 		</div>
 	</form>
 
