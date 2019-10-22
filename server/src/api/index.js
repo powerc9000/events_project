@@ -125,8 +125,71 @@ module.exports = {
         }
       }
     });
+
+    server.route({
+      method: "POST",
+      path: "/groups/{id}/members",
+      handler: addUserToGroup,
+      options: {
+        validate: {
+          payload: joi
+            .object({
+              name: joi.string(),
+              email: joi.string(),
+              phone: joi.string(),
+              role: joi
+                .string()
+                .valid("member", "moderator", "admin")
+                .default("member")
+            })
+            .or("email", "phone")
+        }
+      }
+    });
   }
 };
+async function addUserToGroup(req, h) {
+  const userService = server.getService("user");
+  const groupService = server.getService("groups");
+
+  if (!req.app.user) {
+    return Boom.unauthorized();
+  }
+
+  const allowed = await groupService.canAddUserToGroup(
+    req.app.user.id,
+    req.params.id,
+    req.payload.role
+  );
+
+  if (!allowed) {
+    return Boom.unauthorized();
+  }
+
+  let addedUser = await userService.findUser({
+    email: req.payload.email,
+    phone: req.payload.phone
+  });
+
+  if (!addedUser) {
+    addedUser = await userService.createUser({
+      email: req.payload.email,
+      phone: req.payload.phone
+    });
+  }
+
+  const [err] = await groupService.addUserToGroup(
+    addedUser.id,
+    req.params.id,
+    req.payload.role
+  );
+
+  if (err) {
+    return Boom.badRequest(err);
+  }
+
+  return h.response().code(204);
+}
 
 async function createGroup(req, h) {
   const user = req.app.user;
@@ -159,8 +222,6 @@ async function rsvpToEvent(req, h) {
   if (!canInvite) {
     return Boom.unauthorized();
   }
-
-  console.log(req.params);
 
   await events.rsvpToEvent(
     req.params.id,

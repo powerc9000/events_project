@@ -1,6 +1,6 @@
 <div class="md:w-1/4 border-l border-black p-4">
 		</div>
-<div class="content container mx-auto" data-controller="group-detail">
+<div class="content container mx-auto" data-controller="group-detail" data-group-detail-form-id="group-invite">
 	<h1 class="text-2xl"><%=group.name%></h1>
 	<p>
 	<%=group.description%>
@@ -11,7 +11,10 @@
 	</div>
 	<%}%>
 
-	<form class="hidden p-4 bg-gray-300 mt-4" data-target="group-detail.inviteForm" data-action="group-detail#sendInvite">
+	<form class="hidden p-4 bg-gray-300 mt-4" data-target="group-detail.inviteForm" data-action="group-detail#sendInvite" >
+		<div class="mb-4">
+			<%-include("partials/form_messages", {id: "group-invite"})%>
+		</div>
 		<input type="hidden" name="groupId" value="<%=group.id%>" />
 		<div class="flex flex-col">
 			<label class="font-bold">

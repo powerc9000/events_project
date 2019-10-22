@@ -1,9 +1,8 @@
-import {Controller} from "stimulus";
+import { Controller } from "stimulus";
 
 const turbolinks = require("turbolinks");
 
-
-function requestJson(verb, path, data){
+function requestJson(verb, path, data) {
   return fetch(path, {
     method: verb,
     body: JSON.stringify(data),
@@ -14,115 +13,128 @@ function requestJson(verb, path, data){
   });
 }
 
-function request(verb, path){
+function request(verb, path) {
   return fetch(path, {
     method: verb
   });
 }
 
-function Patch(path, data){
+function Patch(path, data) {
   return requestJson("PATCH", path, data);
 }
 
-function Get(path){
+function Get(path) {
   return request("GET", path);
 }
 
-function Delete(path){
+function Delete(path) {
   return request("DELETE", path);
 }
 
-function Post(path, data){
+function Post(path, data) {
   return requestJson("POST", path, data);
 }
 
-function reload(){
+function reload() {
   replace(window.location);
 }
-function replace(path){
-  turbolinks.visit(path, {action: "replace"})
+function replace(path) {
+  turbolinks.visit(path, { action: "replace" });
 }
 
-function visit(path){
+function visit(path) {
   turbolinks.visit(path);
 }
-function clearCache(){
+function clearCache() {
   turbolinks.clearCache();
 }
 
+function success(text) {
+  const event = new CustomEvent("form:success", { details: { message: text } });
+  document.dispatchEvent(event);
+}
+
+function error(text) {
+  const event = new CustomEvent("form:error", { details: { message: text } });
+
+  document.dispatchEvent(event);
+}
+
 class ApplicationController extends Controller {
-  disableButton(targetName){
+  disableButton(targetName) {
     const target = this.targets.find(targetName);
 
-    if(target){
+    if (target) {
       target.setAttribute("disabled", "");
       target.classList.add("disabled");
     }
-
   }
-  hideTarget(targetName){
+  hideTarget(targetName) {
     const target = this.targets.find(targetName);
 
-    if(target){
+    if (target) {
       target.classList.add("hidden");
     }
   }
-  showTarget(targetName){
+  showTarget(targetName) {
     const target = this.targets.find(targetName);
 
-    if(target){
-      target.classList.remove("hidden")
+    if (target) {
+      target.classList.remove("hidden");
     }
   }
-  removeTargetAttribute(targetName, attributeName){
+  removeTargetAttribute(targetName, attributeName) {
     const target = this.targets.find(targetName);
-    if(target){
+    if (target) {
       target.removeAttribute(attributeName);
     }
   }
-  setTargetAttribute(targetName, attributeName, value){
+  setTargetAttribute(targetName, attributeName, value) {
     const target = this.targets.find(targetName);
-    if(target){
+    if (target) {
       target.setAttribute(attributeName, value);
     }
   }
-  toggleTarget(targetName){
+  toggleTarget(targetName) {
     const target = this.targets.find(targetName);
 
-    if(target){
+    if (target) {
       target.classList.toggle("hidden");
     }
   }
+
+  formControl = {
+    success,
+    error
+  };
   page = {
     reload,
     replace,
     visit,
     clearCache
-  }
+  };
   api = {
     Patch,
     Get,
     Post,
     Delete
-  }
-  enableButton(targetName){
+  };
+  enableButton(targetName) {
     const target = this.targets.find(targetName);
-    if(target){
+    if (target) {
       target.removeAttribute("disabled");
       target.classList.remove("disabled");
     }
   }
-  debounce(func, wait){
+  debounce(func, wait) {
     let timeout;
     return (...args) => {
       clearTimeout(timeout);
-      timeout = setTimeout(()=>{
+      timeout = setTimeout(() => {
         func(...args);
-      }, wait)
-    }
+      }, wait);
+    };
   }
 }
 
-export {
-  ApplicationController
-}
+export { ApplicationController };

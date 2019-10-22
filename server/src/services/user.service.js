@@ -1,5 +1,6 @@
 let server;
 const sql = require("slonik").sql;
+const { normalizePhone } = require("../utils");
 
 async function createUser({ provider = {}, email, name, phone }) {
   let field = sql.identifier(["email"]);
@@ -7,7 +8,7 @@ async function createUser({ provider = {}, email, name, phone }) {
 
   if (!email && phone) {
     field = sql.identifier(["phone"]);
-    fieldValue = phone;
+    fieldValue = normalizePhone(phone);
   }
 
   const query = await server.app.db.query(
@@ -49,6 +50,20 @@ async function findUserByEmail(email) {
   return query.rows[0];
 }
 
+async function findUser(options) {
+  let where;
+
+  console.log(options);
+
+  if (options.email) {
+    return findUserByEmail(options.email);
+  }
+
+  if (options.phone) {
+    return findUserByPhone(normalizePhone(options.phone));
+  }
+}
+
 async function findUserByPhone(phone) {
   const query = await server.app.db.query(
     sql`SELECT * FROM users where phone = ${phone}`
@@ -73,7 +88,6 @@ async function generateOTP(user) {
   }
 
   const code = codeArr.join("");
-  console.log(code, user);
   const loginCode = await server.app.db.one(sql`
 	INSERT into login_codes (code, user_id) VALUES (${code}, ${user.id}) returning *
 	`);
@@ -86,6 +100,7 @@ function init(hapiServer) {
 }
 
 module.exports = {
+  findUser,
   findUserByEmail,
   findUserByPhone,
   findUserByProvider,
