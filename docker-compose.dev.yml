@@ -5,14 +5,9 @@ services:
     ports:
       - 8000:8000
     command: nodemon /var/www/events/server/src/index.js --ignore /var/www/events/client
+    env_file:
+            - server/local.env
     environment:
-      - NODE_ENV=develop
-      - REDIS_PORT=6379
-      - REDIS_HOST=redis
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_DATABASE=events
       - AWS_ACCESS_KEY_ID=AKIAI5EWIGUGQVR6D6SQ
       - AWS_SECRET_ACCESS_KEY=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
     volumes:
