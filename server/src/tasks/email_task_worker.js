@@ -3,7 +3,7 @@ const fs = require("fs");
 const mjml = require("mjml");
 const path = require("path");
 const postmark = require("postmark");
-const client = new postmark.Client("0e4ed554-38f5-4dbf-8317-d5605ecfc815");
+const client = new postmark.Client(process.env.POSTMARK_API_KEY);
 let server;
 module.exports = (hapiServer) => async (job) => {
   server = hapiServer;
