@@ -2,6 +2,8 @@ const mustache = require("mustache");
 const fs = require("fs");
 const mjml = require("mjml");
 const path = require("path");
+const postmark = require("postmark");
+const client = new postmark.Client("0e4ed554-38f5-4dbf-8317-d5605ecfc815");
 let server;
 module.exports = (hapiServer) => async (job) => {
   server = hapiServer;
@@ -42,24 +44,14 @@ async function sendEmail(templateName, payload) {
     const template = mustache.render(templateString, payload.data);
     const subject = mustache.render(payload.subject, payload.data);
     const html = mjml(template).html;
-    const params = {
-      Destination: {
-        ToAddresses: [payload.to]
-      },
-      Source: "clay.murray8@gmail.com",
-      Message: {
-        Body: {
-          Html: {
-            Data: html
-          }
-        },
-        Subject: {
-          Data: subject
-        }
-      }
-    };
+    const res = await client.sendEmail({
+      To: payload.to,
+      From: `"Juniper Branch" <branch@junipercity.com>`,
+      ReplyTo: "branch@stem.junipercity.com",
+      Subject: subject,
+      HtmlBody: html
+    });
 
-    const res = await server.app.aws.ses.sendEmail(params).promise();
     console.log(res);
   } catch (e) {
     console.log(e);
