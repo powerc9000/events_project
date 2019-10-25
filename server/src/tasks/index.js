@@ -7,11 +7,21 @@ module.exports = {
   register: async function(hapiServer) {
     server = hapiServer;
     const queues = [];
+
+    const redisConnection = {
+      port: process.env.REDIS_PORT,
+      host: process.env.REDIS_HOST,
+      connectTimeout: 30000,
+      tls: {},
+      username: process.env.REDIS_USERNAME,
+      password: process.env.REDIS_PASSWORD
+    };
+
     const emailQueue = new Queue("email", {
-      redis: { port: process.env.REDIS_PORT, host: process.env.REDIS_HOST }
+      redis: redisConnection
     });
     const smsQueue = new Queue("sms", {
-      redis: { port: process.env.REDIS_PORT, host: process.env.REDIS_HOST }
+      redis: redisConnection
     });
 
     emailQueue.process(email(server));
@@ -21,6 +31,7 @@ module.exports = {
     queues.push(smsQueue);
 
     server.decorate("server", "createTask", function(type, data) {
+      console.log(type, data);
       queues.forEach((queue) => {
         queue.add({
           type: type,

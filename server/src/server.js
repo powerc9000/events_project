@@ -101,11 +101,6 @@ async function start() {
     strictHeader: true // don't allow violations of RFC 6265
   });
 
-  server.app.aws = {
-    ses: new aws.SES({ region: "us-east-1" }),
-    sns: new aws.SNS({ region: "us-east-1" })
-  };
-
   await server.register(views);
   await server.register(services);
   await server.register(tasks);

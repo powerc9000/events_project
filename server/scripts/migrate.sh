@@ -1,12 +1,16 @@
 #!/bin/bash
 set -e
 PSQL_OPTS="-h localhost -p 9000 -U postgres"
+DB_NAME="events"
 if [ "$1" = "prod" ]
 then
-  PSQL_OPTS="-h prod-db.cgzoujjn4lwu.us-east-1.rds.amazonaws.com -U prod_db_user"
+  echo -n Password:
+  read -s password
+  export PGPASSWORD=$password
+  PSQL_OPTS="-h occasions-db-do-user-4391150-0.db.ondigitalocean.com -p 25060 -U juniper"
+  DB_NAME='occasions'
 fi
 
-DB_NAME="events"
 BASEDIR="."
 
 function add-version() {

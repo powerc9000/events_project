@@ -9,11 +9,13 @@ const entryFiles = [
 
 const options = {
   outDir: "./build",
-  publicUrl: "/static/",
-  watch: true,
-  minify: false
+  publicUrl: "/static/"
 };
 let errorCount = 0;
+if (process.argv[2] === "prod") {
+  console.log("Prod build");
+  process.env.NODE_ENV = "production";
+}
 const start = async () => {
   const bundler = new Bundler(entryFiles, options);
 

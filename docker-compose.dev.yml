@@ -6,7 +6,7 @@ services:
       - 8000:8000
     command: nodemon /var/www/events/server/src/index.js --ignore /var/www/events/client
     env_file:
-            - server/local.env
+            - server/prod.env
     environment:
       - AWS_ACCESS_KEY_ID=AKIAI5EWIGUGQVR6D6SQ
       - AWS_SECRET_ACCESS_KEY=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
