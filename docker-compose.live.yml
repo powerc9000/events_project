@@ -1,0 +1,9 @@
+version: "2.2"
+services:
+  server:
+    image: registry.gitlab.com/dropconfig/events:latest
+    ports:
+      - 8000:8000
+    command: node /var/www/events/server/src/index.js
+    env_file:
+            - server/prod.env

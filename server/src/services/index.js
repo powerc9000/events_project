@@ -90,7 +90,7 @@ async function initDb(server) {
     connectionTimeoutMillis: 60000
   };
 
-  const connection = `postgres://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}`;
+  const connection = `postgres://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}?ssl=1`;
 
   const db = slonik.createPool(connection, {
     connectionTimeout: config.connectionTimoutMillis
