@@ -76,7 +76,7 @@ module.exports = {
 
     server.route({
       method: "POST",
-      path: "/login/phone",
+      path:findlogin/phone",
       options: {
         validate: {
           payload: joi.object({
@@ -306,7 +306,7 @@ async function validateOTPLogin(req, h) {
       sql`Update login_codes set used = now() where id=${token.rows[0].id}`
     );
     h.unstate("session_key");
-    return h.loginAnRedirectUser(user, true);
+    return h.loginAndRedirectUser(user, true);
   }
 }
 
