@@ -1,41 +1,31 @@
-<html>
-	<head>
-		<title>Login</title>
-		<link rel="stylesheet" href="/static/css/main.css" />
-		<script src="/static/js/index.js"></script>
-		<meta name="google-signin-client_id" content="634779035671-htqj3sdamedg2bldv6fa85dr9qv3hh0f.apps.googleusercontent.com">
-	</head>	
-	<body>
-		<div class="container mx-auto flex items-center flex-col login-container">
-			<h1 class="text-xl p-1 bg-black text-white">Login</h1>
-			<div class="w-full">
-				<div class="mt-2 mb-2">
-					<label for="email">
-						Login with your email
-					</label>
-						<form method="POST" action="/api/login/email" class="flex">
-							<input type="email" placeholder="Email" class="border border-gray-500 p-1 w-full" id="email" name="email" required/>
-							<button class="bg-black text-white hover:underline p-2" type="submit">Login</button>
-						</form>
-				</div>
-				<hr />
-				<div class="mt-2 mb-2">
-					<label for="phone">
-						Login with your phone number 
-
-					</label>
-					<form class="flex" method="POST" action="/api/login/phone">
-						<input type="phone" placeholder="Phone" class="border border-gray-500 p-1 w-full" id="phone" name="phone" required/>
-						<button class="bg-black text-white hover:underline p-2"> Login</button>
-					</form>
-				</div>
-				<hr />
-			</div>
-			<div class="flex items-center mt-2">
-				<div class="g-signin2 mr-2" data-onsuccess="onSignIn" data-controller="login-with-google"></div>
-			</div>
+<div class="container mx-auto flex items-center flex-col login-container content">
+	<div class="w-full">
+		<section class="text-center text-lg">
+		<h1 class="text-bold text-2xl">Login or Signup</h1>
+		<p>All we need is your email or phone number.</p>
+		<p>No passwords or anything else to remember</p>
+		</section>
+		<div class="mt-2 mb-2">
+			<label for="email">
+				Login with your email
+			</label>
+			<form method="POST" action="/api/login/email" class="flex">
+				<input type="email" placeholder="Email" class="border border-gray-500 p-1 w-full" id="email" name="email" required/>
+				<button class="bg-black text-white hover:underline p-2" type="submit">Login</button>
+			</form>
 		</div>
+		<hr />
+		<div class="mt-2 mb-2">
+			<label for="phone">
+				Login with your phone number 
 
-		<script src="https://apis.google.com/js/platform.js" async defer></script>
-	</body>
-</html>
+			</label>
+			<form class="flex" method="POST" action="/api/login/phone">
+				<input type="phone" placeholder="Phone" class="border border-gray-500 p-1 w-full" id="phone" name="phone" required/>
+				<button class="bg-black text-white hover:underline p-2"> Login</button>
+			</form>
+		</div>
+		<hr />
+	</div>
+</div>
+

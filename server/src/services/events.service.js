@@ -5,7 +5,7 @@ const sql = require("slonik").sql;
 const PhoneNumber = require("awesome-phonenumber");
 const { normalizePhone } = require("../utils");
 
-async function canUserViewEvent(userId, eventId) {
+async function canUserViewEvent(userId, eventId, key) {
   const event = await server.app.db.maybeOne(
     sql`select id, is_private, creator from events where id=${eventId}`
   );
@@ -16,6 +16,16 @@ async function canUserViewEvent(userId, eventId) {
 
   if (!event.is_private) {
     return true;
+  }
+
+  if (key) {
+    const invite = await server.app.db.maybeOne(
+      sql`select * from invites where invite_key=${key}`
+    );
+
+    if (invite) {
+      return true;
+    }
   }
 
   if (!userId) {
@@ -237,7 +247,7 @@ async function inviteUsersToEvent(eventId, users) {
     server.createTask("invite-user-to-event", {
       event: eventQuery.rows[0],
       invite,
-      link: `http://example.com/events/${eventQuery.rows[0].slug}?invite_key=${invite.invite_key}`,
+      link: `https://junipercity.com/events/${eventQuery.rows[0].slug}?invite_key=${invite.invite_key}`,
       user
     });
   });

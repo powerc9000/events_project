@@ -218,7 +218,11 @@ async function rsvpToEvent(req, h) {
     return Boom.unauthorized();
   }
 
-  const canInvite = await events.canRSVPToEvent(req.params.id, user.id);
+  const canInvite = await events.canRSVPToEvent(
+    req.params.id,
+    user.id,
+    req.query.invite_key
+  );
   if (!canInvite) {
     return Boom.unauthorized();
   }
@@ -301,11 +305,8 @@ async function validateOTPLogin(req, h) {
     await server.app.db.query(
       sql`Update login_codes set used = now() where id=${token.rows[0].id}`
     );
-
-    await h.loginUser(user, false);
     h.unstate("session_key");
-
-    return h.redirect("/");
+    return h.loginAnRedirectUser(user, true);
   }
 }
 
@@ -360,7 +361,7 @@ async function loginWithGoogle(req, h) {
     });
   }
 
-  return h.loginUser(user);
+  return h.loginAndRedirectUser(user);
 }
 
 const tw = new LoginWithTwitter({

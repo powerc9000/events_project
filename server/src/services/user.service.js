@@ -62,6 +62,16 @@ async function findUser(options) {
   if (options.phone) {
     return findUserByPhone(normalizePhone(options.phone));
   }
+
+  if (options.invite_key) {
+    return findUserByInviteKey(options.invite_key);
+  }
+}
+
+async function findUserByInviteKey(key) {
+  const query = sql`select users.* from users inner join invites on users.id = invites.user_id where invites.invite_key=${key}`;
+
+  return server.app.db.maybeOne(query);
 }
 
 async function findUserByPhone(phone) {

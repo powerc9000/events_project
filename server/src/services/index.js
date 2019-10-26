@@ -29,14 +29,19 @@ module.exports = {
       return _.get(server, ["app", "services", name]);
     });
 
-    server.decorate("toolkit", "loginUser", async function(
+    server.decorate("toolkit", "loginUser", async function(user) {
+      const token = await server.getService("user").generateLoginToken(user.id);
+      this.state("user", token);
+    });
+
+    server.decorate("toolkit", "loginAndRedirectUser", async function(
       user,
       redirect = false
     ) {
       const token = await server.getService("user").generateLoginToken(user.id);
+      const redirectPath = this.request.state.login_redirect || "/";
+      this.unstate("login_redirect");
       this.state("user", token);
-      const redirectPath = this.request.state.redirect || "";
-      this.unstate("redirect");
       if (!redirect) {
         return this.response({
           path: redirectPath
@@ -44,6 +49,14 @@ module.exports = {
       } else {
         return this.redirect(redirectPath);
       }
+    });
+
+    server.decorate("toolkit", "toLogin", function() {
+      //Check for same domain.
+      const location = `/login?redirect_to=${this.request.path}`;
+      const res = this.response();
+      this.state("turbo_redirect", location);
+      return res.redirect(location);
     });
 
     server.decorate("request", "loggedIn", function() {
@@ -87,10 +100,11 @@ async function initDb(server) {
     password: process.env["DB_PASSWORD"],
     database: process.env["DB_DATABASE"],
     port: process.env["DB_PORT"],
-    connectionTimeoutMillis: 60000
+    connectionTimeoutMillis: 60000,
+    ssl: process.env["DB_SSL"]
   };
 
-  const connection = `postgres://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}?ssl=1`;
+  const connection = `postgres://${config.user}:${config.password}@${config.host}:${config.port}/${config.database}?ssl=${config.ssl}`;
 
   const db = slonik.createPool(connection, {
     connectionTimeout: config.connectionTimoutMillis

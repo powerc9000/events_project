@@ -12,9 +12,13 @@ module.exports = {
       port: process.env.REDIS_PORT,
       host: process.env.REDIS_HOST,
       connectTimeout: 30000,
-      tls: {},
-      username: process.env.REDIS_USERNAME,
-      password: process.env.REDIS_PASSWORD
+      ...(process.env.NODE_ENV === "production"
+        ? {
+            tls: {},
+            username: process.env.REDIS_USERNAME,
+            password: process.env.REDIS_PASSWORD
+          }
+        : {})
     };
 
     const emailQueue = new Queue("email", {

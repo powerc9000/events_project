@@ -1,39 +1,21 @@
-<html>
-	<head>
-		<title>Hello</title>
-		<script src="/static/js/index.js"></script>
-		<link rel="stylesheet" href="/static/css/main.css"/>
-	</head>
-	<body>
-		<%-include("partials/header")%>
-		<div class="container mx-auto content max-w-3xl">
-			<div class="flex items-center justify-center">
-				<div class="p-4 border-2 border-gray-300">
-					<div>
-						<img src="/static/img/banner.jpg" class="w-full object-contain h-full"/>
-					</div>
-					<p class="pt-4 text-xl">
-					Occasions - <%= date.format(new Date(), "PP") %>
-					</p>
-				</div>
-			</div>
-			<div class="mt-4">
-				<ul class="">
-					<%events.forEach((event)=>{%>
-						<li class="py-2">
-							<h3>
-							<a href="/events/<%=event.slug%>" class="bg-black p-1 text-white relative event-link"><%=event.name%>
-								- <%=date.format(new Date(event.date), "PP")%></a>
-							</h3>
-							<p>
-								<%=event.description%>
-							</p>
-							<div>
-						</li>
-					<%})%>
-				</ul>
-			</div>
-		</div>
-		<%-include("partials/footer")%>
-	</body>
-</html>
+<div class="container mx-auto content max-w-3xl">
+  <div class="mt-4">
+    <h1 class="text-2xl font-bold text-center">Your Events</h1>
+    <ul class="">
+      <%events.forEach((event)=>{%>
+      <li class="py-2">
+        <h3>
+          <a
+            href="/events/<%=event.slug%>"
+            class="bg-black p-1 text-white relative event-link"
+            ><%=event.name%> - <%=date.format(new Date(event.date), "PP")%></a
+          >
+        </h3>
+        <p>
+          <%=event.description%>
+        </p>
+      </li>
+      <%})%>
+    </ul>
+  </div>
+</div>

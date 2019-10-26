@@ -1,0 +1,45 @@
+<div class="container content mx-auto">
+  <div class="text-xl">
+    <section class="text-center bg-gray-300 py-4">
+      <h1 class="font-bold text-4xl">Welcome</h1>
+      <p>
+        Juniper City is the easiest way to create and invite people to your
+        event.
+      </p>
+      <p>
+        <a href="/create" class="underline">Create your event</a> with just a
+        name and a date.
+      </p>
+      <p>
+        You can invite anyone with only an email or phone number.
+      </p>
+      <p>No need for them to sign up!</p>
+      <div class="mt-8">
+        <a
+          href="/create"
+          class="bg-black text-white p-1 text-2xl mt-8 hover:underline"
+          >Get Started Now</a
+        >
+      </div>
+    </section>
+    <section class="mt-8">
+      <h2 class="font-bold text-xl">Public events</h2>
+      <div>
+        <%events.forEach((event)=>{%>
+        <li class="py-2">
+          <h3>
+            <a
+              href="/events/<%=event.slug%>"
+              class="bg-black p-1 text-white relative event-link"
+              ><%=event.name%> - <%=date.format(new Date(event.date), "PP")%></a
+            >
+          </h3>
+          <p>
+            <%=event.description%>
+          </p>
+        </li>
+        <%})%>
+      </div>
+    </section>
+  </div>
+</div>

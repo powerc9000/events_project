@@ -41,7 +41,13 @@ module.exports = {
     });
 
     server.decorate("toolkit", "layout", function(name, data) {
-      return this.view("layout", { __body: name, ...data });
+      const res = this.view("layout", { __body: name, ...data });
+      if (this.request.state.turbo_redirect) {
+        res.header("Turbolinks-Location", this.request.state.turbo_redirect);
+        this.unstate("turbo_redirect");
+      }
+
+      return res;
     });
 
     //The source map url gets mapped wrong from parcel...
@@ -123,6 +129,9 @@ async function groupDetail(req, h) {
   const eventService = server.getService("events");
 
   const group = await groupService.getGroup(req.params.idOrCustom);
+  if (!group) {
+    return "Not found";
+  }
   const events = await eventService.getGroupEventsForUser(
     group.id,
     req.app.user.id
@@ -140,7 +149,7 @@ async function groupDetail(req, h) {
 
 async function userGroups(req, h) {
   if (!req.app.user) {
-    return h.redirect("/login");
+    return h.toLogin();
   }
 
   const groups = await server
@@ -161,10 +170,21 @@ async function loginWithOTP(req, h) {
 async function eventDetail(req, h) {
   const eventService = server.getService("events");
   const event = await eventService.getEventBySlug(req.params.slug);
-  const userId = _.get(req, "app.user.id");
+  let userId = _.get(req, "app.user.id");
 
   if (!event) {
     return "NO EVENT";
+  }
+
+  if (!userId && req.query.invite_key) {
+    const user = await server
+      .getService("user")
+      .findUser({ invite_key: req.query.invite_key });
+
+    if (user) {
+      h.loginUser(user);
+      userId = user.id;
+    }
   }
   const canViewEvent = await eventService.canUserViewEvent(userId, event.id);
 
@@ -189,7 +209,7 @@ async function eventDetail(req, h) {
       return invite.user_id === userId;
     }) || {};
 
-  return h.view("event_detail", {
+  return h.layout("event_detail", {
     event: { ...event, ...statuses },
     invite,
     canInvite
@@ -202,10 +222,17 @@ async function homepage(req, h) {
     options.user = req.app.user.id;
   }
   const events = await server.getService("events").findEvents(options);
-  return h.view("homepage", { events });
+  let view = "homepage";
+  if (!req.app.user) {
+    view = "welcome";
+  }
+  return h.layout(view, { events });
 }
 
 async function createEvent(req, h) {
+  if (!req.loggedIn()) {
+    return h.toLogin();
+  }
   const groups = await server
     .getService("groups")
     .getGroupsForUser(req.app.user.id);
@@ -215,7 +242,7 @@ async function createEvent(req, h) {
   if (req.query.group) {
     forGroup = req.query.group;
   }
-  return h.view("create", {
+  return h.layout("create", {
     forGroup,
     groups
   });
@@ -224,9 +251,10 @@ async function createEvent(req, h) {
 async function login(req, h) {
   if (!req.app.user) {
     if (req.query.redirect_to) {
-      h.state("redirect", req.query.redirect_to);
+      console.log(req.query);
+      h.state("login_redirect", req.query.redirect_to);
     }
-    return h.view("login");
+    return h.layout("login");
   } else {
     return h.redirect("/");
   }
