@@ -76,7 +76,7 @@ module.exports = {
 
     server.route({
       method: "POST",
-      path:findlogin/phone",
+      path: "/login/phone",
       options: {
         validate: {
           payload: joi.object({
