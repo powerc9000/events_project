@@ -90,7 +90,18 @@ async function start() {
     strictHeader: true // don't allow violations of RFC 6265
   });
 
-  server.state("redirect", {
+  server.state("turbo_redirect", {
+    ttl: Hour,
+    isSecure: false, //This server will never be listening on https the load balancer will handle that
+    isHttpOnly: true,
+    isSameSite: false,
+    path: "/",
+    encoding: "base64",
+    clearInvalid: false, // remove invalid cookies
+    strictHeader: true // don't allow violations of RFC 6265
+  });
+
+  server.state("login_redirect", {
     ttl: Hour,
     isSecure: false, //This server will never be listening on https the load balancer will handle that
     isHttpOnly: true,

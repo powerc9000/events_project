@@ -1,114 +1,151 @@
-<html>
-	<head>
-		<title>EVENT</title>
-		<script src="/static/js/index.js"></script>
-		<link rel="stylesheet" href="/static/css/main.css" />
-	</head>
-	<body>
-		<%-include("partials/header")%>
-		<div class="container mx-auto content" data-controller="event-detail">
-			<h1 class="font-bold text-3xl"><%=event.name%></h1>
-			<div class="text-lg">
-				<span data-controller="format-date" data-format-date-epoch="<%=event.date%>" data-target="format-date.date"><%=new Date(event.date)%></span>
-			</div>
+<div class="container mx-auto content" data-controller="event-detail">
+  <h1 class="font-bold text-3xl"><%=event.name%></h1>
+  <div class="text-lg">
+    <span
+      data-controller="format-date"
+      data-format-date-epoch="<%=event.date%>"
+      data-target="format-date.date"
+      ><%=new Date(event.date)%></span
+    >
+  </div>
 
-			<div class="mt-2">
-				 
-				<span class="p-1 bg-green-500 mr-2">
-					<%=event.going.length%> Attending
-				</span>
-				<span class="p-1 bg-gray-300 mr-2">
-					<%=event.invited.length%> Invited
-				</span>
-				<%if(canInvite){%>
-				<button href="#" class="bg-black text-white hover:underline p-1" data-action="event-detail#toggleInviteForm">Invite People</button>
-				<%}%>
+  <div class="mt-2">
+    <span class="p-1 bg-green-500 mr-2">
+      <%=event.going.length%> Attending
+    </span>
+    <span class="p-1 bg-gray-300 mr-2">
+      <%=event.invited.length%> Invited
+    </span>
+    <%if(canInvite){%>
+    <button
+      href="#"
+      class="bg-black text-white hover:underline p-1"
+      data-action="event-detail#toggleInviteForm"
+    >
+      Invite People
+    </button>
+    <%}%>
+  </div>
+  <form
+    class="hidden p-4 bg-green-200 mt-4"
+    data-target="event-detail.inviteForm"
+    data-action="event-detail#sendInvite"
+  >
+    <input type="hidden" name="eventId" value="<%=event.id%>" />
+    <div class="flex flex-col">
+      <label class="font-bold" for="name">
+        Name of person to invite
+        <span class="font-normal text-xs">(Optional)</span>
+      </label>
+      <input
+        id="name"
+        type="text"
+        name="name"
+        class="border-gray-300 border p-1 "
+        placeholder="Name"
+      />
+    </div>
+    <div class="mt-2 flex flex-col">
+      <label class="font-bold" for="email">
+        Email
+      </label>
+      <input
+        id="email"
+        type="text"
+        name="email"
+        class="border-gray-300 border p-1"
+        placeholder="Email"
+      />
+    </div>
+    <div class="mt-2 flex flex-col">
+      <label class="font-bold" for="phone">
+        Phone
+      </label>
+      <input
+        id="phone"
+        type="text"
+        name="phone"
+        class="border-gray-300 border p-1"
+        placeholder="Phone"
+      />
+    </div>
+    <p class="mt-1">
+      <span class="font-bold">Email OR phone is required</span>
+    </p>
 
-			</div>
-			<form class="hidden p-4 bg-green-200 mt-4" data-target="event-detail.inviteForm" data-action="event-detail#sendInvite">
-				<input type="hidden" name="eventId" value="<%=event.id%>" />
-				<div class="flex flex-col">
-					<label class="font-bold">
-						Name <span class="font-normal text-xs">(Optional)</span>
-					</label>
-					<input type="text" name="name" class="border-gray-300 border p-1 "/>
-				</div>
-				<div class="mt-2 flex flex-col">
-					<label class="font-bold">
-						Email
+    <div class="mt-2">
+      <button class="p-1 bg-black text-white hover:underline" type="submit">
+        Invite
+      </button>
+      <span class="hidden" data-target="event-detail.inviteSent"
+        >Invite sent!</span
+      >
+    </div>
+  </form>
+  <%if(invite || !event.is_private){%>
+  <div class="mt-2 bg-gray-200 p-2">
+    <form
+      data-target="event-detail.rsvpForm"
+      data-action="change->event-detail#rsvp"
+      autocomplete="off"
+    >
+      <input type="hidden" name="eventId" value="<%=event.id%>" />
+      <div>
+        <fieldset>
+          <legend class="text-lg font-bold">RSVP</legend>
+          <label class="font-bold cursor-pointer">
+            <span class="">Going</span> <input type="radio" name="rsvp"
+            value="going" <%=_checked(invite.status === "going")%>/>
+          </label>
+          -
+          <label class="font-bold cursor-pointer">
+            <span class="">Maybe</span> <input type="radio" name="rsvp"
+            value="maybe" <%=_checked(invite.status === "maybe")%>/>
+          </label>
+          -
 
-					</label>
-					<input type="text" name="email" class="border-gray-300 border p-1"/>
-				</div>
-				<div class="mt-2 flex flex-col">
-					<label class="font-bold">
-						Phone
-
-					</label>
-					<input type="text" name="phone" class="border-gray-300 border p-1"/>
-
-				</div>
-				<p class="mt-1">
-				<span>Email OR phone is required</span>
-				</p>
-
-				<div class="mt-2">
-					<button class="p-1 bg-black text-white hover:underline" type="submit">
-						Invite
-					</button>
-					<span class="hidden" data-target="event-detail.inviteSent">Invite sent!</span>
-				</div>
-			</form>
-			<%if(invite || !event.is_private){%>
-				<div class="mt-2 bg-gray-200 p-2">
-					<p class="text-lg font-bold">RSVP</p>
-					<form data-target="event-detail.rsvpForm" data-action="change->event-detail#rsvp" autocomplete="off">
-						<input type="hidden" name="eventId" value="<%=event.id%>" />
-						<div>
-							<label class="font-bold cursor-pointer">
-								<span class="">Going</span> <input type="radio" name="rsvp" value="going" <%=_checked(invite.status === "going")%>/>
-							</label>
-							-
-							<label class="font-bold cursor-pointer">
-								<span class="">Maybe</span> <input type="radio" name="rsvp" value="maybe" <%=_checked(invite.status === "maybe")%>/>
-							</label>
-							-
-
-							<label class="font-bold cursor-pointer">
-								<span class="">Not Going</span> <input type="radio" name="rsvp" value="declined" <%=_checked(invite.status === "declined") %>/>
-							</label>
-						</div>
-						<div class="mt-1">
-							<label class="cursor-pointer">
-								Keep my RSVP private
-								<input type="checkbox" name="show_name" <%=_checked(!invite.show_name)%>/>
-
-							</label>
-							<p>
-
-								<span class="text-xs text-green-700" data-target="event-detail.privateInfo">Only the organizer will see your RSVP</span>
-							</p>
-						</div>
-					</form>
-				</div>	
-			<%}%>
-			<%if(!event.is_private){%>
-			<div class="mt-2">
-				<a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-text="<%=event.name%>" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-			</div>
-			<%}%>
-			<div class="mt-2">
-
-				Created by: <%=event.creator.name%>
-			</div>
-			<div>
-				<%=event.is_private ? "Private": "Public"%> event
-			</div>
-			<hr/>
-			<div class="mt-2">
-				<%=event.description%>
-			</div>
-		</div>
-		<%-include("partials/footer")%>
-	</body>
-</html>
+          <label class="font-bold cursor-pointer">
+            <span class="">Not Going</span> <input type="radio" name="rsvp"
+            value="declined" <%=_checked(invite.status === "declined") %>/>
+          </label>
+        </fieldset>
+      </div>
+      <div class="mt-1">
+        <label class="cursor-pointer">
+          Keep my RSVP private <input type="checkbox" name="show_name"
+          <%=_checked(invite.show_name === false) %> />
+        </label>
+        <p>
+          <span class="text-xs font-bold" data-target="event-detail.privateInfo"
+            >Only the organizer will see your RSVP</span
+          >
+        </p>
+      </div>
+    </form>
+  </div>
+  <%}%> <%if(!event.is_private){%>
+  <div class="mt-2">
+    <a
+      href="https://twitter.com/share?ref_src=twsrc%5Etfw"
+      class="twitter-share-button"
+      data-text="<%=event.name%>"
+      data-show-count="false"
+      >Tweet</a
+    ><script
+      async
+      src="https://platform.twitter.com/widgets.js"
+      charset="utf-8"
+    ></script>
+  </div>
+  <%}%>
+  <div class="mt-2">
+    Created by: <%=event.creator.name%>
+  </div>
+  <div>
+    <%=event.is_private ? "Private": "Public"%> event
+  </div>
+  <hr />
+  <div class="mt-2">
+    <%=event.description%>
+  </div>
+</div>
