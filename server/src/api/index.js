@@ -113,7 +113,7 @@ module.exports = {
         validate: {
           payload: joi.object({
             name: joi.string().required(),
-            descirption: joi.string(),
+            description: joi.string(),
             allow_inviting: joi.boolean(),
             is_private: joi.boolean(),
             custom_path: joi
