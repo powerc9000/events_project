@@ -26,7 +26,6 @@ module.exports = (server) => async (job) => {
           user.phone,
           `You have been invited to an event on Juniper City: ${data.link}`
         );
-        console.log(res);
       } catch (e) {
         console.log(e);
       }

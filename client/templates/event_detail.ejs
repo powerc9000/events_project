@@ -113,7 +113,7 @@
       <div class="mt-1">
         <label class="cursor-pointer">
           Keep my RSVP private <input type="checkbox" name="show_name"
-          <%=_checked(invite.show_name === false) %> />
+          <%=_checked(invite.show_name !== true) %> />
         </label>
         <p>
           <span class="text-xs font-bold" data-target="event-detail.privateInfo"
