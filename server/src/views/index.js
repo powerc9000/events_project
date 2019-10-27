@@ -19,6 +19,7 @@ module.exports = {
       engines: { ejs },
       relativeTo: path.join(__dirname, "../../../", "templates"),
       context: (req) => ({
+        NODE_ENV: process.env.NODE_ENV,
         date: fns,
         user: req.app.user,
         _boolAttr: (name, value) => {
