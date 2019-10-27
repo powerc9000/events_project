@@ -1,4 +1,5 @@
 let server;
+const _ = require("lodash");
 const slugify = require("slugify");
 const crypto = require("crypto");
 const sql = require("slonik").sql;
@@ -58,12 +59,21 @@ async function getEventBySlug(slug) {
   const data = await server.app.db.query(
     sql`SELECT * from events where slug = ${slug}`
   );
-  const userService = server.getService("user");
+  return formatEvent(data.rows[0]);
+}
 
-  if (!data.rows.length) {
+async function getEventById(id) {
+  const event = await server.app.db.maybeOne(
+    sql`select * from events where id=${id}`
+  );
+  return formatEvent(event);
+}
+
+async function formatEvent(event) {
+  if (!event) {
     return null;
   }
-  const event = data.rows[0];
+  const userService = server.getService("user");
   event.creator = await userService.findById(event.creator);
   event.invites = await getEventInvites(event.id);
   return event;
@@ -277,7 +287,6 @@ async function createEvent(user, event) {
       if (f !== "date") {
         values.push(event[f]);
       } else {
-        console.log(event["date"] / 1000);
         values.push(sql`to_timestamp(${event["date"] / 1000})`);
       }
     }
@@ -365,6 +374,49 @@ async function rsvpToEvent(eventId, userId, status, show_name) {
   );
 }
 
+async function canUserEditEvent(user, event) {
+  //Right now only the creator
+
+  return server.app.db.maybeOne(
+    sql`select * from events where creator = ${user} and id=${event}`
+  );
+}
+
+async function editEvent(eventId, payload) {
+  const sets = [];
+  const allowedFields = [
+    "name",
+    "can_invite",
+    "is_private",
+    "description",
+    {
+      name: "date",
+      format: (date) => {
+        return sql`to_timestamp(${new Date(date).getTime() / 1000})`;
+      }
+    },
+    "location",
+    "group_id",
+    "allow_comments",
+    "show_participants"
+  ];
+
+  allowedFields.forEach((field) => {
+    const key = field.name || field;
+    if (_.has(payload, key)) {
+      const format = field.format || ((val) => val);
+      sets.push(sql`${sql.identifier([key])}=${format(payload[key])}`);
+    }
+  });
+
+  return server.app.db.maybeOne(
+    sql`Update events set ${sql.join(
+      sets,
+      sql` , `
+    )} where id=${eventId} returning *`
+  );
+}
+
 function init(hapiServer) {
   server = hapiServer;
   //set up database
@@ -376,12 +428,15 @@ module.exports = {
   canInviteToEvent,
   canRSVPToEvent,
   rsvpToEvent,
+  canUserEditEvent,
+  editEvent,
   createEvent,
   getEventBySlug,
   findEvents,
   canUserViewEvent,
   canCreateForGroup,
   init,
+  getEventById,
   getGroupEventsForUser,
   name: "events"
 };
