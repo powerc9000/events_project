@@ -218,6 +218,7 @@ async function eventDetail(req, h) {
 
   return h.layout("event_detail", {
     event: { ...event, ...statuses },
+    title: event.name,
     canEdit: await eventService.canUserEditEvent(userId, event.id),
     invite,
     canInvite
