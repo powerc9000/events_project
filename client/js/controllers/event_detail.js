@@ -68,7 +68,11 @@ export default class extends ApplicationController {
       show_name: !show_name
     });
 
-    this.page.reload();
+    if (show_name) {
+      this.showTarget("privateInfo");
+    } else {
+      this.hideTarget("privateInfo");
+    }
   }
 
   disconnect() {
