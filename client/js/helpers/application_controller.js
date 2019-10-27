@@ -36,10 +36,10 @@ function Post(path, data) {
 }
 
 function reload() {
-  replace(window.location);
+  replace(window.location.pathname);
 }
 function replace(path) {
-  turbolinks.visit(path, { action: "replace" });
+  turbolinks.visit(path);
 }
 
 function visit(path) {

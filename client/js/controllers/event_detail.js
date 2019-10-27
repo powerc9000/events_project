@@ -56,12 +56,17 @@ export default class extends ApplicationController {
     }
   }
 
-  async rsvp() {
+  async rsvp(e) {
+    e.preventDefault();
     const form = this.targets.find("rsvpForm");
 
     const rsvp = form.rsvp.value;
     const show_name = form.show_name.checked;
     const eventId = form.eventId.value;
+
+    if (!rsvp) {
+      return;
+    }
 
     await this.api.Post(`/api/events/${eventId}/rsvp`, {
       status: rsvp,
