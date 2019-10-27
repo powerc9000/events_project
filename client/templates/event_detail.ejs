@@ -1,5 +1,16 @@
 <div class="container mx-auto content" data-controller="event-detail">
-  <h1 class="font-bold text-3xl"><%=event.name%></h1>
+  <div class="flex items-center">
+    <h1 class="font-bold text-3xl"><%=event.name%></h1>
+    <div class="ml-4">
+      <%if(canEdit){%>
+      <a
+        href="/events/<%=event.slug%>/edit"
+        class="underline hover:text-gray-600"
+        >Edit</a
+      >
+      <%}%>
+    </div>
+  </div>
   <div class="text-lg">
     <span
       data-controller="format-date"
@@ -40,6 +51,7 @@
       <input
         id="name"
         type="text"
+        )
         name="name"
         class="border-gray-300 border p-1 "
         placeholder="Name"

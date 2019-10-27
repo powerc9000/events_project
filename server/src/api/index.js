@@ -101,6 +101,30 @@ module.exports = {
 
     server.route({
       method: "POST",
+      path: "/events/{id}",
+      handler: editEvent,
+      options: {
+        validate: {
+          payload: joi.object({
+            name: joi.string().required(),
+            date: joi.date().timestamp(),
+            description: joi.string().required(),
+            is_private: joi.boolean(),
+            show_participants: joi.boolean(),
+            allow_comments: joi.boolean(),
+            can_invite: joi.boolean(),
+            location: joi.string().allow(null, ""),
+            group_id: joi
+              .string()
+              .uuid()
+              .allow(null)
+          })
+        }
+      }
+    });
+
+    server.route({
+      method: "POST",
       path: "/events/{id}/rsvp",
       handler: rsvpToEvent
     });
@@ -148,6 +172,39 @@ module.exports = {
     });
   }
 };
+
+async function editEvent(req, h) {
+  const eventService = server.getService("events");
+  const event = await eventService.getEventById(req.params.id);
+  if (!event) {
+    return Boom.notFound();
+  }
+
+  if (!req.loggedIn()) {
+    return Boom.unauthorized();
+  }
+  const canEdit = await eventService.canUserEditEvent(
+    req.app.user.id,
+    event.id
+  );
+
+  if (!canEdit) {
+    return Boom.unauthorized();
+  }
+
+  const canCreate = await eventService.canCreateForGroup(
+    req.app.user.id,
+    req.payload.group_id
+  );
+
+  if (!canCreate) {
+    return Boom.unauthorized();
+  }
+  console.log(req.payload);
+  const updatedEvent = await eventService.editEvent(req.params.id, req.payload);
+
+  return updatedEvent;
+}
 async function addUserToGroup(req, h) {
   const userService = server.getService("user");
   const groupService = server.getService("groups");

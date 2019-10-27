@@ -28,14 +28,21 @@ export default class extends ApplicationController {
 
     if (form.date.value) {
       payload.date = new Date(form.date.value).getTime();
-      console.log(payload.date);
     }
 
     if (form.group_id && form.group_id.value) {
       payload.group_id = form.group_id.value;
     }
+    let extra = "";
+    if (form.edited_event && form.edited_event.value) {
+      extra = `/${form.edited_event.value}`;
+    }
 
-    const res = await this.api.Post("/api/events", payload);
+    console.log(form.edited_event, extra);
+
+    const base = "/api/events";
+
+    const res = await this.api.Post(`${base}${extra}`, payload);
 
     if (res.ok) {
       const data = await res.json();

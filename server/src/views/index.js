@@ -103,6 +103,12 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/events/{slug}/edit",
+      handler: editEvent
+    });
+
+    server.route({
+      method: "GET",
       path: "/groups",
       handler: userGroups
     });
@@ -212,8 +218,43 @@ async function eventDetail(req, h) {
 
   return h.layout("event_detail", {
     event: { ...event, ...statuses },
+    canEdit: await eventService.canUserEditEvent(userId, event.id),
     invite,
     canInvite
+  });
+}
+
+async function editEvent(req, h) {
+  const eventService = server.getService("events");
+  const event = await eventService.getEventBySlug(req.params.slug);
+  if (!event) {
+    return "No Event";
+  }
+
+  if (!req.loggedIn()) {
+    return "NOT ALLOWED";
+  }
+  const canEdit = await eventService.canUserEditEvent(
+    req.app.user.id,
+    event.id
+  );
+
+  if (!canEdit) {
+    return "NOT Allowed";
+  }
+  const groups = await server
+    .getService("groups")
+    .getGroupsForUser(req.app.user.id);
+
+  let forGroup = null;
+
+  if (req.query.group) {
+    forGroup = req.query.group;
+  }
+  return h.layout("create", {
+    event,
+    groups,
+    forGroup
   });
 }
 
@@ -244,6 +285,7 @@ async function createEvent(req, h) {
     forGroup = req.query.group;
   }
   return h.layout("create", {
+    event: {},
     forGroup,
     groups
   });
