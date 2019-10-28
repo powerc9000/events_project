@@ -1,31 +1,48 @@
-<div class="container mx-auto flex items-center flex-col login-container content">
-	<div class="w-full">
-		<section class="text-center text-lg">
-		<h1 class="text-bold text-2xl">Login or Signup</h1>
-		<p>All we need is your email or phone number.</p>
-		<p>No passwords or anything else to remember</p>
-		</section>
-		<div class="mt-2 mb-2">
-			<label for="email">
-				Login with your email
-			</label>
-			<form method="POST" action="/api/login/email" class="flex">
-				<input type="email" placeholder="Email" class="border border-gray-500 p-1 w-full" id="email" name="email" required/>
-				<button class="bg-black text-white hover:underline p-2" type="submit">Login</button>
-			</form>
-		</div>
-		<hr />
-		<div class="mt-2 mb-2">
-			<label for="phone">
-				Login with your phone number 
-
-			</label>
-			<form class="flex" method="POST" action="/api/login/phone">
-				<input type="phone" placeholder="Phone" class="border border-gray-500 p-1 w-full" id="phone" name="phone" required/>
-				<button class="bg-black text-white hover:underline p-2"> Login</button>
-			</form>
-		</div>
-		<hr />
-	</div>
+<div
+  class="container mx-auto flex items-center flex-col login-container content"
+>
+  <div class="w-full">
+    <section class="text-center text-lg">
+      <h1 class="text-bold text-2xl">Login or Signup</h1>
+      <p>All we need is your email or phone number.</p>
+      <p>No passwords or anything else to remember</p>
+    </section>
+    <div class="mt-2 mb-2">
+      <label for="email">
+        Login with your email
+      </label>
+      <form method="POST" action="/api/login/email" class="flex">
+        <input
+          type="email"
+          placeholder="Email"
+          class="border border-gray-500 p-1 w-full"
+          id="email"
+          name="email"
+          required
+        />
+        <button class="bg-black text-white hover:underline p-2" type="submit">
+          Login
+        </button>
+      </form>
+    </div>
+    <div class="hr-text">
+      <span class="text-xl font-bold">OR</span>
+    </div>
+    <div class="mt-2 mb-2">
+      <label for="phone">
+        Login with your phone number
+      </label>
+      <form class="flex" method="POST" action="/api/login/phone">
+        <input
+          type="phone"
+          placeholder="Phone"
+          class="border border-gray-500 p-1 w-full"
+          id="phone"
+          name="phone"
+          required
+        />
+        <button class="bg-black text-white hover:underline p-2">Login</button>
+      </form>
+    </div>
+  </div>
 </div>
-

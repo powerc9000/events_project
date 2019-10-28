@@ -47,4 +47,36 @@ footer {
   background-color: green;
 }
 
+.hr-text {
+    display: block;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap; 
+}
+
+.hr-text > span {
+    position: relative;
+    display: inline-block;
+}
+
+.hr-text > span:before,
+.hr-text > span:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 9999px;
+    height: 1px;
+    @apply bg-gray-400;
+}
+
+.hr-text > span:before {
+    right: 100%;
+    margin-right: 15px;
+}
+
+.hr-text > span:after {
+    left: 100%;
+    margin-left: 15px;
+}
+
 @tailwind utilities;

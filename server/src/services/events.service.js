@@ -376,7 +376,9 @@ async function rsvpToEvent(eventId, userId, status, show_name) {
 
 async function canUserEditEvent(user, event) {
   //Right now only the creator
-
+  if (!user) {
+    return false;
+  }
   return server.app.db.maybeOne(
     sql`select * from events where creator = ${user} and id=${event}`
   );
