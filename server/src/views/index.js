@@ -182,6 +182,7 @@ async function eventDetail(req, h) {
   if (!event) {
     return "NO EVENT";
   }
+  const viewData = {};
 
   if (!userId && req.query.invite_key) {
     const user = await server
@@ -191,6 +192,7 @@ async function eventDetail(req, h) {
     if (user) {
       h.loginUser(user);
       userId = user.id;
+      viewData.user = user;
     }
   }
   const canViewEvent = await eventService.canUserViewEvent(userId, event.id);
@@ -218,6 +220,7 @@ async function eventDetail(req, h) {
     }) || {};
 
   return h.layout("event_detail", {
+    ...viewData,
     event: { ...event, ...statuses },
     title: event.name,
     canEdit: await eventService.canUserEditEvent(userId, event.id),
