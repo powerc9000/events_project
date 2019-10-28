@@ -63,7 +63,7 @@
     <div class="mt-2 flex flex-col">
       <label class="font-bold" for="email">
         Email
-      </label09f8fd06-a683-4863-a77d-13e6740c5008>
+      </label>
       <input
         id="email"
         type="text"
@@ -98,108 +98,120 @@
     </div>
   </form>
   <div class="flex">
-	  <div class="flex-1">
-  <%if(invite || !event.is_private){%>
-  <div class="mt-2 bg-gray-200 p-2">
-    <form
-      data-target="event-detail.rsvpForm"
-      data-action="change->event-detail#rsvp"
-      autocomplete="off"
-    >
-
+    <div class="flex-1">
+      <%if(invite || !event.is_private){%>
+      <div class="mt-2 bg-gray-200 p-2">
+        <form
+          data-target="event-detail.rsvpForm"
+          data-action="change->event-detail#rsvp"
+          autocomplete="off"
+        >
           <h4 class="text-lg font-bold">RSVP</h4>
-      <input type="hidden" name="eventId" value="<%=event.id%>" />
+          <input type="hidden" name="eventId" value="<%=event.id%>" />
+          <div>
+            <label class="font-bold"
+              >Name
+              <input
+                type="text"
+                name="name"
+                value="<%=user.name%>"
+                class="border-gray-600 border p-1 w-full"
+                placeholder="name"
+              />
+            </label>
+          </div>
+
+          <div class="mt-3">
+            <fieldset>
+              <legend
+                class="font-lg text-gray-800 mb-1 font-bold"
+                aria-label="RSVP Status"
+              >
+                Status
+              </legend>
+              <label class="font-bold cursor-pointer">
+                <span class="">Going</span> <input type="radio" name="rsvp"
+                value="going" <%=_checked(invite.status === "going")%>/>
+              </label>
+              -
+              <label class="font-bold cursor-pointer">
+                <span class="">Maybe</span> <input type="radio" name="rsvp"
+                value="maybe" <%=_checked(invite.status === "maybe")%>/>
+              </label>
+              -
+
+              <label class="font-bold cursor-pointer">
+                <span class="">Not Going</span> <input type="radio" name="rsvp"
+                value="declined" <%=_checked(invite.status === "declined") %>/>
+              </label>
+            </fieldset>
+          </div>
+          <div class="mt-1">
+            <label class="cursor-pointer">
+              Keep my RSVP private <input type="checkbox" name="show_name"
+              <%=_checked(invite.show_name !== true) %> />
+            </label>
+            <p>
+              <span
+                class="text-xs font-bold"
+                data-target="event-detail.privateInfo"
+                >Only the organizer will see your RSVP</span
+              >
+            </p>
+          </div>
+        </form>
+      </div>
+      <%}%> <%if(!event.is_private){%>
+      <div class="mt-2" id="twitter-section" data-turbolinks-permanent>
+        <a
+          href="https://twitter.com/share?ref_src=twsrc%5Etfw"
+          class="twitter-share-button"
+          data-text="<%=event.name%>"
+          data-show-count="false"
+          >Tweet</a
+        ><script
+          async
+          src="https://platform.twitter.com/widgets.js"
+          charset="utf-8"
+          id="twitter-js"
+          data-turbolinks-permanent
+        ></script>
+      </div>
+      <%}%>
+      <div class="mt-2">
+        Created by: <%=event.creator.name%>
+      </div>
       <div>
-	      <label class="font-bold">Name
-		      <input type="text" name="name" value="<%=user.name%>" class="border-gray-600 border p-1 w-full" placeholder="name"/>
-	      </label>
+        <%=event.is_private ? "Private": "Public"%> event
       </div>
+      <hr />
+      <div class="mt-2">
+        <%=event.description%>
+      </div>
+    </div>
+    <%if(canSeeInvites){%>
+    <div class="w-1/4 ml-5 p-2 border-l border-gray-300 pl-5">
+      <h3 class="text-lg">Invites</h3>
+      <%["going", "invited", "maybe", "declined"].forEach((status)=>{%>
+      <div class="border-b border-gray-300 pb-4 mt-2">
+        <h4 class="italic">
+          <%=status.charAt(0).toUpperCase() + status.substring(1)%>
+        </h4>
+        <%if(event[status].length){%>
 
-      <div class="mt-3">
-        <fieldset>
-		<legend class="font-lg text-gray-800 mb-1 font-bold" aria-label="RSVP Status">Status</legend>
-          <label class="font-bold cursor-pointer">
-            <span class="">Going</span> <input type="radio" name="rsvp"
-            value="going" <%=_checked(invite.status === "going")%>/>
-          </label>
-          -
-          <label class="font-bold cursor-pointer">
-            <span class="">Maybe</span> <input type="radio" name="rsvp"
-            value="maybe" <%=_checked(invite.status === "maybe")%>/>
-          </label>
-          -
-
-          <label class="font-bold cursor-pointer">
-            <span class="">Not Going</span> <input type="radio" name="rsvp"
-            value="declined" <%=_checked(invite.status === "declined") %>/>
-          </label>
-        </fieldset>
+        <ul class="list-disc pl-4">
+          <%event[status].forEach((invite)=>{%> <%const person = invite.user%>
+          <%const name = person.name || person.email || person.phone%> <%if(name
+          && name.trim()){%>
+          <li><%=name%></li>
+          <%}%> <%})%>
+        </ul>
+        <%} else {%>
+        <p class="ml-5 text-xs text-gray-700">---</p>
+        <%}%>
       </div>
-      <div class="mt-1">
-        <label class="cursor-pointer">
-          Keep my RSVP private <input type="checkbox" name="show_name"
-          <%=_checked(invite.show_name !== true) %> />
-        </label>
-        <p>
-          <span class="text-xs font-bold" data-target="event-detail.privateInfo"
-            >Only the organizer will see your RSVP</span
-          >
-        </p>
-      </div>
-    </form>
+      <%})%>
+    </div>
+    <%}%>
   </div>
-  <%}%> <%if(!event.is_private){%>
-  <div class="mt-2" id="twitter-section" data-turbolinks-permanent>
-    <a
-      href="https://twitter.com/share?ref_src=twsrc%5Etfw"
-      class="twitter-share-button"
-      data-text="<%=event.name%>"
-      data-show-count="false"
-      >Tweet</a
-    ><script
-      async
-      src="https://platform.twitter.com/widgets.js"
-      charset="utf-8"
-      id="twitter-js"
-      data-turbolinks-permanent
-    ></script>
-  </div>
-  <%}%>
-  <div class="mt-2">
-    Created by: <%=event.creator.name%>
-  </div>
-  <div>
-    <%=event.is_private ? "Private": "Public"%> event
-  </div>
-  <hr />
-  <div class="mt-2">
-    <%=event.description%>
-  </div>
-  </div>
-  <%if(canSeeInvites){%>
-  <div class="w-1/4 ml-5 p-2 border-l border-gray-300 pl-5">
-	  <h3 class="text-lg">Invites</h3>
-	  <%["going", "invited", "maybe", "declined"].forEach((status)=>{%>
-	  <div class="border-b border-gray-300 pb-4 mt-2">
-	  <h4 class="italic"><%=status.charAt(0).toUpperCase() + status.substring(1)%></h4>
-	  <%if(event[status].length){%>
-	  
-	  <ul class="list-disc pl-4">
-		  <%event[status].forEach((invite)=>{%>
-		  <%const person = invite.user%>
-		  <%const name = person.name || person.email || person.phone%>
-		  <%if(name && name.trim()){%>
-		  <li><%=name%></li>
-		  <%}%>
-		  <%})%>
-	  </ul>
-	  <%} else {%>
-	  <p class="ml-5 text-xs text-gray-700">---</p>
-	  <%}%>
-	  </div>
-	  <%})%>
-  </div>
-  <%}%>
 </div>
-
- </div>
