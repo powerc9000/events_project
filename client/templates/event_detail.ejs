@@ -11,6 +11,9 @@
       <%}%>
     </div>
   </div>
+  <h2 class="text-lg">
+    <span class="font-bold">Location:</span> <%=event.location%>
+  </h2>
   <div class="text-lg">
     <span
       data-controller="format-date"
@@ -60,7 +63,7 @@
     <div class="mt-2 flex flex-col">
       <label class="font-bold" for="email">
         Email
-      </label>
+      </label09f8fd06-a683-4863-a77d-13e6740c5008>
       <input
         id="email"
         type="text"
@@ -94,6 +97,8 @@
       >
     </div>
   </form>
+  <div class="flex">
+	  <div class="flex-1">
   <%if(invite || !event.is_private){%>
   <div class="mt-2 bg-gray-200 p-2">
     <form
@@ -162,4 +167,31 @@
   <div class="mt-2">
     <%=event.description%>
   </div>
+  </div>
+  <%if(canSeeInvites){%>
+  <div class="w-1/4 ml-5 p-2 border-l border-gray-300 pl-5">
+	  <h3 class="text-lg">Invites</h3>
+	  <%["going", "invited", "maybe", "declined"].forEach((status)=>{%>
+	  <div class="border-b border-gray-300 pb-4 mt-2">
+	  <h4 class="italic"><%=status.charAt(0).toUpperCase() + status.substring(1)%></h4>
+	  <%if(event[status].length){%>
+	  
+	  <ul class="list-disc pl-4">
+		  <%event[status].forEach((invite)=>{%>
+		  <%const person = invite.user%>
+		  <%const name = person.name || person.email || person.phone%>
+		  <%if(name && name.trim()){%>
+		  <li><%=name%></li>
+		  <%}%>
+		  <%})%>
+	  </ul>
+	  <%} else {%>
+	  <p class="ml-5 text-xs text-gray-700">---</p>
+	  <%}%>
+	  </div>
+	  <%})%>
+  </div>
+  <%}%>
 </div>
+
+ </div>
