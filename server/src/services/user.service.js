@@ -105,6 +105,12 @@ async function generateOTP(user) {
   return { session_key: loginCode.id, code };
 }
 
+async function setName(userId, name) {
+  return server.app.db.maybeOne(
+    sql`update users set name=${name} where id=${userId} returning *`
+  );
+}
+
 function init(hapiServer) {
   server = hapiServer;
 }
@@ -115,6 +121,7 @@ module.exports = {
   findUserByPhone,
   findUserByProvider,
   generateOTP,
+  setName,
   findById,
   generateLoginToken,
   createUser,
