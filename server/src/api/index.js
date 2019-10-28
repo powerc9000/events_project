@@ -284,6 +284,10 @@ async function rsvpToEvent(req, h) {
     return Boom.unauthorized();
   }
 
+  if (req.payload.name) {
+    await server.getService("user").setName(user.id, req.payload.name);
+  }
+
   await events.rsvpToEvent(
     req.params.id,
     user.id,

@@ -61,17 +61,23 @@ export default class extends ApplicationController {
     const form = this.targets.find("rsvpForm");
 
     const rsvp = form.rsvp.value;
-    const show_name = form.show_name.checked;
+    const hide_name = form.show_name.checked;
     const eventId = form.eventId.value;
 
     if (!rsvp) {
       return;
     }
 
-    await this.api.Post(`/api/events/${eventId}/rsvp`, {
+    const payload = {
       status: rsvp,
-      show_name: !show_name
-    });
+      show_name: !hide_name
+    };
+
+    if (form.name.value) {
+      payload.name = form.name.value;
+    }
+
+    await this.api.Post(`/api/events/${eventId}/rsvp`, payload);
 
     if (show_name) {
       this.showTarget("privateInfo");
