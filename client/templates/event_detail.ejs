@@ -186,7 +186,9 @@
       </div>
       <hr />
       <div class="mt-2">
-        <%=event.description%>
+        <%(event.description || "").split("\n").forEach((line)=>{%>
+        <p><%=line%></p>
+        <%})%>
       </div>
     </div>
     <%if(canSeeInvites){%>
