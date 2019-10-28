@@ -16,6 +16,6 @@ deploy: prod
 	docker-compose -f docker-compose.live.yml -H "ssh://root@206.189.232.223" up -d
 
 api-logs-live: 
-	docker-compose -f docker-compose.live.yml -H "ssh://root@206.189.232.223" logs -f --tail=20 server
+	docker-compose -f docker-compose.live.yml -H "ssh://root@206.189.232.223" logs -f --tail=200 server
 	
 

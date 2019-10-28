@@ -210,6 +210,7 @@ async function eventDetail(req, h) {
   const isPublic = !event.is_private;
   const isOwner = event.creator.id === userId;
   const canInvite = !event.is_private || isOwner || event.can_invite;
+  const canSeeInvites = canInvite || event.show_participants;
 
   const invite =
     event.invites.find((invite) => {
@@ -221,7 +222,8 @@ async function eventDetail(req, h) {
     title: event.name,
     canEdit: await eventService.canUserEditEvent(userId, event.id),
     invite,
-    canInvite
+    canInvite,
+    canSeeInvites
   });
 }
 
