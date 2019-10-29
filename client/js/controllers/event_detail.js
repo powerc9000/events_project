@@ -58,6 +58,7 @@ export default class extends ApplicationController {
 
   async rsvp(e) {
     e.preventDefault();
+    this.formControl.hide("rsvp");
     const form = this.targets.find("rsvpForm");
 
     const rsvp = form.rsvp.value;
@@ -78,8 +79,8 @@ export default class extends ApplicationController {
     }
 
     await this.api.Post(`/api/events/${eventId}/rsvp`, payload);
-
-    if (show_name) {
+    this.formControl.success("RSVP saved!", "rsvp");
+    if (hide_name) {
       this.showTarget("privateInfo");
     } else {
       this.hideTarget("privateInfo");
