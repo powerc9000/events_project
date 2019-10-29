@@ -16,6 +16,8 @@ export default class extends ApplicationController {
   }
   async sendInvite(e) {
     e.preventDefault();
+
+    this.formControl.hide("invite");
     const form = this.targets.find("inviteForm");
     const name = form.name.value;
     const email = form.email.value;
@@ -48,10 +50,10 @@ export default class extends ApplicationController {
     });
 
     if (res.ok) {
-      this.showTarget("inviteSent");
+      this.formControl.success("Invite Sent!", "invite");
       setTimeout(() => {
-        this.hideTarget("inviteSent");
-      }, 5000);
+        this.formControl.hide("invite");
+      }, 4000);
       form.reset();
     }
   }
