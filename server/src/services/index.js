@@ -5,7 +5,8 @@ const pg = require("pg");
 const services = [
   require("./events.service"),
   require("./user.service"),
-  require("./groups.service")
+  require("./groups.service"),
+  require("./shortlinks.service")
 ];
 
 module.exports = {

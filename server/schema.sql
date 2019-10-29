@@ -147,6 +147,18 @@ CREATE TABLE public.migrations (
 
 
 --
+-- Name: shortlinks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.shortlinks (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    key text NOT NULL,
+    link text NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -237,6 +249,22 @@ ALTER TABLE ONLY public.migrations
 
 ALTER TABLE ONLY public.migrations
     ADD CONSTRAINT migrations_version_key UNIQUE (version);
+
+
+--
+-- Name: shortlinks shortlinks_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shortlinks
+    ADD CONSTRAINT shortlinks_key_key UNIQUE (key);
+
+
+--
+-- Name: shortlinks shortlinks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.shortlinks
+    ADD CONSTRAINT shortlinks_pkey PRIMARY KEY (id);
 
 
 --

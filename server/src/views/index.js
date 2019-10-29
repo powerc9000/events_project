@@ -124,8 +124,26 @@ module.exports = {
       path: "/groups/{idOrCustom}",
       handler: groupDetail
     });
+
+    server.route({
+      method: "GET",
+      path: "/s/{id}",
+      handler: shortLink
+    });
   }
 };
+
+async function shortLink(req, h) {
+  const key = req.params.id;
+
+  const link = await server.getService("shortlinks").findByKey(key);
+
+  if (!link) {
+    return "NOT FOUND";
+  } else {
+    return h.redirect(link.link);
+  }
+}
 
 async function createGroup(req, h) {
   return h.layout("create_group");
