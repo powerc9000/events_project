@@ -45,6 +45,9 @@
     data-target="event-detail.inviteForm"
     data-action="event-detail#sendInvite"
   >
+    <div class="my-2">
+      <%-include("partials/form_messages", {id:"invite"})%>
+    </div>
     <input type="hidden" name="eventId" value="<%=event.id%>" />
     <div class="flex flex-col">
       <label class="font-bold" for="name">
@@ -92,9 +95,6 @@
       <button class="p-1 bg-black text-white hover:underline" type="submit">
         Invite
       </button>
-      <span class="hidden" data-target="event-detail.inviteSent"
-        >Invite sent!</span
-      >
     </div>
   </form>
   <div class="flex">
