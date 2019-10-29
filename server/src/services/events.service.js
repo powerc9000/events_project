@@ -361,16 +361,10 @@ async function rsvpToEvent(eventId, userId, status, show_name) {
     return;
   }
 
-  if (invite) {
-    await server.app.db.query(
-      sql`UPDATE invites set status = ${status}, show_name = ${show_name} where id=${invite.id}`
-    );
-  }
-
-  //Create an invite
+  //Create or update an invite
   const key = crypto.randomBytes(16).toString("hex");
   await server.app.db.query(
-    sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name) values (${userId}, ${eventId}, ${key}, ${status}, ${show_name})`
+    sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name) values (${userId}, ${eventId}, ${key}, ${status}, ${show_name}) ON CONFLICT (user_id, event_id) DO UPDATE set status = ${status}, show_name = ${show_name}`
   );
 }
 
