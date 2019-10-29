@@ -22,9 +22,14 @@ module.exports = (server) => async (job) => {
     const user = data.user;
     if (user.phone) {
       try {
+        const shortlink = await server
+          .getService("shortlinks")
+          .create(data.link);
+
+        const link = `https://junipercity.com/s/${shortlink.key}`;
         const res = await sendText(
           user.phone,
-          `You have been invited to an event on Juniper City: ${data.link}`
+          `You have been invited to an event on Juniper City: ${link}`
         );
         console.log(res);
       } catch (e) {
