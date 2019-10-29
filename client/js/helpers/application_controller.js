@@ -49,19 +49,20 @@ function clearCache() {
   turbolinks.clearCache();
 }
 
-function success(text) {
+function success(text, id) {
   const event = new CustomEvent("form:success", {
-    detail: { message: text, id: this.data.get("formId") }
+    bubbles: true,
+    detail: { message: text, id }
   });
-  document.dispatchEvent(event);
+  this.element.dispatchEvent(event);
 }
 
-function error(text) {
+function error(text, id) {
   const event = new CustomEvent("form:error", {
-    detail: { message: text, id: this.data.get("formId") }
+    detail: { message: text, id }
   });
 
-  document.dispatchEvent(event);
+  this.element.dispatchEvent(event);
 }
 
 class ApplicationController extends Controller {
@@ -112,8 +113,13 @@ class ApplicationController extends Controller {
       success.call(this, ...args);
     },
     error: (...args) => {
-      console.log(args);
       error.call(this, ...args);
+    },
+    hide: (id) => {
+      const event = new CustomEvent("form:hide", {
+        detail: { id }
+      });
+      document.dispatchEvent(event);
     }
   };
   page = {
