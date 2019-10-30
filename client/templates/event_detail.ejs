@@ -99,7 +99,7 @@
   </form>
   <div class="flex">
     <div class="flex-1">
-      <%if(invite || !event.is_private){%>
+      <%if((invite || !event.is_private) && user){%>
       <div class="mt-2 bg-gray-200 p-2">
         <form
           data-target="event-detail.rsvpForm"
@@ -113,14 +113,9 @@
           <input type="hidden" name="eventId" value="<%=event.id%>" />
           <div>
             <label class="font-bold"
-              >Name
-              <input
-                type="text"
-                name="name"
-                value="<%=user.name%>"
-                class="border-gray-600 border p-1 w-full"
-                placeholder="name"
-              />
+              >Name <input type="text" name="name" value="<%=locals.user ?
+              user.name : ""%>" class="border-gray-600 border p-1 w-full"
+              placeholder="name" />
             </label>
           </div>
 
