@@ -229,8 +229,7 @@ async function eventDetail(req, h) {
 
   const isPublic = !event.is_private;
   const isOwner = event.creator.id === userId;
-  const canInvite =
-    (!event.is_private || isOwner || event.can_invite) && userId;
+  const canInvite = await eventService.canInviteToEvent(event.id, userId);
   const canSeeInvites = canInvite || event.show_participants;
 
   const invite =
