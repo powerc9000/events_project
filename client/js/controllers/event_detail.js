@@ -97,6 +97,7 @@ export default class extends ApplicationController {
     const res = await this.api.Post(`/api/invites/${invite}/resend`);
 
     if (res.ok) {
+      this.formControl.success("Invite Resent!", "resend");
     }
   }
 

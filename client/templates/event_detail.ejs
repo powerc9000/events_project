@@ -97,7 +97,7 @@
       </button>
     </div>
   </form>
-  <div class="flex">
+  <div class="sm:flex">
     <div class="flex-1">
       <%if((invite || !event.is_private) && user){%>
       <div class="mt-2 bg-gray-200 p-2">
@@ -190,7 +190,10 @@
       </div>
     </div>
     <%if(canSeeInvites){%>
-    <div class="w-1/4 ml-5 p-2 border-l border-gray-300 pl-5">
+    <div
+      class="sm:w-1/4 sm:ml-5 p-2 sm:border-l border-gray-300 sm:pl-5 mt-5 sm:mt-0"
+    >
+      <%-include("partials/form_messages", {id: "resend"} )%>
       <h3 class="text-lg">Invites</h3>
       <%["going", "invited", "maybe", "declined"].forEach((status)=>{%>
       <div class="border-b border-gray-300 pb-4 mt-2">

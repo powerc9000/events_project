@@ -203,6 +203,8 @@ async function resendInvite(req, h) {
   }
 
   await events.resendInvite(invite.id);
+
+  return h.response().code(204);
 }
 
 async function editEvent(req, h) {
