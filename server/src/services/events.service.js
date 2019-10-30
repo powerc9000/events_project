@@ -263,6 +263,29 @@ async function inviteUsersToEvent(eventId, users) {
   });
 }
 
+async function resendInvite(inviteId) {
+  const invite = await server.app.db.maybeOne(
+    sql`select * from invites where id=${inviteId}`
+  );
+  if (!invite) {
+    return;
+  }
+
+  const event = await server.app.db.maybeOne(
+    sql`select * from events where id=${invite.event_id}`
+  );
+
+  const user = await server.app.db.maybeOne(
+    sql`select * from users where id = ${invite.user_id}`
+  );
+  server.createTask("invite-user-to-event", {
+    event,
+    invite,
+    link: `https://junipercity.com/events/${event.slug}?invite_key=${invite.invite_key}`,
+    user
+  });
+}
+
 async function createEvent(user, event) {
   const user_id = user.id;
   const id = crypto.randomBytes(4).toString("hex");
@@ -413,6 +436,12 @@ async function editEvent(eventId, payload) {
   );
 }
 
+async function getInvite(inviteId) {
+  return server.app.db.maybeOne(
+    sql`Select * from invites where id=${inviteId}`
+  );
+}
+
 function init(hapiServer) {
   server = hapiServer;
   //set up database
@@ -433,6 +462,8 @@ module.exports = {
   canCreateForGroup,
   init,
   getEventById,
+  getInvite,
   getGroupEventsForUser,
+  resendInvite,
   name: "events"
 };
