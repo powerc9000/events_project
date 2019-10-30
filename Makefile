@@ -6,8 +6,10 @@ dev: dev-up api-logs
 
 login: 
 	docker login registry.gitlab.com
-prod: login
+client-prod:
+	rm -rf client/build
 	cd client && make prod
+prod: login client-prod
 	docker build -t registry.gitlab.com/dropconfig/events .
 	docker push registry.gitlab.com/dropconfig/events
 
