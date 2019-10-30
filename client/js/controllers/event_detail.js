@@ -89,6 +89,17 @@ export default class extends ApplicationController {
     }
   }
 
+  async resend(e) {
+    const target = e.target;
+
+    const invite = target.dataset.id;
+
+    const res = await this.api.Post(`/api/invites/${invite}/resend`);
+
+    if (res.ok) {
+    }
+  }
+
   disconnect() {
     this.hideTarget("inviteSent");
   }

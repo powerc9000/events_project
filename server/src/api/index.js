@@ -170,8 +170,40 @@ module.exports = {
         }
       }
     });
+
+    server.route({
+      method: "POST",
+      path: "/invites/{id}/resend",
+      handler: resendInvite
+    });
   }
 };
+
+async function resendInvite(req, h) {
+  const user = req.app.user;
+  const events = server.getService("events");
+
+  if (!user) {
+    return Boom.unauthorized();
+  }
+
+  const invite = await events.getInvite(req.params.id);
+
+  if (!invite) {
+    return Boom.notFound();
+  }
+
+  const canInvite = await events.canInviteToEvent(
+    invite.event_id,
+    req.app.user.id
+  );
+
+  if (!canInvite) {
+    return Boom.unauthorized();
+  }
+
+  await events.resendInvite(invite.id);
+}
 
 async function editEvent(req, h) {
   const eventService = server.getService("events");

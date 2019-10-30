@@ -203,7 +203,18 @@
           <%event[status].forEach((invite)=>{%> <%const person = invite.user%>
           <%const name = person.name || person.email || person.phone%> <%if(name
           && name.trim()){%>
-          <li><%=name%></li>
+          <li>
+            <span><%=name%></span>
+            <%if(canInvite){%>
+            <button
+              class="text-blue-500 hover:underline"
+              data-id="<%=invite.id%>"
+              data-action="event-detail#resend"
+            >
+              Resend Invite
+            </button>
+            <%}%>
+          </li>
           <%}%> <%})%>
         </ul>
         <%} else {%>
