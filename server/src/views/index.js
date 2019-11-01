@@ -6,11 +6,16 @@ const path = require("path");
 const fns = require("date-fns");
 const util = require("util");
 const fs = require("fs");
-const md = require("markdown-it")();
+const anchor = require("markdown-it-anchor");
+const footnote = require("markdown-it-footnote");
+const md = require("markdown-it")({ html: true });
 
 const readFile = util.promisify(fs.readFile);
 
 let server;
+
+md.use(anchor);
+md.use(footnote);
 
 module.exports = {
   name: "views",
@@ -155,7 +160,7 @@ async function renderHelp(req, h) {
   try {
     const base = path.join(__dirname, "../../../", "templates", "help");
     let name = `${req.params.page}.md`;
-    if (req.params.page) {
+    if (!req.params.page) {
       name = "index.md";
     }
     const page = await readFile(path.join(base, name));

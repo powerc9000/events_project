@@ -24,6 +24,8 @@
     "lodash": "^4.17.15",
     "login-with-twitter": "^1.2.2",
     "markdown-it": "^10.0.0",
+    "markdown-it-anchor": "^5.2.5",
+    "markdown-it-footnote": "^3.0.2",
     "mjml": "^4.5.1",
     "mustache": "^3.1.0",
     "node-fetch": "^2.6.0",
