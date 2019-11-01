@@ -79,4 +79,6 @@ footer {
     margin-left: 15px;
 }
 
+@import url("./md.css");
+
 @tailwind utilities;

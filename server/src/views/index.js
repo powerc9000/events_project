@@ -4,6 +4,11 @@ const inert = require("@hapi/inert");
 const ejs = require("ejs");
 const path = require("path");
 const fns = require("date-fns");
+const util = require("util");
+const fs = require("fs");
+const md = require("markdown-it")();
+
+const readFile = util.promisify(fs.readFile);
 
 let server;
 
@@ -137,8 +142,30 @@ module.exports = {
       path: "/s/{id}",
       handler: shortLink
     });
+
+    server.route({
+      method: "GET",
+      path: "/help/{page?}",
+      handler: renderHelp
+    });
   }
 };
+
+async function renderHelp(req, h) {
+  try {
+    const base = path.join(__dirname, "../../../", "templates", "help");
+    let name = `${req.params.page}.md`;
+    if (req.params.page) {
+      name = "index.md";
+    }
+    const page = await readFile(path.join(base, name));
+    const html = md.render(page.toString());
+    return h.view("layout", { content: html });
+  } catch (e) {
+    console.log(e);
+    return "NOT FOUND";
+  }
+}
 
 async function shortLink(req, h) {
   const key = req.params.id;

@@ -12,7 +12,7 @@
   </head>
   <body>
     <%-include("partials/header")%>
-    <main class="content"><%-include(__body)%></main>
+    <main class="content <%=_className("md", locals.content)%>"><%-locals.__body? include(__body): content%></main>
     <%-include("partials/footer")%> <%-include("partials/tracking")%>
   </body>
 </html>
