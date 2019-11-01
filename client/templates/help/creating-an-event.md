@@ -17,9 +17,9 @@ You can optionally attach the event to a group are a member of. You also must be
 
 ## Private
 
-Check this box if you would like to keep your group private.
+Check this box if you would like to keep your event private.
 
-[Learn more about public vs private groups here.](/help/public-v-private-groups)
+[Learn more about public vs private events here.](/help/public-v-private-events)
 
 ## Show participants
 You can select this option if you want people who RSVP'd to this event to be visible to anyone who can see this event.^[People who RSVP privately won't show up to anyone but you]
