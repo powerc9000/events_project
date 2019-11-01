@@ -1,7 +1,42 @@
 .md {
 	@apply mx-auto;
-	max-width:1200px;
-	h3 {
-		@apply text-2xl;
+	width:100%;
+	h1 {
+		@apply text-2xl font-bold;
 	}
+	h3 {
+		@apply text-xl;
+	}
+	a {
+		@apply underline text-blue-500;
+	}
+	.main-nav {
+		@apply text-lg;
+	}
+	ul {
+		@apply list-disc list-inside pl-4;
+		ul {
+			list-style-type: circle;
+		}
+	}
+	p {
+		@apply my-2;
+	}
+
+	h2 {
+		@apply text-xl font-bold;
+	}
+}
+
+@screen sm {
+    .md { max-width: theme('screens.sm'); }
+}
+@screen md {
+    .md { max-width: theme('screens.md'); }
+}
+@screen lg {
+    .md { max-width: theme('screens.lg'); }
+}
+@screen xl {
+    .md { max-width: theme('screens.xl'); }
 }
