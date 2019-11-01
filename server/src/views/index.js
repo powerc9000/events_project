@@ -22,6 +22,13 @@ module.exports = {
         NODE_ENV: process.env.NODE_ENV,
         date: fns,
         user: req.app.user,
+        _className: (name, condition) => {
+          if (condition) {
+            return name;
+          } else {
+            return "";
+          }
+        },
         _boolAttr: (name, value) => {
           if (value) {
             return name;

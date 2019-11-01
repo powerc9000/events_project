@@ -57,6 +57,12 @@ export default class extends ApplicationController {
       form.reset();
     }
   }
+  async changeRSVP(e) {
+    e.preventDefault(e);
+
+    this.hideTarget("hasRSVP");
+    this.showTarget("rsvpForm");
+  }
 
   async rsvp(e) {
     e.preventDefault();
@@ -82,6 +88,8 @@ export default class extends ApplicationController {
 
     await this.api.Post(`/api/events/${eventId}/rsvp`, payload);
     this.formControl.success("RSVP saved!", "rsvp");
+    this.page.reload();
+    this.hideTarget("rsvpForm");
     if (hide_name) {
       this.showTarget("privateInfo");
     } else {
