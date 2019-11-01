@@ -1,3 +1,5 @@
+[&lt; Back to events help](/help/events)
+
 # Public and private events
 
 When you create an event you are able to choose whether to make the event public or private. 
