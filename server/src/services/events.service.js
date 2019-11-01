@@ -357,7 +357,7 @@ async function canRSVPToEvent(eventId, userId) {
     return false;
   }
 
-  const isOwner = event.owner === userId;
+  const isOwner = event.creator === userId;
 
   const isInvited = invites.find((invite) => {
     return invite.user_id === userId;

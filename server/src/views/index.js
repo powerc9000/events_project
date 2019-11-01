@@ -242,7 +242,7 @@ async function eventDetail(req, h) {
   const invite =
     event.invites.find((invite) => {
       return invite.user_id === userId;
-    }) || {};
+    }) || false;
 
   return h.layout("event_detail", {
     ...viewData,
@@ -250,8 +250,10 @@ async function eventDetail(req, h) {
     title: event.name,
     canEdit: await eventService.canUserEditEvent(userId, event.id),
     invite,
+    canRSVP: await eventService.canRSVPToEvent(event.id, userId),
     canInvite,
-    canSeeInvites
+    canSeeInvites,
+    isCreator: event.creator.id === userId
   });
 }
 

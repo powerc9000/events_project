@@ -5,7 +5,7 @@
       <%if(canEdit){%>
       <a
         href="/events/<%=event.slug%>/edit"
-        class="underline hover:text-gray-600"
+        class="text-blue-500 hover:underline"
         >Edit</a
       >
       <%}%>
@@ -99,17 +99,17 @@
   </form>
   <div class="sm:flex">
     <div class="flex-1">
-      <%if((invite || !event.is_private) && user){%>
+      <%if(canRSVP){%>
 
       <div class="my-2" id="rsvp-message" data-turbolinks-permanent>
 	      <%-include("partials/form_messages", {id:"rsvp"})%>
       </div>
-      <div class="<%=_className("hidden", invite.status === "invited")%>" data-target="event-detail.hasRSVP">
+      <div class="<%=_className("hidden", !invite.status || invite.status === "invited")%>" data-target="event-detail.hasRSVP">
 	You RSVP'd as <%=invite.status%> - <button class="hover:underline text-blue-500" data-action="event-detail#changeRSVP">Change</button>
       </div>
         <form
           data-target="event-detail.rsvpForm"
-	  class="mt-2 bg-gray-200 p-2 <%=_className("hidden", invite.status !== "invited")%>"
+	  class="mt-2 bg-gray-200 p-2 <%=_className("hidden", invite.status && invite.status !== "invited")%>"
           data-action="change->event-detail#rsvp"
           autocomplete="off"
         >
@@ -151,7 +151,8 @@
           <div class="mt-1">
             <label class="cursor-pointer">
               Keep my RSVP private <input type="checkbox" name="show_name"
-              <%=_checked(invite.show_name !== true) %> />
+	      <%=_checked(invite && invite.status !== "invited" ? !invite.show_name : !event.is_private) %>
+              />
             </label>
             <p>
               <span
@@ -186,7 +187,7 @@
 	      <p>
         <%=event.is_private ? "Private": "Public"%> event
 	      </p>
-	      <%if(user.id === event.creator.id){%>
+	      <%if(isCreator){%>
 	      <p class="mt-1 mb-1">
 	      <span class="bg-yellow-400 p-1 text-xs text-yellow-900 font-bold">
 	<%if(event.is_private){%>
