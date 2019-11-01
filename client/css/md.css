@@ -19,6 +19,9 @@
 			list-style-type: circle;
 		}
 	}
+	ol {
+		@apply list-decimal pl-4;
+	}
 	p {
 		@apply my-2;
 	}
@@ -26,6 +29,7 @@
 	h2 {
 		@apply text-xl font-bold;
 	}
+
 }
 
 @screen sm {

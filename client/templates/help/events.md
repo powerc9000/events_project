@@ -1,3 +1,5 @@
+[&lt; Back to Help](/help)
+
 # Events
 
 Events are the core part of Juniper City.
