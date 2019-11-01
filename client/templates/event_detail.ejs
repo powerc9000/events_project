@@ -214,9 +214,11 @@
         <%if(event[status].length){%>
 	
         <ul class="list-disc pl-4">
+
+	  <%let statusCount = 0%>
           <%event[status].forEach((invite)=>{%> <%const person = invite.user%>
           <%const name = person.name || person.email || person.phone%> <%if(name
-          && name.trim()){%>
+          && name.trim() && (invite.show_name || isCreator || invite.user.id === user.id)){%>
           <li>
             <span><%=name%></span>
             <%if(canInvite){%>
@@ -227,9 +229,13 @@
             >
               Resend Invite
             </button>
-            <%}%>
+	    <%}%>
           </li>
-          <%}%> <%})%>
+	    <%} else if(!invite.show_name && !isCreator){statusCount++}%>
+	  <%})%>
+	  <%if(statusCount){%>
+	  +<%=statusCount%> more people
+	  <%}%>
         </ul>
         <%} else {%>
         <p class="ml-5 text-xs text-gray-700">---</p>
