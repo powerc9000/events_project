@@ -24,12 +24,6 @@
   </div>
 
   <div class="mt-2">
-    <span class="p-1 bg-green-500 mr-2">
-      <%=event.going.length%> Attending
-    </span>
-    <span class="p-1 bg-gray-300 mr-2">
-      <%=event.invited.length%> Invited
-    </span>
     <%if(canInvite){%>
     <button
       href="#"
@@ -206,7 +200,6 @@
         <%})%>
       </div>
     </div>
-    <%if(canSeeInvites){%>
     <div
       class="sm:w-1/4 sm:ml-5 p-2 sm:border-l border-gray-300 sm:pl-5 mt-5 sm:mt-0"
     >
@@ -217,8 +210,9 @@
         <h4 class="italic">
           <%=status.charAt(0).toUpperCase() + status.substring(1)%>
         </h4>
+	<%if(canSeeInvites){%>
         <%if(event[status].length){%>
-
+	
         <ul class="list-disc pl-4">
           <%event[status].forEach((invite)=>{%> <%const person = invite.user%>
           <%const name = person.name || person.email || person.phone%> <%if(name
@@ -240,9 +234,11 @@
         <%} else {%>
         <p class="ml-5 text-xs text-gray-700">---</p>
         <%}%>
+	<%} else {%>
+	<%=event[status].length%> People
+	<%}%>
       </div>
       <%})%>
     </div>
-    <%}%>
   </div>
 </div>
