@@ -12,10 +12,7 @@ async function start() {
     port: 8000,
     host: "0.0.0.0",
     routes: {
-      cors: {
-        origin: ["*"],
-        credentials: true
-      },
+      cors: false,
       response: {
         failAction: "log"
       },
@@ -72,7 +69,7 @@ async function start() {
     ttl: _2Weeks,
     isSecure: false, //This server will never be listening on https the load balancer will handle that
     isHttpOnly: true,
-    isSameSite: false,
+    isSameSite: "Lax",
     path: "/",
     encoding: "base64json",
     clearInvalid: false, // remove invalid cookies
