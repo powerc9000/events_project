@@ -1,0 +1,7 @@
+.md {
+	@apply mx-auto;
+	max-width:1200px;
+	h3 {
+		@apply text-2xl;
+	}
+}
