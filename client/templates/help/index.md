@@ -12,6 +12,10 @@ If you can't find your answers here don't hesitate to email us at [friends@junip
 	* [Public vs private events](/help/public-v-private-events)
 	* [Inviting People](/help/inviting-people-to-event)
 	* [RSVPing to an event](/help/rsvping)
+	* [Hiding attendees](/help/hiding-event-attendees)
+	* [Allow others to invite](/help/allow-others-to-invite)
 * [Groups](/help/groups)
-	* [Adding people to your group](/help/adding-to-groups)
+	* [Create a group](/help/groups#creating-a-group)
+	* [Public vs Private Groups](/help/groups#public-and-private-groups)
+	* [Adding people to your group](/help/groups#adding-people-to-your-group)
 </div>

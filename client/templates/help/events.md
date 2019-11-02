@@ -14,5 +14,7 @@ We are doing are best to make them easy to use an manage!
 * [Public vs private events](/help/public-v-private-events)
 * [Inviting People](/help/inviting-people-to-event)
 * [RSVPing to an event](/help/rsvping)
+* [Hiding attendees](/help/hiding-event-attendees)
+* [Allow others to invite](/help/allow-others-to-invite)
 
 </div>

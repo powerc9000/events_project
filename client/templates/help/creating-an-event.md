@@ -24,7 +24,7 @@ Check this box if you would like to keep your event private.
 ## Show participants
 You can select this option if you want people who RSVP'd to this event to be visible to anyone who can see this event.^[People who RSVP privately won't show up to anyone but you]
 
-[Learn more about showing participants here.](/help/hiding-attendees)
+[Learn more about showing participants here.](/help/hiding-event-attendees)
 
 
 ## Allow Comments
