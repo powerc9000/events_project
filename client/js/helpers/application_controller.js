@@ -57,13 +57,7 @@ function success(text, id) {
   this.element.dispatchEvent(event);
 }
 
-function error(text, id) {
-  const event = new CustomEvent("form:error", {
-    detail: { message: text, id }
-  });
-
-  this.element.dispatchEvent(event);
-}
+function error(text, id) {}
 
 class ApplicationController extends Controller {
   disableButton(targetName) {
@@ -110,16 +104,20 @@ class ApplicationController extends Controller {
 
   formControl = {
     success: (...args) => {
-      success.call(this, ...args);
+      this.formControl.dispatch("form:success", ...args);
     },
     error: (...args) => {
-      error.call(this, ...args);
+      this.formControl.dispatch("form:error", ...args);
     },
     hide: (id) => {
-      const event = new CustomEvent("form:hide", {
-        detail: { id }
+      this.formControl.dispatch("form:hide", null, id);
+    },
+    dispatch: (type, message, id, ignoreHide = false) => {
+      const event = new CustomEvent(type, {
+        bubbles: true,
+        detail: { message, id, ignoreHide }
       });
-      document.dispatchEvent(event);
+      this.element.dispatchEvent(event);
     }
   };
   page = {

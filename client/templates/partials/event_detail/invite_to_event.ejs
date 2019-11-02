@@ -2,7 +2,7 @@
   <%if(canInvite){%>
   <button
     data-target="event-detail.canInviteButton"
-    class="rounded-lg bg-green-300 hover:bg-green-400 p-1 px-2"
+    class="btn btn-green"
     data-action="event-detail#toggleInviteForm"
   >
     Invite People
@@ -13,10 +13,10 @@
 <form
   class="hidden mt-4 bg-gray-100  border border-gray-400 p-4"
   data-target="event-detail.inviteForm"
-  data-action="event-detail#sendInvite reset->event-detail#toggleInviteForm"
+  data-action="event-detail#sendInvite reset->event-detail#toggleInviteForm input->event-detail#inviteChange"
 >
   <div class="my-2">
-    <%-include("partials/form_messages", {id:"invite"})%>
+    <%-include("partials/form_messages", {id:"invite", autoHide: 4000})%>
   </div>
   <input type="hidden" name="eventId" value="<%=event.id%>" />
   <div class="flex flex-col">
@@ -62,10 +62,7 @@
   </p>
 
   <div class="mt-2">
-    <button
-      class="p-1 bg-black text-white hover:underline border hover:border-white"
-      type="submit"
-    >
+    <button class="btn btn-green" type="submit">
       Invite
     </button>
     <button
