@@ -110,22 +110,6 @@
           </button>
         </div>
       </form>
-      <%}%> <%if(!event.is_private){%>
-      <div class="mt-2" id="twitter-section" data-turbolinks-permanent>
-        <a
-          href="https://twitter.com/share?ref_src=twsrc%5Etfw"
-          class="twitter-share-button"
-          data-text="<%=event.name%>"
-          data-show-count="false"
-          >Tweet</a
-        ><script
-          async
-          src="https://platform.twitter.com/widgets.js"
-          charset="utf-8"
-          id="twitter-js"
-          data-turbolinks-permanent
-        ></script>
-      </div>
       <%}%>
       <div class="mt-2">
         Created by: <%=event.creator.name%>
@@ -134,7 +118,23 @@
         <p>
           <%=event.is_private ? "Private": "Public"%> event
         </p>
-        <%if(isCreator){%>
+        <%if(!event.is_private){%>
+        <div class="my-1" id="twitter-section" data-turbolinks-permanent>
+          <a
+            href="https://twitter.com/share?ref_src=twsrc%5Etfw"
+            class="twitter-share-button"
+            data-text="<%=event.name%>"
+            data-show-count="false"
+            >Tweet</a
+          ><script
+            async
+            src="https://platform.twitter.com/widgets.js"
+            charset="utf-8"
+            id="twitter-js"
+            data-turbolinks-permanent
+          ></script>
+        </div>
+        <%}%> <%if(isCreator){%>
         <p class="mt-1 mb-1">
           <span class="bg-yellow-400 p-1 text-xs text-yellow-900 font-bold">
             <%if(event.is_private){%> This event is private. Only you and the
@@ -144,6 +144,7 @@
         </p>
         <%}%>
       </div>
+
       <hr />
       <div class="mt-2 md mb-2">
         <details open>
