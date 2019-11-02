@@ -81,6 +81,16 @@ footer {
     margin-left: 15px;
 }
 
+.btn {
+	@apply rounded-lg p-1 px-2;
+	&.btn-green {
+		@apply bg-green-300 border border-green-600;
+		&:hover {
+			@apply bg-green-400 border border-green-800;
+		}
+	}
+}
+
 @import url("./md.css");
 
 @tailwind utilities;

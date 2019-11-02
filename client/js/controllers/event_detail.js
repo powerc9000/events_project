@@ -15,6 +15,17 @@ export default class extends ApplicationController {
     this.toggleTarget("inviteForm");
     this.toggleTarget("canInviteButton");
   }
+  async inviteChange(e) {
+    const form = this.targets.find("inviteForm");
+    const email = form.email.value;
+    const phone = form.phone.value;
+
+    if (email || phone) {
+      form.email.setCustomValidity("");
+      form.phone.setCustomValidity("");
+      form.reportValidity(true);
+    }
+  }
   async sendInvite(e) {
     e.preventDefault();
 
@@ -41,7 +52,13 @@ export default class extends ApplicationController {
       form.email.setCustomValidity("Email or Phone is required");
       form.phone.setCustomValidity("Email or Phone is required");
 
+      this.formControl.error("Email or Phone is required", "invite", true);
+
       return;
+    } else {
+      form.email.setCustomValidity("");
+      form.phone.setCustomValidity("");
+      form.reportValidity(true);
     }
 
     const eventId = form.eventId.value;
@@ -52,10 +69,9 @@ export default class extends ApplicationController {
 
     if (res.ok) {
       this.formControl.success("Invite Sent!", "invite");
-      setTimeout(() => {
-        this.formControl.hide("invite");
-      }, 4000);
-      form.reset();
+      form.name.value = "";
+      form.email.value = "";
+      form.phone.value = "";
     }
   }
   async changeRSVP(e) {
