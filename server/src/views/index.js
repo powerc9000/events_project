@@ -8,7 +8,9 @@ const util = require("util");
 const fs = require("fs");
 const anchor = require("markdown-it-anchor");
 const footnote = require("markdown-it-footnote");
-const md = require("markdown-it")({ html: true });
+const markdown = require("markdown-it");
+const md = markdown({ html: true });
+const mdSafe = markdown();
 
 const readFile = util.promisify(fs.readFile);
 
@@ -285,7 +287,8 @@ async function eventDetail(req, h) {
     canRSVP: await eventService.canRSVPToEvent(event.id, userId),
     canInvite,
     canSeeInvites,
-    isCreator: event.creator.id === userId
+    isCreator: event.creator.id === userId,
+    mdDescription: mdSafe.render(event.description || "")
   });
 }
 
