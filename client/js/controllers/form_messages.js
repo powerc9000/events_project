@@ -1,11 +1,7 @@
 import { ApplicationController } from "../helpers/application_controller";
 
 export default class extends ApplicationController {
-  connect() {
-    document.addEventListener("form:success", this.success);
-    document.addEventListener("form:error", this.error);
-    document.addEventListener("form:hide", this.hide);
-  }
+  connect() {}
 
   success = (event) => {
     const data = event.detail;
@@ -32,9 +28,5 @@ export default class extends ApplicationController {
     }
   };
 
-  disconnect() {
-    document.removeEventListener("form:hide", this.hide);
-    document.removeEventListener("form:success", this.success);
-    document.removeEventListener("form:error", this.error);
-  }
+  disconnect() {}
 }

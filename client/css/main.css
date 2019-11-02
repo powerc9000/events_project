@@ -2,7 +2,9 @@
 
 @tailwind components;
 
-
+html {
+	@apply h-full;
+}
 body {
 	font-family: monospace;
 	@apply flex flex-col h-full;
