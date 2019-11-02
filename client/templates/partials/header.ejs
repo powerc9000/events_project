@@ -3,18 +3,20 @@
     class="container mx-auto py-2 flex justify-between items-center p-4 sm:p-none"
   >
     <div class="flex items-center">
-      <p class="mr-8">
-        <a href="/" class="underline font-bold text-lg">Juniper City</a>
+      <p class="mr-8 whitespace-no-wrap">
+        <a href="/" class="underline font-bold text-md  sm:text-lg"
+          >Juniper City</a
+        >
       </p>
 
       <p></p>
       <ul class="flex items-center">
         <%if(loggedIn){%>
         <li class="border-l border-black px-2">
-          <a href="/create" class="text-lg hover:underline">Create Event</a>
+          <a href="/create" class="sm:text-lg hover:underline">Create Event</a>
         </li>
         <li class="pl-2 border-l border-black">
-          <a href="/groups" class="text-lg hover:underline">Groups</a>
+          <a href="/groups" class="sm:text-lg hover:underline">Groups</a>
         </li>
 
         <%}%>
