@@ -13,6 +13,7 @@ export default class extends ApplicationController {
   }
   toggleInviteForm() {
     this.toggleTarget("inviteForm");
+    this.toggleTarget("canInviteButton");
   }
   async sendInvite(e) {
     e.preventDefault();

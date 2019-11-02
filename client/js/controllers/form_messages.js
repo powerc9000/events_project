@@ -1,8 +1,6 @@
 import { ApplicationController } from "../helpers/application_controller";
 
 export default class extends ApplicationController {
-  connect() {}
-
   success = (event) => {
     const data = event.detail;
     if (data.id === this.data.get("formId")) {
@@ -27,6 +25,4 @@ export default class extends ApplicationController {
       this.hideTarget("success");
     }
   };
-
-  disconnect() {}
 }

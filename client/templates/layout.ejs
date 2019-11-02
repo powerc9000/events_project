@@ -2,7 +2,11 @@
 <html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+    <meta
+      content="<%= locals.title ? `${title} | `: ''%>Juniper City"
+      property="og:title"
+    />
+    <meta property="og:image" content="/static/img/link_preview.png" />
     <title>
       <%=locals.title ? `${title} | `: ""%>Juniper City
     </title>
@@ -10,6 +14,10 @@
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
     />
     <script src="/static/js/index.js"></script>
   </head>
