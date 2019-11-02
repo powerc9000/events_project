@@ -167,7 +167,7 @@ async function renderHelp(req, h) {
     }
     const page = await readFile(path.join(base, name));
     const html = md.render(page.toString());
-    return h.view("layout", { content: html });
+    return h.view("layout", { __content: html });
   } catch (e) {
     console.log(e);
     return "NOT FOUND";
