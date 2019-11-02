@@ -76,9 +76,12 @@ export default class extends ApplicationController {
   }
   async changeRSVP(e) {
     e.preventDefault(e);
+    this.toggleRSVP();
+  }
 
-    this.hideTarget("hasRSVP");
-    this.showTarget("rsvpForm");
+  toggleRSVP() {
+    this.toggleTarget("hasRSVP");
+    this.toggleTarget("rsvpForm");
   }
 
   async rsvp(e) {

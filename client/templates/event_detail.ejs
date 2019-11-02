@@ -47,7 +47,7 @@
       <form
         data-target="event-detail.rsvpForm"
         class="mt-2 bg-gray-200 p-2 <%=_className('hidden', invite.status && invite.status !== 'invited')%>"
-        data-action="change->event-detail#rsvp"
+        data-action="change->event-detail#rsvp reset->event-detail#toggleRSVP"
         autocomplete="off"
       >
         <h4 class="text-lg font-bold">RSVP</h4>
@@ -98,6 +98,14 @@
               >Only the organizer will see your RSVP</span
             >
           </p>
+        </div>
+        <div>
+          <button
+            type="reset"
+            class="btn btn-white <%=_className('hidden', !invite.status || invite.status === 'invited')%>"
+          >
+            Cancel
+          </button>
         </div>
       </form>
       <%}%> <%if(!event.is_private){%>

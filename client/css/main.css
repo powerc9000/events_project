@@ -89,6 +89,12 @@ footer {
 			@apply bg-green-400 border border-green-800;
 		}
 	}
+	&.btn-white {
+		@apply bg-white border border-gray-600;
+		&:hover {
+			@apply bg-gray-100 border border-gray-900;
+		}
+	}
 }
 
 @import url("./md.css");
