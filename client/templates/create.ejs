@@ -22,8 +22,14 @@
 				</div>
 				<div class="mt-2">
 					<label class="font-bold">
-						Event Description
+						Event Description 
 						<textarea name="description" placeholder="description" class="w-full p-1 border border-gray-500" required><%=event.description%></textarea>
+
+						<span class="font-normal text-xs text-gray-700">Supports 
+							<a 
+							  href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" 
+							  class="underline text-blue-400">Markdown</a>
+						</span>
 					</label>
 				</div>
 				<%if(groups.length){%>
