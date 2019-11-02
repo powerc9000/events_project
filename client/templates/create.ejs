@@ -1,82 +1,123 @@
-		<div class="container mx-auto content p-4 sm:p-none">
-			<h1 class="text-xl font-bold">Create an event</h1>
-			<form data-controller="create" data-action="create#createEvent" data-target="create.form" autocomplete="off">
-				<input type="hidden" name="edited_event" value="<%=event.id%>" />
-				<div>
-					<label class="font-bold">
-						Event Name
-						<input class="p-1 border border-gray-500 w-full"type="text" name="name" placeholder="Event Name" required value="<%=event.name%>"/>
-					</label>
-				</div>
-				<div class="mt-2">
-					<label class="font-bold">
-						Event Date
-						<input type="datetime-local" name="date" class="p-1 border border-gray-500" data-target="create.datepicker" placeholder="Event Date" value="<%=event.date ? new Date(event.date).toISOString(): ""%>"/>
-					</label>
-				</div>
-				<div class="mt-2" >
-					<label class="font-bold">
-						Event Location
-						<input class="p-1 border border-gray-500 w-full"type="text" name="location" placeholder="Event Location" value="<%=event.location%>"/>
-					</label>
-				</div>
-				<div class="mt-2">
-					<label class="font-bold">
-						Event Description 
-						<textarea name="description" placeholder="description" class="w-full p-1 border border-gray-500" required><%=event.description%></textarea>
+<div class="container mx-auto content p-4 sm:p-none">
+  <h1 class="text-xl font-bold">Create an event</h1>
+  <form
+    data-controller="create"
+    data-action="create#createEvent"
+    data-target="create.form"
+    autocomplete="off"
+  >
+    <input type="hidden" name="edited_event" value="<%=event.id%>" />
+    <div>
+      <label class="font-bold">
+        Event Name
+        <input
+          class="p-1 border border-gray-500 w-full"
+          type="text"
+          name="name"
+          placeholder="Event Name"
+          required
+          value="<%=event.name%>"
+        />
+      </label>
+    </div>
+    <div class="mt-2">
+      <label class="font-bold">
+        Event Date
+        <input
+          type="datetime-local"
+          name="date"
+          class="p-1 border border-gray-500"
+          data-target="create.datepicker"
+          placeholder="Event Date"
+          value="<%=event.date ? new Date(event.date).toISOString(): ''%>"
+        />
+      </label>
+    </div>
+    <div class="mt-2">
+      <label class="font-bold">
+        Event Location
+        <input
+          class="p-1 border border-gray-500 w-full"
+          type="text"
+          name="location"
+          placeholder="Event Location"
+          value="<%=event.location%>"
+        />
+      </label>
+    </div>
+    <div class="mt-2">
+      <label class="font-bold">
+        Event Description
+        <textarea
+          name="description"
+          placeholder="description"
+          class="w-full p-1 border border-gray-500"
+          required
+        >
+<%=event.description%></textarea
+        >
 
-						<span class="font-normal text-xs text-gray-700">Supports 
-							<a 
-							  href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" 
-							  class="underline text-blue-400">Markdown</a>
-						</span>
-					</label>
-				</div>
-				<%if(groups.length){%>
-				<div class="mt-2">
-					<label class="font-bold">
-					Create event in group
-					<select name="group_id" class="p-1 border-gray-500 border">
-						<option value="">No Group</option>
-						<%groups.forEach((group)=>{%>
-						<option value="<%=group.id%>" <%=_boolAttr("selected", group.id === forGroup || event.group_id === group.id)%>><%=group.name%></option>
-						<%})%>
-					</select>
-					</label>
-					
-				</div>
-				<%}%>
-				<div class="mt-2 font-bold">
-					<label class="cursor-pointer">
-						Private:
-						<input type="checkbox" name="is_private" <%=_boolAttr("checked", !event.id || event.is_private)%> class="cursor-pointer"/>
-					</label>
-				</div>
-				<div class="font-bold">
-					<label class="cursor-pointer">
-						Show Participants:
-						<input type="checkbox" name="show_participants" class="cursor-pointer" <%=_boolAttr("checked", event.show_participants)%>/>
-					</label>
-				</div>
-				<div class="font-bold">
-					<label class="cursor-pointer">
-						Allow Comments:
-						<input type="checkbox" name="allow_comments" class="cursor-pointer" <%=_boolAttr("checked", event.allow_comments)%>/>
-					</label>
-				</div>
-				<div class="font-bold">
-					<label class="cursor-pointer">
-						Allow Participants to invite others:
-						<input type="checkbox" name="can_invite" class="cursor-pointer"  <%=_boolAttr("checked", event.can_invite)%>/>
-					</label>
-				</div>
+        <span class="font-normal text-xs text-gray-700"
+          >Supports
+          <a
+            href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet"
+            class="underline text-blue-400"
+            >Markdown</a
+          >
+        </span>
+      </label>
+    </div>
+    <%if(groups.length){%>
+    <div class="mt-2">
+      <label class="font-bold">
+        Create event in group
+        <select name="group_id" class="p-1 border-gray-500 border">
+          <option value="">No Group</option>
+          <%groups.forEach((group)=>{%>
+          <option
+            <%=_boolAttr('selected', group.id === forGroup || event.group_id === group.id)%>
+            value="<%=group.id%>"
+          >
+            <%=group.name%>
+          </option>
+          <%})%>
+        </select>
+      </label>
+    </div>
+    <%}%>
+    <div class="mt-2 font-bold">
+      <label class="cursor-pointer">
+        Private: <input type="checkbox" name="is_private"
+        <%=_boolAttr('checked', !event.id || event.is_private)%>
+        class="cursor-pointer"/>
+      </label>
+    </div>
+    <div class="font-bold">
+      <label class="cursor-pointer">
+        Show Participants: <input type="checkbox" name="show_participants"
+        class="cursor-pointer" <%=_boolAttr('checked',
+        event.show_participants)%>/>
+      </label>
+    </div>
+    <div class="font-bold">
+      <label class="cursor-pointer">
+        Allow Comments: <input type="checkbox" name="allow_comments"
+        class="cursor-pointer" <%=_boolAttr('checked', event.allow_comments)%>/>
+      </label>
+    </div>
+    <div class="font-bold">
+      <label class="cursor-pointer">
+        Allow Participants to invite others: <input type="checkbox"
+        name="can_invite" class="cursor-pointer" <%=_boolAttr('checked',
+        event.can_invite)%>/>
+      </label>
+    </div>
 
-				<hr />
-				<div class="mt-2">
-					<button type="submit" class="bg-teal-300 text-black p-2 hover:underline hover:bg-teal-400">
-						<%=event.id ? "Save Edits": "Create"%>
-					</button>
-				</div>
-
-			</form>
-		</div>
+    <hr />
+    <div class="mt-2">
+      <button type="submit" class="btn btn-green">
+        <%=event.id ? "Save Edits": "Create Event"%>
+      </button>
+    </div>
+  </form>
+</div>

@@ -11,10 +11,12 @@
       <%}%>
     </div>
   </div>
+  <%if(event.location){%>
   <h2 class="text-lg" aria-label="Location" title="Location">
     <i class="fas fa-map-marker-alt" aria-hidden="true"></i
     ><span class="ml-2"><%=event.location%></span>
   </h2>
+  <%}%>
   <div class="text-lg" aria-label="Time">
     <i class="fas fa-calendar-day"></i>
     <span
