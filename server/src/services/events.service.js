@@ -365,7 +365,7 @@ async function canRSVPToEvent(eventId, userId) {
 
   const isPublic = !event.is_private;
 
-  return isOwner || isInvited || isPublic;
+  return (isOwner || isInvited || isPublic) && userId;
 }
 
 async function rsvpToEvent(eventId, userId, status, show_name) {

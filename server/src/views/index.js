@@ -1,4 +1,5 @@
 const vision = require("@hapi/vision");
+const Boom = require("@hapi/boom");
 const _ = require("lodash");
 const inert = require("@hapi/inert");
 const ejs = require("ejs");
@@ -69,6 +70,23 @@ module.exports = {
 
       return res;
     });
+
+    server.ext(
+      "onPreResponse",
+      (req, h) => {
+        console.log("here");
+        if (req.response.isBoom) {
+          const err = req.response;
+          if (err.output.payload.statusCode === 404) {
+            return h.layout("404").code(404);
+          } else {
+            return h.layout("500").code(500);
+          }
+        }
+        return h.continue;
+      },
+      { sandbox: "plugin" }
+    );
 
     //The source map url gets mapped wrong from parcel...
     //I still like source maps so here it is
@@ -155,6 +173,23 @@ module.exports = {
       path: "/help/{page?}",
       handler: renderHelp
     });
+
+    server.route({
+      method: "GET",
+      path: "/{param}",
+      handler: () => {
+        return Boom.notFound();
+      }
+    });
+    if (process.env.NODE_ENV !== "production") {
+      server.route({
+        method: "GET",
+        path: "/500",
+        handler: () => {
+          return Boom.internal();
+        }
+      });
+    }
   }
 };
 
@@ -169,8 +204,7 @@ async function renderHelp(req, h) {
     const html = md.render(page.toString());
     return h.view("layout", { __content: html });
   } catch (e) {
-    console.log(e);
-    return "NOT FOUND";
+    return Boom.notFound();
   }
 }
 
@@ -180,7 +214,7 @@ async function shortLink(req, h) {
   const link = await server.getService("shortlinks").findByKey(key);
 
   if (!link) {
-    return "NOT FOUND";
+    return Boom.notFound();
   } else {
     return h.redirect(link.link);
   }
@@ -196,7 +230,7 @@ async function groupDetail(req, h) {
 
   const group = await groupService.getGroup(req.params.idOrCustom);
   if (!group) {
-    return "Not found";
+    return Boom.notFound();
   }
   const events = await eventService.getGroupEventsForUser(
     group.id,
@@ -239,7 +273,7 @@ async function eventDetail(req, h) {
   let userId = _.get(req, "app.user.id");
 
   if (!event) {
-    return "NO EVENT";
+    return Boom.notFound();
   }
   const viewData = {};
 
@@ -257,7 +291,7 @@ async function eventDetail(req, h) {
   const canViewEvent = await eventService.canUserViewEvent(userId, event.id);
 
   if (!canViewEvent) {
-    return "NOT ALLOWED";
+    return Boom.notFound();
   }
 
   const statuses = { going: [], maybe: [], declined: [], invited: [] };
@@ -296,11 +330,11 @@ async function editEvent(req, h) {
   const eventService = server.getService("events");
   const event = await eventService.getEventBySlug(req.params.slug);
   if (!event) {
-    return "No Event";
+    return Boom.notFound();
   }
 
   if (!req.loggedIn()) {
-    return "NOT ALLOWED";
+    return Boom.notFound();
   }
   const canEdit = await eventService.canUserEditEvent(
     req.app.user.id,
@@ -308,7 +342,7 @@ async function editEvent(req, h) {
   );
 
   if (!canEdit) {
-    return "NOT Allowed";
+    return Boom.notFound();
   }
   const groups = await server
     .getService("groups")
