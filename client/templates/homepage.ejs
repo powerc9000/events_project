@@ -1,13 +1,13 @@
 <div class="container mx-auto content max-w-3xl">
   <div class="mt-4">
-    <h1 class="text-2xl font-bold text-center">Your Events</h1>
-    <ul class="">
+    <h1 class="text-2xl font-bold text-center mb-4">Your Events</h1>
+    <ul class="list-disc pl-4">
       <%events.forEach((event)=>{%>
       <li class="py-2">
-        <h3>
+        <h3 class="text-lg">
           <a
             href="/events/<%=event.slug%>"
-            class="bg-black p-1 text-white relative event-link"
+            class="text-blue-700 hover:underline"
             ><%=event.name%> - <%=date.format(new Date(event.date), "PP")%></a
           >
         </h3>
