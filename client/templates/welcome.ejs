@@ -27,17 +27,17 @@
     </section>
     <section class="mt-8">
       <h2 class="font-bold text-xl">Public events</h2>
-      <ul>
+      <ul class="pl-4 list-disc">
         <%events.forEach((event)=>{%>
         <li class="py-2">
-          <h3>
+          <h3 class="text-sl">
             <a
               href="/events/<%=event.slug%>"
-              class="bg-black p-1 text-white relative event-link"
+              class="text-blue-700 hover:underline"
               ><%=event.name%> - <%=date.format(new Date(event.date), "PP")%></a
             >
           </h3>
-          <p>
+          <p class="text-lg">
             <%=event.description%>
           </p>
         </li>
