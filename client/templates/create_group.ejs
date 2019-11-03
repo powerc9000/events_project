@@ -2,10 +2,10 @@
   <h1 class="text-2xl font-bold">Create a new group</h1>
   <form data-target="create-group.form" data-action="create-group#submit">
     <div class="mt-4">
-      <label class="font-bold">
+      <label class="font-bold cursor-pointer">
         Pick a name for your group
         <input
-          class="border border-gray-300 p-1 w-full"
+          class="w-full input"
           type="text"
           name="name"
           placeholder="Name"
@@ -15,22 +15,26 @@
     </div>
 
     <div class="mt-4">
-      <label class="font-bold">
+      <label class="font-bold cursor-pointer" for="custom-path">
         Custom path <span class="text-xs text-gray-700">(optional)</span>
-        <span
-          ><input
-            type="text"
-            name="custom_path"
-            class="border border-gray-300 p-1 w-full"
-            placeholder="Custom Path"
-            data-target="create-group.customPath"
-            data-action="input->create-group#customChanged"
-        /></span>
       </label>
+      <div class="flex items-center">
+        <span class="whitespace-no-wrap border border-gray-600 bg-gray-100 p-1"
+          >junipercity.com/groups/</span
+        ><input
+          type="text"
+          id="custom-path"
+          name="custom_path"
+          class="input w-full"
+          placeholder="Custom Path"
+          data-target="create-group.customPath"
+          data-action="input->create-group#customChanged"
+        />
+      </div>
       <p class="text-xs text-gray-700">
         By default your group will have the url
         <span class="font-bold"
-          >https://occasions.com/groups/&lt;group-id&gt;</span
+          >https://junipercity.com/groups/&lt;group-id&gt;</span
         >
       </p>
       <p class="text-xs text-gray-700">You can customize it here.</p>
@@ -40,13 +44,13 @@
     </div>
 
     <div class="mt-4">
-      <label class="font-bold">
+      <label class="font-bold cursor-pointer">
         Description of your group
         <span class="text-xs text-gray-700">(optional)</span>
 
         <textarea
           name="description"
-          class="border border-gray-300 p-1 w-full"
+          class="input w-full"
           placeholder="Description"
         ></textarea>
       </label>
