@@ -97,6 +97,13 @@ footer {
 	}
 }
 
+.input {
+	@apply border-gray-700 border p-1;
+	&:focus {
+			outline: solid theme("colors.blue.700") 1px;
+	}
+}
+
 @import url("./md.css");
 
 @tailwind utilities;
