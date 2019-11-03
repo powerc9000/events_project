@@ -109,6 +109,15 @@ module.exports = {
     });
 
     server.route({
+      method: "post",
+      path: "/logout",
+      handler: (req, h) => {
+        h.unstate("user");
+        return h.response.code(204);
+      }
+    });
+
+    server.route({
       method: "GET",
       path: "/",
       handler: homepage
@@ -268,11 +277,14 @@ async function userGroups(req, h) {
 
 async function loginWithOTP(req, h) {
   const type = req.params.type;
+  if (req.loggedIn()) {
+    return h.redirect("/");
+  }
   let codeSource = "Phone";
   if (type === "email") {
     codeSource = "Email";
   }
-  return h.view("login_otp", { codeSource });
+  return h.layout("login_otp", { codeSource });
 }
 
 async function eventDetail(req, h) {

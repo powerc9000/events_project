@@ -26,6 +26,16 @@
     <div>
       <a href="/login" class="text-lg hover:underline">Login / Signup</a>
     </div>
+    <%} else {%>
+    <div>
+      <button
+        data-controller="logout"
+        data-action="logout#logout"
+        class="text-lg hover:underline"
+      >
+        Logout
+      </button>
+    </div>
     <%}%>
   </nav>
 </header>

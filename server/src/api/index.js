@@ -357,7 +357,7 @@ async function loginWithPhone(req, h) {
   );
 
   if (!phone.isValid()) {
-    return "Invalid Phone";
+    return Boom.badRequest("Not a valid phone number");
   }
 
   const number = phone.getNumber("e164");
