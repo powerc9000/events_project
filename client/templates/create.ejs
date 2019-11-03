@@ -8,10 +8,10 @@
   >
     <input type="hidden" name="edited_event" value="<%=event.id%>" />
     <div>
-      <label class="font-bold">
+      <label class="font-bold cursor-pointer">
         Event Name
         <input
-          class="p-1 border border-gray-500 w-full"
+          class="input w-full"
           type="text"
           name="name"
           placeholder="Event Name"
@@ -21,12 +21,12 @@
       </label>
     </div>
     <div class="mt-2">
-      <label class="font-bold">
+      <label class="font-bold cursor-pointer">
         Event Date
         <input
           type="datetime-local"
           name="date"
-          class="p-1 border border-gray-500"
+          class="input"
           data-target="create.datepicker"
           placeholder="Event Date"
           value="<%=event.date ? new Date(event.date).toISOString(): ''%>"
@@ -34,10 +34,10 @@
       </label>
     </div>
     <div class="mt-2">
-      <label class="font-bold">
+      <label class="font-bold cursor-pointer">
         Event Location
         <input
-          class="p-1 border border-gray-500 w-full"
+          class="input w-full"
           type="text"
           name="location"
           placeholder="Event Location"
@@ -46,12 +46,12 @@
       </label>
     </div>
     <div class="mt-2">
-      <label class="font-bold">
+      <label class="font-bold cursor-pointer">
         Event Description
         <textarea
           name="description"
           placeholder="description"
-          class="w-full p-1 border border-gray-500"
+          class="w-full input"
           required
         >
 <%=event.description%></textarea
@@ -69,9 +69,9 @@
     </div>
     <%if(groups.length){%>
     <div class="mt-2">
-      <label class="font-bold">
+      <label class="font-bold cursor-pointer">
         Create event in group
-        <select name="group_id" class="p-1 border-gray-500 border">
+        <select name="group_id" class="input">
           <option value="">No Group</option>
           <%groups.forEach((group)=>{%>
           <option
