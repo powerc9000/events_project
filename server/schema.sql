@@ -47,6 +47,21 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: comments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.comments (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    user_id uuid NOT NULL,
+    entity_id uuid NOT NULL,
+    parent_comment uuid,
+    body text NOT NULL,
+    created timestamp with time zone DEFAULT now(),
+    flagged boolean DEFAULT false
+);
+
+
+--
 -- Name: events; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -172,6 +187,14 @@ CREATE TABLE public.users (
 
 
 --
+-- Name: comments comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: events events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -289,6 +312,22 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: comments comments_parent_comment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_parent_comment_fkey FOREIGN KEY (parent_comment) REFERENCES public.comments(id);
+
+
+--
+-- Name: comments comments_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.comments
+    ADD CONSTRAINT comments_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --

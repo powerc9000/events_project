@@ -227,11 +227,19 @@ async function createGroup(req, h) {
 async function groupDetail(req, h) {
   const groupService = server.getService("groups");
   const eventService = server.getService("events");
+  const userId = _.get(req, "app.user.id");
 
   const group = await groupService.getGroup(req.params.idOrCustom);
   if (!group) {
     return Boom.notFound();
   }
+
+  const canView = await groupService.canUserViewGroup(userId, group.id);
+
+  if (!canView) {
+    return Boom.notFound();
+  }
+
   const events = await eventService.getGroupEventsForUser(
     group.id,
     req.app.user.id

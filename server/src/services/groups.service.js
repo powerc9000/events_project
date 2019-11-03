@@ -92,6 +92,34 @@ async function getGroupMembers(groupId) {
   return members;
 }
 
+async function canUserViewGroup(userId, groupId) {
+  const group = await server.app.db.maybeOne(
+    sql`SELECT * from groups where id=${groupId}`
+  );
+
+  if (!group) {
+    return false;
+  }
+
+  if (group.is_private) {
+    if (!userId) {
+      return false;
+    }
+
+    const member = await server.app.db.maybeOne(
+      sql`SELECT user_id from group_members where user_id=${userId} and group_id=${groupId}`
+    );
+
+    if (!member) {
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
+}
+
 function init(hapiServer) {
   server = hapiServer;
 }
@@ -103,6 +131,7 @@ module.exports = {
   getGroupsForUser,
   init,
   canAddUserToGroup,
+  canUserViewGroup,
   addUserToGroup,
   name: "groups"
 };
