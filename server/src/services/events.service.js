@@ -451,6 +451,16 @@ async function getComments(eventId) {
   );
 }
 
+async function createComment(userId, eventId, parentId, body) {
+  const parent = parentId || null;
+  return server.app.db.maybeOne(
+    sql`INSERT INTO comments 
+		(user_id, entity_id, parent_comment, body) 
+		VALUES (${userId}, ${eventId}, ${parent}, ${body}) 
+		returning *`
+  );
+}
+
 function init(hapiServer) {
   server = hapiServer;
   //set up database
@@ -475,5 +485,6 @@ module.exports = {
   getGroupEventsForUser,
   resendInvite,
   getComments,
+  createComment,
   name: "events"
 };

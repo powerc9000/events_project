@@ -74,7 +74,6 @@ module.exports = {
     server.ext(
       "onPreResponse",
       (req, h) => {
-        console.log("here");
         if (req.response.isBoom) {
           const err = req.response;
           if (err.output.payload.statusCode === 404) {
@@ -371,6 +370,8 @@ async function eventDisussion(req, h) {
 
   const map = new Map();
 
+  console.log(allComments);
+
   allComments.forEach((c) => {
     map.set(c.id, { ...c, children: [] });
   });
@@ -381,6 +382,7 @@ async function eventDisussion(req, h) {
       const parent = map.get(c.parent_comment);
       parent.children.push(c);
     } else {
+      console.log("no parent");
       comments.push(c);
     }
   });
