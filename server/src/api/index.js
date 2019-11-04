@@ -1,4 +1,5 @@
 const joi = require("@hapi/joi");
+const _ = require("lodash");
 const PhoneNumber = require("awesome-phonenumber");
 const crypto = require("crypto");
 const { OAuth2Client } = require("google-auth-library");
@@ -176,8 +177,52 @@ module.exports = {
       path: "/invites/{id}/resend",
       handler: resendInvite
     });
+
+    server.route({
+      method: "POST",
+      path: "/events/{id}/comments",
+      handler: commentOnEvent,
+      options: {
+        validate: {
+          payload: joi.object({
+            body: joi.string().required(),
+            parent: joi
+              .string()
+              .uuid()
+              .allow(null)
+          })
+        }
+      }
+    });
   }
 };
+
+async function commentOnEvent(req, h) {
+  const eventService = server.getService("events");
+  const userId = _.get(req, "app.user.id");
+  const event = await eventService.getEventById(req.params.id);
+  if (!event) {
+    return Boom.notFound();
+  }
+  const canView = await eventService.canUserViewEvent(userId, event.id);
+
+  if (!canView) {
+    return Boom.notFound();
+  }
+
+  if (!event.allow_comments) {
+    return Boom.unauthorized();
+  }
+
+  const comment = await eventService.createComment(
+    userId,
+    event.id,
+    req.payload.parent,
+    req.payload.body
+  );
+
+  return comment;
+}
 
 async function resendInvite(req, h) {
   const user = req.app.user;
@@ -234,7 +279,6 @@ async function editEvent(req, h) {
   if (!canCreate) {
     return Boom.unauthorized();
   }
-  console.log(req.payload);
   const updatedEvent = await eventService.editEvent(req.params.id, req.payload);
 
   return updatedEvent;

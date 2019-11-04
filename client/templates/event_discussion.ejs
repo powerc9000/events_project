@@ -27,6 +27,7 @@
           name="body"
           class="w-full border border-gray-700 p-1"
           rows="7"
+          required
           placeholder="Comment"
         ></textarea>
       </div>
@@ -35,7 +36,9 @@
       </div>
     </form>
     <ul>
-      <li>Comment</li>
+      <%comments.forEach((comment)=>{%>
+      <li><%=comment.body%></li>
+      <%})%>
     </ul>
   </div>
 </div>
