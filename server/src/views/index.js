@@ -173,6 +173,12 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/events/{slug}/discussion",
+      handler: eventDisussion
+    });
+
+    server.route({
+      method: "GET",
       path: "/s/{id}",
       handler: shortLink
     });
@@ -190,6 +196,7 @@ module.exports = {
         return Boom.notFound();
       }
     });
+
     if (process.env.NODE_ENV !== "production") {
       server.route({
         method: "GET",
@@ -335,6 +342,7 @@ async function eventDetail(req, h) {
   return h.layout("event_detail", {
     ...viewData,
     event: { ...event, ...statuses },
+    path: `/events/${event.slug}`,
     title: event.name,
     canEdit: await eventService.canUserEditEvent(userId, event.id),
     invite,
@@ -343,6 +351,28 @@ async function eventDetail(req, h) {
     canSeeInvites,
     isCreator: event.creator.id === userId,
     mdDescription: mdSafe.render(event.description || "")
+  });
+}
+
+async function eventDisussion(req, h) {
+  const userId = _.get(req, "app.user.id");
+  const eventService = server.getService("events");
+  const event = await eventService.getEventBySlug(req.params.slug);
+  const canView = await eventService.canUserViewEvent(userId, event.id);
+  const comments = await eventService.getComments(event.id);
+
+  if (!canView) {
+    return Boom.notFound();
+  }
+
+  if (!event.allow_comments) {
+    return h.turboRedirect(`/events/${event.slug}`);
+  }
+
+  return h.layout("event_discussion", {
+    event,
+    comments,
+    path: `/events/${event.slug}`
   });
 }
 
