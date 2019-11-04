@@ -359,7 +359,7 @@ async function eventDisussion(req, h) {
   const eventService = server.getService("events");
   const event = await eventService.getEventBySlug(req.params.slug);
   const canView = await eventService.canUserViewEvent(userId, event.id);
-  const comments = await eventService.getComments(event.id);
+  const allComments = await eventService.getComments(event.id);
 
   if (!canView) {
     return Boom.notFound();
@@ -369,7 +369,24 @@ async function eventDisussion(req, h) {
     return h.turboRedirect(`/events/${event.slug}`);
   }
 
+  const map = new Map();
+
+  allComments.forEach((c) => {
+    map.set(c.id, { ...c, children: [] });
+  });
+
+  const comments = [];
+  allComments.forEach((c) => {
+    if (c.parent_comment) {
+      const parent = map.get(c.parent_comment);
+      parent.children.push(c);
+    } else {
+      comments.push(c);
+    }
+  });
+
   return h.layout("event_discussion", {
+    title: `${event.name} Discussion`,
     event,
     comments,
     path: `/events/${event.slug}`

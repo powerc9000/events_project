@@ -447,7 +447,7 @@ async function getComments(eventId) {
     sql`SELECT *, 
 		row_to_json((select d from (select * from users where id = c.user_id) d)) as user 
 		from comments c 
-		where entity_id=${eventId}`
+		where entity_id=${eventId} order by parent_comment`
   );
 }
 
