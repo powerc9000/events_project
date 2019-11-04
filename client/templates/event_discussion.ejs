@@ -1,4 +1,4 @@
-<div class="container mx-auto content" data-controller="event-detail">
+<div class="container mx-auto content" data-controller="event-discussion">
   <ul class="flex border-b border-gray-800 text-md my-4">
     <li class="mr-1 pl-2">
       <a
@@ -15,4 +15,27 @@
       >
     </li>
   </ul>
+  <div>
+    <form
+      data-target="event-discussion.form"
+      data-action="event-discussion#createComment"
+    >
+      <input type="hidden" name="event_id" value="<%=event.id%>" />
+      <input type="hidden" name="parent_comment" />
+      <div>
+        <textarea
+          name="body"
+          class="w-full border border-gray-700 p-1"
+          rows="7"
+          placeholder="Comment"
+        ></textarea>
+      </div>
+      <div class="mt-2">
+        <button class="btn btn-green" type="submit">Add a comment</button>
+      </div>
+    </form>
+    <ul>
+      <li>Comment</li>
+    </ul>
+  </div>
 </div>
