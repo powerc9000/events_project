@@ -60,6 +60,12 @@ module.exports = {
       return res.redirect(location);
     });
 
+    server.decorate("toolkit", "turboRedirect", function(path) {
+      this.state("turbo_redirect", path);
+
+      return this.redirect(path);
+    });
+
     server.decorate("request", "loggedIn", function() {
       return !!this.app.user;
     });

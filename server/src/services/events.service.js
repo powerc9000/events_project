@@ -442,6 +442,15 @@ async function getInvite(inviteId) {
   );
 }
 
+async function getComments(eventId) {
+  return server.app.db.any(
+    sql`SELECT *, 
+		row_to_json((select d from (select * from users where id = c.user_id) d)) as user 
+		from comments c 
+		where entity_id=${eventId}`
+  );
+}
+
 function init(hapiServer) {
   server = hapiServer;
   //set up database
@@ -465,5 +474,6 @@ module.exports = {
   getInvite,
   getGroupEventsForUser,
   resendInvite,
+  getComments,
   name: "events"
 };
