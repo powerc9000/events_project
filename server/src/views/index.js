@@ -292,7 +292,7 @@ async function groupDetail(req, h) {
     "member"
   );
 
-  return h.layout("group_detail", { group, events, members, canInvite });
+  return h.view("group_detail.njk", { group, events, members, canInvite });
 }
 
 async function userGroups(req, h) {
@@ -303,7 +303,7 @@ async function userGroups(req, h) {
   const groups = await server
     .getService("groups")
     .getGroupsForUser(req.app.user.id);
-  return h.layout("groups", { groups });
+  return h.view("groups.njk", { groups });
 }
 
 async function loginWithOTP(req, h) {
@@ -494,7 +494,7 @@ async function login(req, h) {
       console.log(req.query);
       h.state("login_redirect", req.query.redirect_to);
     }
-    return h.layout("login");
+    return h.view("login.njk");
   } else {
     return h.redirect("/");
   }
