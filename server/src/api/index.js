@@ -194,8 +194,24 @@ module.exports = {
         }
       }
     });
+    server.route({
+      method: "POST",
+      path: "/inbound",
+      handler: inboundEmail
+    });
   }
 };
+
+async function inboundEmail(req, h) {
+  const key = req.query.key;
+
+  if (key !== process.env.INBOUND_EMAIL_KEY) {
+    server.createTask("inbound-email", req.payload);
+    return h.response().code(200);
+  } else {
+    return Boom.forbidden();
+  }
+}
 
 async function commentOnEvent(req, h) {
   const eventService = server.getService("events");
