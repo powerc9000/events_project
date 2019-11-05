@@ -1,0 +1,66 @@
+{%import "partials/form_messages.njk" as messages %}
+<div class="mt-2">
+  {%if(canInvite)%}
+  <button
+    data-target="event-detail.canInviteButton"
+    class="btn btn-green"
+    data-action="event-detail#toggleInviteForm"
+  >
+    Invite People
+  </button>
+  {%endif%}
+</div>
+
+<form
+  class="hidden mt-4 bg-gray-100  border border-gray-400 p-4"
+  data-target="event-detail.inviteForm"
+  data-action="event-detail#sendInvite reset->event-detail#toggleInviteForm input->event-detail#inviteChange"
+>
+  <div class="my-2">
+    {{messages.messages("invite", 4000)}}
+  </div>
+  <input type="hidden" name="eventId" value="<%=event.id%>" />
+  <div class="flex flex-col">
+    <label class="font-bold" for="name">
+      Name of person to invite
+      <span class="font-normal text-xs">(Optional)</span>
+    </label>
+    <input id="name" type="text" name="name" class="input" placeholder="Name" />
+  </div>
+  <div class="mt-2 flex flex-col">
+    <label class="font-bold" for="email">
+      Email
+    </label>
+    <input
+      id="email"
+      type="text"
+      name="email"
+      class="input"
+      placeholder="Email"
+    />
+  </div>
+  <div class="mt-2 flex flex-col">
+    <label class="font-bold" for="phone">
+      Phone
+    </label>
+    <input
+      id="phone"
+      type="text"
+      name="phone"
+      class="input"
+      placeholder="Phone"
+    />
+  </div>
+  <p class="mt-1">
+    <span class="font-bold">Email OR phone is required</span>
+  </p>
+
+  <div class="mt-2">
+    <button class="btn btn-green" type="submit">
+      Invite
+    </button>
+    <button class="btn btn-white" type="reset">
+      Cancel
+    </button>
+  </div>
+</form>
