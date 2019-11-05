@@ -77,7 +77,9 @@ CREATE TABLE public.events (
     location text,
     slug text,
     can_invite boolean DEFAULT false,
-    group_id uuid
+    group_id uuid,
+    source text DEFAULT 'web'::text,
+    email_message_id text
 );
 
 

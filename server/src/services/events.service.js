@@ -59,6 +59,8 @@ async function getEventBySlug(slug) {
   const data = await server.app.db.query(
     sql`SELECT * from events where slug = ${slug}`
   );
+
+  console.log(data, slug);
   return formatEvent(data.rows[0]);
 }
 
@@ -299,7 +301,9 @@ async function createEvent(user, event) {
     "is_private",
     "allow_comments",
     "show_participants",
-    "group_id"
+    "group_id",
+    "source",
+    "email_message_id"
   ];
   const fields = [sql.identifier(["slug"]), sql.identifier(["creator"])];
   const values = [slug, user_id];
@@ -314,7 +318,7 @@ async function createEvent(user, event) {
       }
     }
   });
-
+  console.log(fields, values);
   const result = await server.app.db.query(
     sql`
 	INSERT into events (${sql.join(fields, sql`, `)}) VALUES (${sql.join(

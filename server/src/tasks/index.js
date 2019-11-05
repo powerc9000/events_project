@@ -2,6 +2,7 @@ let server;
 const Queue = require("bull");
 const email = require("./email_task_worker");
 const sms = require("./sms_task_worker");
+const inboundEmail = require("./inbound_email");
 module.exports = {
   name: "tasks",
   register: async function(hapiServer) {
@@ -28,14 +29,19 @@ module.exports = {
       redis: redisConnection
     });
 
+    const inboundEmailQueue = new Queue("inbound-email", {
+      redis: redisConnection
+    });
+
     emailQueue.process(email(server));
     smsQueue.process(sms(server));
+    inboundEmailQueue.process(inboundEmail(server));
 
     queues.push(emailQueue);
     queues.push(smsQueue);
+    queues.push(inboundEmailQueue);
 
     server.decorate("server", "createTask", function(type, data) {
-      console.log(type, data);
       queues.forEach((queue) => {
         queue.add({
           type: type,

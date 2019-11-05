@@ -12,11 +12,21 @@ module.exports = (hapiServer) => async (job) => {
 
   if (type === "invite-user-to-event") {
     const user = data.user;
-    console.log(user.email);
     if (user.email) {
       await sendEmail("user_invite", {
         to: user.email,
         subject: "You were invited to an event",
+        data
+      });
+    }
+  }
+
+  if (type === "create-event-pingback") {
+    const user = data.user;
+    if (user.email) {
+      await sendEmail("event_created_by_email", {
+        to: user.email,
+        subject: "Event successfully created",
         data
       });
     }
