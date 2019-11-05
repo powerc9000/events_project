@@ -1,21 +1,24 @@
+{% extends "layout.njk" %}
+{%block content%}
 <div class="container mx-auto content max-w-3xl">
   <div class="mt-4">
     <h1 class="text-2xl font-bold text-center mb-4">Your Events</h1>
     <ul class="list-disc pl-4">
-      <%events.forEach((event)=>{%>
+	{% for event in events %}
       <li class="py-2">
         <h3 class="text-lg">
           <a
-            href="/events/<%=event.slug%>"
+            href="/events/{{event.slug}}"
             class="text-blue-700 hover:underline"
-            ><%=event.name%> - <%=date.format(new Date(event.date), "PP")%></a
+            >{{event.name}} - {{date.format(event.date, "PP")}}</a
           >
         </h3>
         <p>
-          <%=event.description%>
+          {{event.description}}
         </p>
       </li>
-      <%})%>
+	{%endfor%}
     </ul>
   </div>
 </div>
+{%endblock%}
