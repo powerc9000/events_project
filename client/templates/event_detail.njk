@@ -45,7 +45,8 @@
 
   <div class="sm:flex">
     <div class="flex-1">
-      {%if canRSVP %}
+      {% include "./partials/event_detail/invite_to_event.njk" %} {%if canRSVP
+      %}
 
       <div class="my-2" id="rsvp-message" data-turbolinks-permanent>
         {{form_messages.messages("rsvp")}}
