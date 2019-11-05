@@ -363,7 +363,7 @@ async function eventDetail(req, h) {
       return invite.user_id === userId;
     }) || false;
 
-  return h.layout("event_detail", {
+  return h.view("event_detail.njk", {
     ...viewData,
     event: { ...event, ...statuses },
     path: `/events/${event.slug}`,

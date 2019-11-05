@@ -1,0 +1,17 @@
+{%macro messages(id, autoHide)%}
+<div
+  data-controller="form-messages"
+  data-form-messages-form-id="{{id}}"
+  data-form-messages-auto-hide="{{autoHide}}"
+  data-action="form:success@document->form-messages#success form:error@document->form-messages#error form:hide@document->form-messages#hide"
+>
+  <div
+    data-target="form-messages.success"
+    class="p-1 bg-green-300 border-l-4 border-green-500 hidden"
+  ></div>
+  <div
+    data-target="form-messages.error"
+    class="p-1 bg-red-300 border-l-4 border-red-500 hidden"
+  ></div>
+</div>
+{%endmacro%}
