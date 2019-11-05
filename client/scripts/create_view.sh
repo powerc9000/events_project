@@ -3,7 +3,11 @@
 if [ "$#" -ne 1 ]; then
 	echo "Please provide a file name"
 else
-touch "templates/$1.ejs"
+cat <<FILE > "templates/$1.njk"
+{%include "layout.njk"%}
+{%block content%}
+{%endblock%}
+FILE
 
-echo "created templates/$1.ejs"
+echo "created templates/$1.njk"
 fi
