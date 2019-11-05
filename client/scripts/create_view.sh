@@ -4,7 +4,7 @@ if [ "$#" -ne 1 ]; then
 	echo "Please provide a file name"
 else
 cat <<FILE > "templates/$1.njk"
-{%include "layout.njk"%}
+{%extends "layout.njk"%}
 {%block content%}
 {%endblock%}
 FILE

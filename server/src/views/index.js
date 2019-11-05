@@ -261,7 +261,7 @@ async function shortLink(req, h) {
 }
 
 async function createGroup(req, h) {
-  return h.layout("create_group");
+  return h.view("create_group");
 }
 
 async function groupDetail(req, h) {
