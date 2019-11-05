@@ -33,12 +33,11 @@ export default class extends ApplicationController {
       );
 
       if (res.ok) {
-        this.formControl.success("User Added to Group");
+        this.formControl.success("User Added to Group", "group-invite");
         form.reset();
       } else {
         const data = await res.json();
-        console.log(data);
-        this.formControl.error(data.message);
+        this.formControl.error(data.message, "group-invite");
       }
     } else {
       console.log("bad data");

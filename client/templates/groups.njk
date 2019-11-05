@@ -1,0 +1,23 @@
+{%extends "layout.njk" %}
+{%block content %}
+	<div class="container mx-auto">
+		<div class="sm:flex items-center">
+			<h1 class="text-2xl">Your Groups</h1>
+			<span class="hidden sm:inline mx-2">-</span>
+			<a href="/groups/create" class="hover:underline text-blue-700"
+															 >Create a group</a
+														 >
+		</div>
+				<ul class="mt-4">
+					{%for group in groups %}
+						<li class="mb-2">
+							<a
+								class="bg-black p-1 text-white hover:underline"
+								href="/groups/{{group.custom_path if group.custom_path else group.id}}"
+								>{{group.name}}<a>
+								<p class="mt-1">{{group.description}}</p>
+						</li>
+					{%endfor%}
+				</ul>
+	</div>
+{%endblock%}
