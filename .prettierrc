@@ -1,9 +1,12 @@
 {
+"pluginSearchDirs": ["./client"],
   "overrides": [
     {
-	    "files": ["*.ejs", "*.njk"],
+	    "files": ["*.ejs"],
       "options": {
-        "parser": "html"
+        "parser": "html",
+"htmlWhitespaceSensitivity": "ignore",
+"jsxBracketSameLine": true
       }
     }
   ]

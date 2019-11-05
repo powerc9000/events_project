@@ -411,13 +411,8 @@ async function eventDisussion(req, h) {
       comments.push(c);
     }
   });
-  {
-    {
-      event.data | formatDate;
-    }
-  }
 
-  return h.layout("event_discussion", {
+  return h.view("event_discussion.njk", {
     title: `${event.name} Discussion`,
     event,
     comments,
@@ -452,7 +447,7 @@ async function editEvent(req, h) {
   if (req.query.group) {
     forGroup = req.query.group;
   }
-  return h.layout("create", {
+  return h.view("create_event.njk", {
     event,
     groups,
     forGroup
@@ -486,7 +481,7 @@ async function createEvent(req, h) {
   if (req.query.group) {
     forGroup = req.query.group;
   }
-  return h.layout("create", {
+  return h.view("create_event.njk", {
     event: {},
     forGroup,
     groups
