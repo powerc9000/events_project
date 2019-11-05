@@ -1,0 +1,47 @@
+{%extends "layout.njk" %} {%block title%}{{event.name}} Discussion{%endblock%}
+{%block content %}
+<div class="container mx-auto content" data-controller="event-discussion">
+  <ul class="flex border-b border-gray-800 text-md my-4">
+    <li class="mr-1 pl-2">
+      <a
+        class="bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold"
+        href="{{path}}"
+        >Event Details</a
+      >
+    </li>
+    <li class="-mb-px mr-1">
+      <a
+        class="bg-white inline-block py-2 px-4 text-blue-700  font-semibold font-semibold  border-l border-t border-r rounded-t border-gray-800"
+        href="{{path}}/discussion"
+        >Discussion</a
+      >
+    </li>
+  </ul>
+  <div>
+    <form
+      data-target="event-discussion.form"
+      data-action="event-discussion#createComment"
+    >
+      <input type="hidden" name="event_id" value="{{event.id}}" />
+      <input type="hidden" name="parent_comment" />
+      <div>
+        <textarea
+          name="body"
+          class="w-full border border-gray-700 p-1"
+          rows="7"
+          required
+          placeholder="Comment"
+        ></textarea>
+      </div>
+      <div class="mt-2">
+        <button class="btn btn-green" type="submit">Add a comment</button>
+      </div>
+    </form>
+    <ul>
+      {% for comment in comments %}
+      <li>{{comment.body}}</li>
+      {%endfor%}
+    </ul>
+  </div>
+</div>
+{%endblock%}

@@ -1,0 +1,130 @@
+{%extends "layout.njk"%} 
+{%block title%}Create A New Event{%endblock%} 
+{%block css%}
+
+	<link
+		rel="stylesheet"
+		href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+		/>
+{%endblock%} 
+{%block content%}
+	<div class="container mx-auto content p-4 sm:p-none">
+		<h1 class="text-xl font-bold">Create an event</h1>
+		<form
+			data-controller="create"
+			data-action="create#createEvent"
+			data-target="create.form"
+			autocomplete="off"
+			>
+			<input type="hidden" name="edited_event" value="{{event.id}}" />
+			<div>
+				<label class="font-bold cursor-pointer">
+					Event Name
+					<input
+						class="input w-full"
+						type="text"
+						name="name"
+						placeholder="Event Name"
+						required
+						value="{{event.name}}"
+						/>
+				</label>
+			</div>
+			<div class="mt-2">
+				<label class="font-bold cursor-pointer">
+					Event Date
+					<input
+						type="datetime-local"
+						name="date"
+						class="input"
+						data-target="create.datepicker"
+						placeholder="Event Date"
+						value="{{date.fromUnixTime(event.date/1000).toISOString() if event.date}}"
+						/>
+				</label>
+			</div>
+			<div class="mt-2">
+				<label class="font-bold cursor-pointer">
+					Event Location
+					<input
+						class="input w-full"
+						type="text"
+						name="location"
+						placeholder="Event Location"
+						value="{{event.location}}"
+						/>
+				</label>
+			</div>
+			<div class="mt-2">
+				<label class="font-bold cursor-pointer">
+					Event Description
+					<textarea
+						name="description"
+						placeholder="description"
+						class="w-full input"
+						required
+						>{{event.description}}</textarea>
+
+					<span class="font-normal text-xs text-gray-700">
+						Supports
+						<a
+							href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet"
+							class="underline text-blue-400"
+							>
+							Markdown
+						</a>
+					</span>
+				</label>
+			</div>
+			{%if groups.length %}
+				<div class="mt-2">
+					<label class="font-bold cursor-pointer">
+						Create event in group
+						<select name="group_id" class="input">
+							<option value="">No Group</option>
+							{%for group in groups%} 
+								{%set selected = group.id === forGroup or event.group_id === group.id%}
+								<option value="{{group.id}}" {{'selected' if selected}}>
+								{{group.name}}
+								</option>
+							{%endfor%}
+						</select>
+					</label>
+				</div>
+			{%endif%}
+			<div class="mt-2 font-bold">
+				<label class="cursor-pointer">
+					Private: <input type="checkbox" name="is_private" {{'checked' if not event.id or event.is_private}} class="cursor-pointer"/>
+				</label>
+			</div>
+			<div class="font-bold">
+				<label class="cursor-pointer">
+					Show Participants: <input type="checkbox" name="show_participants"
+																										class="cursor-pointer" {{'checked' if event.show_participants}} />
+				</label>
+			</div>
+			<div class="font-bold">
+				<label class="cursor-pointer">
+					Allow Comments: <input type="checkbox" name="allow_comments" {{'checked'
+																								 if event.allow_comments}} class="cursor-pointer" />
+				</label>
+			</div>
+			<div class="font-bold">
+				<label class="cursor-pointer">
+					Allow Participants to invite others: <input type="checkbox" {{'checked'
+																											if event.can_invite}} name="can_invite" class="cursor-pointer" />
+				</label>
+			</div>
+
+			<hr />
+			<div class="mt-2">
+				<button type="submit" class="btn btn-green">
+					{{'Save Edits' if event.id else 'Create Event'}}
+				</button>
+				{%if event.id %}
+					<a href="/events/{{event.slug}}" class="btn btn-white p-2">Cancel</a>
+				{%endif%}
+			</div>
+		</form>
+	</div>
+{%endblock%}

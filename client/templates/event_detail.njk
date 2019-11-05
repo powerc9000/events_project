@@ -39,7 +39,7 @@
       data-controller="format-date"
       data-format-date-epoch="{{event.date}}"
       data-target="format-date.date"
-      >{{event.date}}</span
+      >{{date.format(date.fromUnixTime(event.date/1000), "PPpp OOOO")}}</span
     >
   </div>
 
@@ -215,9 +215,24 @@
             </button>
             {%endif%}
           </li>
-          {% elseif not invite.show_name or not isCreator %}{% set statusCount =
-          statusCount+1 %}{%endif%} {%endfor%} {%if statusCount %}
-          +{{statusCount}} more people{%endif%}
+          {% elseif not invite.show_name or not isCreator %}
+
+          <!-- prettier-ignore -->
+          {% set statusCount = statusCount+1 %}
+          <!-- prettier-ignore -->
+          {%endif%}
+
+          <!-- prettier-ignore -->
+          {%endfor%}
+
+          <!-- prettier-ignore -->
+          {%if statusCount %}
+
+          <!-- prettier-ignore -->
+          +{{statusCount}} more people
+
+          <!-- prettier-ignore -->
+          {%endif%}
         </ul>
         {% else %}
         <p class="ml-5 text-xs text-gray-700">---</p>
