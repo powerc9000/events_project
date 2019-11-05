@@ -10,6 +10,7 @@ const fs = require("fs");
 const anchor = require("markdown-it-anchor");
 const footnote = require("markdown-it-footnote");
 const markdown = require("markdown-it");
+const Nunjucks = require("nunjucks");
 const md = markdown({ html: true });
 const mdSafe = markdown();
 
@@ -29,8 +30,31 @@ module.exports = {
     await server.register(inert);
 
     server.views({
-      engines: { ejs },
+      engines: {
+        ejs,
+        njk: {
+          compile: (src, options) => {
+            const template = Nunjucks.compile(src, options.environment);
+
+            return (context) => {
+              return template.render(context);
+            };
+          },
+
+          prepare: (options, next) => {
+            console.log(options.path);
+            options.compileOptions.environment = Nunjucks.configure(
+              options.path,
+              { watch: false }
+            );
+
+            return next();
+          }
+        }
+      },
+
       relativeTo: path.join(__dirname, "../../../", "templates"),
+      path: path.join(__dirname, "../../../", "templates"),
       context: (req) => ({
         NODE_ENV: process.env.NODE_ENV,
         date: fns,
@@ -58,7 +82,8 @@ module.exports = {
         },
         loggedIn: !!req.app.user
       }),
-      isCached: process.env.NODE_ENV !== "develop"
+      isCached: process.env.NODE_ENV !== "develop",
+      defaultExtension: "ejs"
     });
 
     server.decorate("toolkit", "layout", function(name, data) {
@@ -386,6 +411,11 @@ async function eventDisussion(req, h) {
       comments.push(c);
     }
   });
+  {
+    {
+      event.data | formatDate;
+    }
+  }
 
   return h.layout("event_discussion", {
     title: `${event.name} Discussion`,
@@ -435,11 +465,12 @@ async function homepage(req, h) {
     options.user = req.app.user.id;
   }
   const events = await server.getService("events").findEvents(options);
-  let view = "homepage";
+  let view = "homepage.njk";
   if (!req.app.user) {
     view = "welcome";
   }
-  return h.layout(view, { events });
+  console.log(view);
+  return h.view(view, { events });
 }
 
 async function createEvent(req, h) {

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {%macro title()%}{%block title%}{%endblock%}{%endmacro%}
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta content="{{title()}} Juniper City" property="og:title" />
+    <meta property="og:image" content="/static/img/link_preview.png" />
+    <title>
+      {{title()}} Juniper City
+    </title>
+    <link rel="stylesheet" href="/static/css/main.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
+    />
+    <script src="/static/js/index.js"></script>
+  </head>
+  <body>
+    {%include "partials/header.njk"%}
+    <main class="content">
+      {%block content%}{%endblock%}
+    </main>
+    {%include "partials/footer.njk"%}
+  </body>
+</html>

@@ -1,7 +1,7 @@
 {
   "overrides": [
     {
-      "files": "*.ejs",
+	    "files": ["*.ejs", "*.njk"],
       "options": {
         "parser": "html"
       }
