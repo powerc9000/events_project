@@ -19,7 +19,7 @@
   </head>
   <body>
     {%include "partials/header.njk"%}
-    <main class="content">
+    <main class="content {%block extraClass%}{%endblock%}">
       {%block content%}{%endblock%}
     </main>
     {%include "partials/footer.njk"%} {%include "partials/tracking.njk"%}

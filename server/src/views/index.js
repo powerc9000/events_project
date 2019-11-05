@@ -83,7 +83,7 @@ module.exports = {
         loggedIn: !!req.app.user
       }),
       isCached: process.env.NODE_ENV !== "develop",
-      defaultExtension: "ejs"
+      defaultExtension: "njk"
     });
 
     server.decorate("toolkit", "layout", function(name, data) {
@@ -102,9 +102,9 @@ module.exports = {
         if (req.response.isBoom) {
           const err = req.response;
           if (err.output.payload.statusCode === 404) {
-            return h.layout("404").code(404);
+            return h.view("404").code(404);
           } else {
-            return h.layout("500").code(500);
+            return h.view("500").code(500);
           }
         }
         return h.continue;
@@ -242,7 +242,7 @@ async function renderHelp(req, h) {
     }
     const page = await readFile(path.join(base, name));
     const html = md.render(page.toString());
-    return h.view("layout", { __content: html });
+    return h.view("help", { content: html });
   } catch (e) {
     return Boom.notFound();
   }
