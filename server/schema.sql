@@ -204,6 +204,21 @@ CREATE TABLE public.users (
 
 
 --
+-- Name: validations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.validations (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    email text,
+    phone text,
+    code text NOT NULL,
+    user_id uuid NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL,
+    used timestamp with time zone
+);
+
+
+--
 -- Name: comments comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -332,6 +347,14 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: validations validations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.validations
+    ADD CONSTRAINT validations_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: comments comments_parent_comment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -417,6 +440,14 @@ ALTER TABLE ONLY public.login_codes
 
 ALTER TABLE ONLY public.logins
     ADD CONSTRAINT logins_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: validations validations_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.validations
+    ADD CONSTRAINT validations_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --

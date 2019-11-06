@@ -203,6 +203,12 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/settings",
+      handler: userSettings
+    });
+
+    server.route({
+      method: "GET",
       path: "/s/{id}",
       handler: shortLink
     });
@@ -232,6 +238,17 @@ module.exports = {
     }
   }
 };
+
+async function userSettings(req, h) {
+  const user = req.app.user;
+
+  if (!user) {
+    h.state("turbo_redirect", "/");
+    return h.redirect("/");
+  }
+
+  return h.view("user_settings");
+}
 
 async function renderHelp(req, h) {
   try {
