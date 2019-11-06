@@ -60,7 +60,6 @@ async function getEventBySlug(slug) {
     sql`SELECT * from events where slug = ${slug}`
   );
 
-  console.log(data, slug);
   return formatEvent(data.rows[0]);
 }
 
