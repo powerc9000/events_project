@@ -1,5 +1,6 @@
 let server;
 const sql = require("slonik").sql;
+const crypto = require("crypto");
 const { normalizePhone } = require("../utils");
 
 async function createUser({ provider = {}, email, name, phone }) {
@@ -33,6 +34,17 @@ async function generateLoginToken(userId) {
   };
 
   return result;
+}
+
+async function generateInboundEmail(userId) {
+  const emailId = crypto.randomBytes(10).toString("hex");
+  const email = `${emailId}@inbound.junipercity.com`;
+  const path = `{inbound_email}`;
+  return await server.app.db.maybeOne(
+    sql`update users set settings = jsonb_set(settings, ${path}, ${sql.json(
+      email
+    )}) where id=${userId} returning *`
+  );
 }
 
 async function findUserByProvider(providerName, providerId) {
@@ -126,5 +138,6 @@ module.exports = {
   generateLoginToken,
   createUser,
   init,
+  generateInboundEmail,
   name: "user"
 };

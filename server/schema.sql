@@ -199,7 +199,7 @@ CREATE TABLE public.users (
     name text NOT NULL,
     email text,
     phone text,
-    settings public.hstore
+    settings jsonb DEFAULT '{}'::jsonb
 );
 
 
