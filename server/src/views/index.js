@@ -323,6 +323,8 @@ async function eventDetail(req, h) {
   const event = await eventService.getEventBySlug(req.params.slug);
   let userId = _.get(req, "app.user.id");
 
+  console.log(req.app.user);
+
   if (!event) {
     return Boom.notFound();
   }
