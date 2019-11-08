@@ -1,33 +1,46 @@
 <header class="border-b-2 border-black mb-4">
-	<nav
-		class="container mx-auto py-2 flex justify-between items-center p-4 sm:p-none"
-		>
-		<div class="flex items-center">
-			<p class="mr-8 whitespace-no-wrap">
-			<a href="/" class="underline font-bold text-md  sm:text-lg"
-									>Juniper City</a
-								>
-			</p>
-
-				<p></p>
-				<ul class="flex items-center">
-					{%if loggedIn %}
-						<li class="border-l border-black px-2">
-							<a href="/create" class="sm:text-lg hover:underline">Create Event</a>
-						</li>
-						<li class="pl-2 border-l border-black">
-							<a href="/groups" class="sm:text-lg hover:underline">Groups</a>
-						</li>
-
-					{%endif%}
-				</ul>
+	<nav data-controller="menu-dropdown">
+		<div class="whitespace-no-wrap flex items-center container mx-auto py-2 ">
+			<a href="/" class="underline font-bold text-md  text-lg">Juniper City</a>
+			{%if loggedIn %}
+				<button class="ml-auto text-lg btn btn-green hidden sm:block" data-action="menu-dropdown#toggle">Menu</button>
+			{%else%}
+				<a href="/login" class="text-lg underline ml-auto">Login / Signup</a>
+				{%endif%}
 		</div>
-		{% if not loggedIn %}
-			<div>
-				<a href="/login" class="text-lg hover:underline">Login / Signup</a>
-			</div>
-		{% else %}
-			{%include "partials/user_dropdown.njk"%}
-		{%endif%}
+
+			{%if loggedIn %}
+				<ul class="items-center sm:hidden bg-green-200 border-t border-green-400 flex sm:block" data-target="menu-dropdown.menu">
+				<li class="flex-1">
+					<a href="/create" class="text-xs sm:text-lg hover:underline hover:bg-green-400 block p-2 sm:border-b border-green-400 text-center sm:text-left">
+						<span class="sm:hidden"><i class="fas fa-plus text-xl sm:hidden"></i></span>
+						<span class="block container sm:mx-auto p-0">Create Event</span>
+					</a>
+				</li>
+				<li class="flex-1">
+					<a href="/groups" class="sm:text-lg hover:underline hover:bg-green-400 block p-2 sm:border-b border-green-400 text-center sm:text-left">
+						<span class="sm:hidden"><i class="fas fa-users text-xl"></i></span>
+						<span class="block container sm:mx-auto p-0">Groups</span></a>
+				</li>
+				<li class="flex-1">
+					<a href="/settings" class="sm:text-lg hover:underline hover:bg-green-400 block p-2 sm:border-b border-green-400 text-center sm:text-left">
+						<span class="sm:hidden"><i class="fas fa-cog text-xl sm:hidden"></i></span>
+						<span class="block container sm:mx-auto p-0">Settings</span></a>
+				</li>
+				<li class="sm:mt-4 flex-1">
+					<button
+						data-controller="logout"
+						data-action="logout#logout"
+						class="sm:text-lg hover:underline hover:bg-green-400 block p-2 sm:border-b border-green-400 block w-full sm:text-left text-center"
+						>
+						<span class="sm:hidden"><i class="fas fa-sign-out-alt text-xl sm:hidden"></i></span>
+						<span class="block container sm:mx-auto p-0">Logout</span>
+					</button>
+				</li>
+
+				</ul>
+
+			{%endif%}
+		
 	</nav>
 </header>
