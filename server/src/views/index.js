@@ -13,6 +13,8 @@ const markdown = require("markdown-it");
 const Nunjucks = require("nunjucks");
 const md = markdown({ html: true });
 const mdSafe = markdown();
+const { timezones } = require("../utils");
+const PhoneNumber = require("awesome-phonenumber");
 
 const readFile = util.promisify(fs.readFile);
 
@@ -209,6 +211,12 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/settings/validate/{code}",
+      handler: validateContact
+    });
+
+    server.route({
+      method: "GET",
       path: "/s/{id}",
       handler: shortLink
     });
@@ -235,19 +243,49 @@ module.exports = {
           return Boom.internal();
         }
       });
+      server.route({
+        method: "GET",
+        path: "/valsuccess",
+        handler: (req, h) => {
+          return h.view("validation_success", { validation: { phone: "123" } });
+        }
+      });
+      server.route({
+        method: "GET",
+        path: "/valerror",
+        handler: (req, h) => {
+          return h.view("validation_error", { validation: { phone: "123" } });
+        }
+      });
     }
   }
 };
 
+async function validateContact(req, h) {
+  const validation = await server
+    .getService("user")
+    .validateContact(req.params.code);
+  if (validation) {
+    return h.view("validation_success", { validation });
+  } else {
+    return h.view("validation_error");
+  }
+}
+
 async function userSettings(req, h) {
   const user = req.app.user;
-
+  console.log(user);
   if (!user) {
     h.state("turbo_redirect", "/");
     return h.redirect("/");
   }
 
-  return h.view("user_settings");
+  return h.view("user_settings", {
+    timezones,
+    phone:
+      req.app.user.phone &&
+      new PhoneNumber(req.app.user.phone).getNumber("national")
+  });
 }
 
 async function renderHelp(req, h) {
@@ -332,7 +370,9 @@ async function loginWithOTP(req, h) {
   if (type === "email") {
     codeSource = "Email";
   }
-  return h.layout("login_otp", { codeSource });
+
+  console.log("hello");
+  return h.view("login_otp", { codeSource });
 }
 
 async function eventDetail(req, h) {

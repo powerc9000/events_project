@@ -46,6 +46,19 @@ module.exports = (hapiServer) => async (job) => {
       }
     }
   }
+
+  if (type === "send-validation") {
+    if (data.validation.email) {
+      console.log(data);
+      await sendEmail("email_validation", {
+        to: data.validation.email,
+        subject: "Validate your email on Juniper City",
+        data: {
+          link: data.link
+        }
+      });
+    }
+  }
 };
 
 async function sendEmail(templateName, payload) {

@@ -95,6 +95,13 @@ footer {
 			@apply bg-gray-100 border border-gray-900;
 		}
 	}
+	&:disabled {
+		@apply cursor-default bg-gray-300 border border-gray-700;
+		&:hover {
+
+			@apply bg-gray-300;
+		}
+	}
 }
 
 .input {

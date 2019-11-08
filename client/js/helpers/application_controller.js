@@ -112,6 +112,9 @@ class ApplicationController extends Controller {
     hide: (id) => {
       this.formControl.dispatch("form:hide", null, id);
     },
+    info: (...args) => {
+      this.formControl.dispatch("form:info", ...args);
+    },
     dispatch: (type, message, id, ignoreHide = false) => {
       const event = new CustomEvent(type, {
         bubbles: true,

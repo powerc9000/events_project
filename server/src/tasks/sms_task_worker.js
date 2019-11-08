@@ -36,6 +36,19 @@ module.exports = (server) => async (job) => {
       }
     }
   }
+
+  if (type === "send-validation") {
+    if (data.validation.phone) {
+      const shortlink = await server.getService("shortlinks").create(data.link);
+      const link = `https://junipercity.com/s/${shortlink.key}`;
+      const res = await sendText(
+        data.validation.phone,
+        `Validate your phone on Juniper City ${link}`
+      );
+
+      console.log(res);
+    }
+  }
 };
 
 async function sendText(phone, message) {
