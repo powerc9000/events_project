@@ -199,8 +199,33 @@ module.exports = {
       path: "/inbound",
       handler: inboundEmail
     });
+
+    server.route({
+      method: "POST",
+      path: "/settings",
+      handler: updateSettings
+    });
   }
 };
+
+async function updateSettings(req, h) {
+  const user = req.app.user;
+  if (!user) {
+    return Boom.unauthorized();
+  } else {
+    const result = await server
+      .getService("user")
+      .updateUser(req.app.user.id, req.payload);
+
+    if (result && result.must_validate) {
+      return {
+        must_validate: result.must_validate
+      };
+    } else {
+      return h.response({}).code(200);
+    }
+  }
+}
 
 async function inboundEmail(req, h) {
   const key = req.query.key;

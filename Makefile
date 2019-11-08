@@ -1,5 +1,7 @@
 dev-up:
 	docker-compose -f docker-compose.dev.yml up -d
+dev-build:
+	docker-compose -f docker-compose.dev.yml build server
 api-logs:
 	docker-compose -f docker-compose.dev.yml logs -f --tail=20 server
 dev: dev-up api-logs

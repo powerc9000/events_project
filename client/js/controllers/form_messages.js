@@ -18,6 +18,17 @@ export default class extends ApplicationController {
       this.autoHide(data.ignoreHide);
     }
   };
+  info = (event) => {
+    this.showField(event, "info");
+  };
+  showField(event, target) {
+    if (this.matchesId(event)) {
+      const data = event.detail;
+      this.showTarget(target);
+      this.targets.find(target).textContent = event.detail.message;
+      this.autoHide(data.ignoreHide);
+    }
+  }
   autoHide(ignore) {
     if (this.data.get("autoHide") && !ignore) {
       const duration = parseInt(this.data.get("autoHide"), 10);

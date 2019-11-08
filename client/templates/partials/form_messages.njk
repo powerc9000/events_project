@@ -3,11 +3,15 @@
   data-controller="form-messages"
   data-form-messages-form-id="{{id}}"
   data-form-messages-auto-hide="{{autoHide}}"
-  data-action="form:success@document->form-messages#success form:error@document->form-messages#error form:hide@document->form-messages#hide"
+	data-action="form:success@document->form-messages#success form:error@document->form-messages#error form:hide@document->form-messages#hide form:info@document->form-messages#info"
 >
   <div
     data-target="form-messages.success"
     class="p-1 bg-green-300 border-l-4 border-green-500 hidden"
+		></div>
+  <div
+    data-target="form-messages.info"
+    class="p-1 bg-blue-300 border-l-4 border-blue-500 hidden"
   ></div>
   <div
     data-target="form-messages.error"
