@@ -15,6 +15,7 @@ const md = markdown({ html: true });
 const mdSafe = markdown();
 const { timezones } = require("../utils");
 const PhoneNumber = require("awesome-phonenumber");
+const sanitizeHtml = require("sanitize-html");
 
 const readFile = util.promisify(fs.readFile);
 
@@ -452,19 +453,24 @@ async function eventDisussion(req, h) {
 
   const map = new Map();
 
-  console.log(allComments);
-
   allComments.forEach((c) => {
     map.set(c.id, { ...c, children: [] });
   });
 
   const comments = [];
   allComments.forEach((c) => {
+    c.body = sanitizeHtml(c.body, {
+      allowedTags: [
+        ..._.filter(sanitizeHtml.defaults.allowedTags, (t) => t !== "iframe"),
+        "h2",
+        "del",
+        "blockquote"
+      ]
+    });
     if (c.parent_comment) {
       const parent = map.get(c.parent_comment);
       parent.children.push(c);
     } else {
-      console.log("no parent");
       comments.push(c);
     }
   });

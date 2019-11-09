@@ -6,8 +6,12 @@ html {
 	@apply h-full;
 }
 body {
-	font-family: monospace;
+	font-family: "Courier New", monospace;
 	@apply flex flex-col h-full;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Courier Header", monospace;
 }
 
 .event-link:hover {
