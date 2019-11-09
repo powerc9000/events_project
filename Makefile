@@ -5,6 +5,8 @@ dev-build:
 api-logs:
 	docker-compose -f docker-compose.dev.yml logs -f --tail=20 server
 dev: dev-up api-logs
+restart-dev: 
+	docker-compose -f docker-compose.dev.yml restart server
 
 login: 
 	docker login registry.gitlab.com
