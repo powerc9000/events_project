@@ -25,4 +25,12 @@ export default class extends ApplicationController {
       this.page.reload();
     }
   }
+  toggleForm() {
+    this.toggleTarget("form");
+    this.toggleTarget("commentFormToggle");
+  }
+  resetForm() {
+    this.toggleTarget("form");
+    this.toggleTarget("commentFormToggle");
+  }
 }
