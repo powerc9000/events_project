@@ -450,7 +450,7 @@ async function getComments(eventId) {
     sql`SELECT *, 
 		row_to_json((select d from (select * from users where id = c.user_id) d)) as user 
 		from comments c 
-		where entity_id=${eventId} order by parent_comment`
+		where entity_id=${eventId} order by created desc`
   );
 }
 
@@ -464,6 +464,41 @@ async function createComment(userId, eventId, parentId, body) {
   );
 }
 
+async function getEventsCommentDigest() {
+  return server.app.db.any(
+    sql`
+		with updated_comments as (
+		update comments set notified = TRUE where notified is FALSE returning *
+		)
+		select e.*, (
+			select json_agg(c) from (
+				select nc.*, (
+					select row_to_json(u) from (
+						select * from users where users.id = nc.user_id
+					) u
+				) as creator 
+				from updated_comments nc where nc.entity_id = e.id			
+				) c
+		) as comments,
+		(
+			select json_agg(i) from (
+				select ni.*, (
+					select row_to_json(u) from (
+						select * from users where users.id = ni.user_id
+					) u
+				) as user 
+				from invites ni where ni.event_id = e.id
+			) i
+		) as invites,
+		(
+			select row_to_json(r) from (
+				select * from users where users.id = e.creator
+			) r
+		) as creator
+		from events e where exists (select * from updated_comments where e.id = updated_comments.entity_id)`
+  );
+}
+
 function init(hapiServer) {
   server = hapiServer;
   //set up database
@@ -471,6 +506,7 @@ function init(hapiServer) {
 }
 
 module.exports = {
+  name: "events",
   inviteUsersToEvent,
   canInviteToEvent,
   canRSVPToEvent,
@@ -489,5 +525,5 @@ module.exports = {
   resendInvite,
   getComments,
   createComment,
-  name: "events"
+  getEventsCommentDigest
 };

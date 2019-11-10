@@ -1,4 +1,6 @@
 const PhoneNumber = require("awesome-phonenumber");
+const sanitizeHtml = require("sanitize-html");
+const _ = require("lodash");
 
 module.exports = {
   normalizePhone: (number) => {
@@ -16,6 +18,16 @@ module.exports = {
     } catch (e) {
       console.log(e);
     }
+  },
+  sanitize: (text) => {
+    return sanitizeHtml(text, {
+      allowedTags: [
+        ..._.filter(sanitizeHtml.defaults.allowedTags, (t) => t !== "iframe"),
+        "h2",
+        "del",
+        "blockquote"
+      ]
+    });
   },
   timezones: [
     {

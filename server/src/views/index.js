@@ -13,9 +13,8 @@ const markdown = require("markdown-it");
 const Nunjucks = require("nunjucks");
 const md = markdown({ html: true });
 const mdSafe = markdown();
-const { timezones } = require("../utils");
+const { timezones, sanitize } = require("../utils");
 const PhoneNumber = require("awesome-phonenumber");
-const sanitizeHtml = require("sanitize-html");
 
 const readFile = util.promisify(fs.readFile);
 
@@ -432,7 +431,7 @@ async function eventDetail(req, h) {
     canInvite,
     canSeeInvites,
     isCreator: event.creator.id === userId,
-    mdDescription: mdSafe.render(event.description || "")
+    mdDescription: sanitize(event.description)
   });
 }
 
@@ -459,14 +458,7 @@ async function eventDisussion(req, h) {
 
   const comments = [];
   allComments.forEach((c) => {
-    c.body = sanitizeHtml(c.body, {
-      allowedTags: [
-        ..._.filter(sanitizeHtml.defaults.allowedTags, (t) => t !== "iframe"),
-        "h2",
-        "del",
-        "blockquote"
-      ]
-    });
+    c.body = sanitize(c.body);
     if (c.parent_comment) {
       const parent = map.get(c.parent_comment);
       parent.children.push(c);
@@ -527,7 +519,9 @@ async function homepage(req, h) {
   if (!req.app.user) {
     view = "welcome";
   }
-  console.log(view);
+  events.forEach((e) => {
+    e.description = sanitize(e.description);
+  });
   return h.view(view, { events });
 }
 

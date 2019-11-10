@@ -2,6 +2,7 @@
 {%block title%}Create A New Event{%endblock%} 
 {%block css%}
 
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.0/trix.css"/>
 	<link
 		rel="stylesheet"
 		href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
@@ -55,26 +56,12 @@
 						/>
 				</label>
 			</div>
-			<div class="mt-2">
-				<label class="font-bold cursor-pointer">
+			<div class="mt-2" data-controller="trix">
+				<input type="hidden" id="description" value="{{event.description}}" name="description" />
+				<label class="font-bold cursor-pointer" for="editor">
 					Event Description
-					<textarea
-						name="description"
-						placeholder="description"
-						class="w-full input"
-						required
-						>{{event.description}}</textarea>
-
-					<span class="font-normal text-xs text-gray-700">
-						Supports
-						<a
-							href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet"
-							class="underline text-blue-400"
-							>
-							Markdown
-						</a>
-					</span>
 				</label>
+				<trix-editor input="description" id="editor"></trix-editor>
 			</div>
 			{%if groups.length %}
 				<div class="mt-2">
@@ -127,4 +114,5 @@
 			</div>
 		</form>
 	</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.0/trix-core.js" ></script>
 {%endblock%}

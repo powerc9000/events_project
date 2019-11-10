@@ -1,12 +1,6 @@
 import { ApplicationController } from "../helpers/application_controller";
 
 export default class extends ApplicationController {
-  initTrix() {
-    Trix.config.blockAttributes.heading1 = { tagName: "h2" };
-  }
-  async trixAttach(e) {
-    e.preventDefault();
-  }
   async createComment(e) {
     e.preventDefault();
     const form = this.targets.find("form");
