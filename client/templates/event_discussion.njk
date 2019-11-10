@@ -45,6 +45,8 @@
 					</p>
 					<div class="text-md p-2 trix-c">{{comment.body | safe }}</div>
 				</li>
+			{%else%}
+				<li>No comments yet</li>
       {%endfor%}
     </ul>
   </div>
