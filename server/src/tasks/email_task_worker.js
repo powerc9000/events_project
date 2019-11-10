@@ -63,18 +63,15 @@ module.exports = (hapiServer) => async (job) => {
 
   if (type === "event-comments") {
     try {
-      if (data.invite.user.email) {
-        let key = "";
-        if (data.invite.ivnite_key) {
-          key = `?invite_key=${data.invite.invite_key}`;
-        }
+      if (data.user.email) {
+        console.log(data);
         await sendEmail("event_comments.njk", {
-          to: data.invite.user.email,
-          subject: "New comments on an event you're invited to",
+          to: data.user.email,
+          subject: "New comments on events you're invited to",
           data: {
-            event: data.event,
+            events: data.events,
             sanitize,
-            link: `https://junipercity.com/events/${data.event.slug}${key}`
+            link: `https://junipercity.com`
           }
         });
       }
