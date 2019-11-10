@@ -41,7 +41,7 @@
       {% for comment in comments %}
 				<li class="mb-2 border rounded border-gray-300">
 					<p class="text-gray-700 text-xs bg-gray-200 p-2">
-					<span class="underline">{{comment.user.name | default(comment.user.email) | default(comment.user.phone) }}</span> - <span data-controller="format-date" data-target="format-date.date" data-format-date-epoch="{{comment.created}}">{{date.format(comment.created, "PPpp")}}</span>
+					<span class="underline">{{comment.user.name | default(comment.user.email, true) | default(comment.user.phone, true) }}</span> - <span data-controller="format-date" data-target="format-date.date" data-format-date-epoch="{{comment.created}}">{{date.format(comment.created, "PPpp")}}</span>
 					</p>
 					<div class="text-md p-2 trix-c">{{comment.body | safe }}</div>
 				</li>
