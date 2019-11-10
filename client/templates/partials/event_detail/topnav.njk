@@ -1,0 +1,20 @@
+{%macro event_nav(path, commentCount, active)%}
+
+{%set inactiveClass = "bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold"%}
+{%set activeClass = "bg-white inline-block py-2 px-4 text-blue-700  font-semibold font-semibold  border-l border-t border-r rounded-t border-gray-800" %}
+
+<ul class="flex border-b border-gray-800 text-md my-4">
+	<li class="{{"-mb-px" if active === "base"}} mr-1 pl-2">
+		<a
+			class="{{activeClass if active === "base" else inactiveClass}}"
+			href="{{path}}"
+			>Event Details</a>
+	</li>
+	<li class="{{"-mb-px" if active === "discussion"}} mr-1">
+		<a
+			class="{{activeClass if active === "discussion" else inactiveClass}}"
+			href="{{path}}/discussion"
+			>Discussion <span class="bg-green-800 text-white p-1 rounded-full text-xs" arial-label="Total comments: {{commentCount}}">{{commentCount}}</span></a>
+	</li>
+</ul>
+{%endmacro%}
