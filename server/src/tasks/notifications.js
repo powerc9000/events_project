@@ -7,6 +7,7 @@ module.exports = (server) => async (job) => {
       events.forEach((event) => {
         if (event.invites) {
           event.invites.forEach((invite) => {
+            if (invite.user.id === event.creator.id) return;
             server.createTask("event-comments", {
               invite,
               event

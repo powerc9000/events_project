@@ -49,6 +49,26 @@ module.exports = (server) => async (job) => {
       console.log(res);
     }
   }
+
+  if (type === "event-comments") {
+    if (data.invite.user.phone) {
+      try {
+        let key = "";
+        if (data.invite.ivnite_key) {
+          key = `?invite_key=${data.invite.invite_key}`;
+        }
+        const short = await server
+          .getService("shortlinks")
+          .create(`https://junipercity.com/events/${data.event.slug}${key}`);
+        await sendText(
+          data.invite.user.phone,
+          `New comments on an event in Juniper City https://junipercity.com/s/${short.key}`
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
 };
 
 async function sendText(phone, message) {
