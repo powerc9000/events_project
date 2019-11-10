@@ -1,7 +1,9 @@
 <header class="border-b-2 border-black mb-4">
 	<nav data-controller="menu-dropdown">
 		<div class="whitespace-no-wrap flex items-center container mx-auto py-2 ">
-			<a href="/" class="underline font-bold text-md  text-lg">Juniper City</a>
+			<a href="/" class="underline font-bold text-md  text-lg block" aria-label="Juniper City" style="max-height:50px">
+				<img src="/static/img/logo_small.png" alt="Juniper City Logo" class="object-contain block" width="150"/>
+			</a>
 			{%if loggedIn %}
 				<button class="ml-auto text-lg btn btn-green hidden sm:block" data-action="menu-dropdown#toggle">Menu</button>
 			{%else%}

@@ -2,30 +2,40 @@
   <mj-body>
     <mj-section>
       <mj-column>
-        <mj-text>
-		There are new comments on an event you're invited to: {{event.name}}
-        </mj-text>
+        <mj-image 
+                  width="200px" src="https://junipercity.com/static/img/logo_small.png"/>
       </mj-column>
     </mj-section>
-    <mj-section>
+    <mj-section padding-bottom="0">
       <mj-column>
-        <mj-text>
-          <a href="{{link}}">View the event here</a>
-        </mj-text>
+        <mj-text> There are new comments on an event you're invited to: {{event.name}} </mj-text>
       </mj-column>
     </mj-section>
-    <mj-section>
+    <mj-section padding-top="0">
       <mj-column>
-	{%for comment in event.comments%}
-        <mj-text text-decoration="underline">
-          {{comment.creator.name}}
-        </mj-text>
-        <mj-text>
-          {{sanitize(comment.body) | safe}}
-        </mj-text>
-        <mj-spacer height="10px" />
-	{%endfor%}
-       </mj-column>
+        <mj-button href="{{link}}" background-color="#9AE6B4" color="black" border="#48BB78" border-radius="10px">View the event</mj-button>
+      </mj-column>
     </mj-section>
+    <mj-section padding="0">
+      <mj-column>
+        <mj-text font-size="20px">Comments</mj-text>
+      </mj-column>
+    </mj-section> 
+    {%for comment in event.comments%}
+    <mj-wrapper padding="0" border="1px #F0F0F0 solid">
+      <mj-section background-color="#EDF2F7" padding="2px">
+        <mj-column>
+          <mj-text text-decoration="underline"> {{comment.creator.name}} </mj-text>
+        </mj-column>
+      </mj-section>
+    <mj-section padding="2px" >
+      <mj-column> 
+        
+        <mj-text> {{sanitize(comment.body) | safe}} </mj-text> 
+      </mj-column>
+    </mj-section>
+      
+    </mj-wrapper>
+    {%endfor%}
   </mj-body>
 </mjml>
