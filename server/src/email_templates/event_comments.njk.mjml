@@ -1,0 +1,31 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text>
+		There are new comments on an event you're invited to: {{event.name}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
+        <mj-text>
+          <a href="{{link}}">View the event here</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
+	{%for comment in event.comments%}
+        <mj-text text-decoration="underline">
+          {{comment.creator.name}}
+        </mj-text>
+        <mj-text>
+          {{sanitize(comment.body) | safe}}
+        </mj-text>
+        <mj-spacer height="10px" />
+	{%endfor%}
+       </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

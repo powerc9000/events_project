@@ -4,6 +4,8 @@ const mjml = require("mjml");
 const path = require("path");
 const postmark = require("postmark");
 const client = new postmark.Client(process.env.POSTMARK_API_KEY);
+const nunjucks = require("nunjucks");
+const { sanitize } = require("../utils");
 let server;
 module.exports = (hapiServer) => async (job) => {
   server = hapiServer;
@@ -49,7 +51,6 @@ module.exports = (hapiServer) => async (job) => {
 
   if (type === "send-validation") {
     if (data.validation.email) {
-      console.log(data);
       await sendEmail("email_validation", {
         to: data.validation.email,
         subject: "Validate your email on Juniper City",
@@ -59,12 +60,39 @@ module.exports = (hapiServer) => async (job) => {
       });
     }
   }
+
+  if (type === "event-comments") {
+    try {
+      if (data.invite.user.email) {
+        let key = "";
+        if (data.invite.ivnite_key) {
+          key = `?invite_key=${data.invite.invite_key}`;
+        }
+        await sendEmail("event_comments.njk", {
+          to: data.invite.user.email,
+          subject: "New comments on an event you're invited to",
+          data: {
+            event: data.event,
+            sanitize,
+            link: `https://junipercity.com/events/${data.event.slug}${key}`
+          }
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
 };
 
 async function sendEmail(templateName, payload) {
   try {
     const templateString = await getTemplate(templateName);
-    const template = mustache.render(templateString, payload.data);
+    let template;
+    if (templateName.includes(".njk")) {
+      template = nunjucks.renderString(templateString, payload.data);
+    } else {
+      template = mustache.render(templateString, payload.data);
+    }
     const subject = mustache.render(payload.subject, payload.data);
     const html = mjml(template).html;
     const res = await client.sendEmail({

@@ -168,11 +168,12 @@
         {%endif%}
       </div>
 
-      <hr />
       <div class="mt-2 md mb-2">
-        <details open>
-          <summary>Description</summary>
-          {{mdDescription | safe}}
+        <details open class="">
+					<summary class="cursor-pointer border-b border-gray-300">Description</summary>
+					<div class="mt-4">
+						{{mdDescription | safe}}
+					</div>
         </details>
       </div>
       <hr class="sm:hidden" />

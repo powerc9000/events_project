@@ -1,24 +1,32 @@
 {% extends "layout.njk" %}
 {%block content%}
-<div class="container mx-auto content max-w-3xl">
-  <div class="mt-4">
-    <h1 class="text-2xl font-bold text-center mb-4">Your Events</h1>
-    <ul class="list-disc pl-4">
-	{% for event in events %}
-      <li class="py-2">
-        <h3 class="text-lg">
-          <a
-            href="/events/{{event.slug}}"
-            class="text-blue-700 hover:underline"
-            >{{event.name}} - {{date.format(event.date, "PP")}}</a
-          >
-        </h3>
-        <p>
-          {{event.description}}
-        </p>
-      </li>
-	{%endfor%}
-    </ul>
-  </div>
-</div>
+	<div class="container mx-auto content max-w-3xl">
+		<div class="mt-4">
+			<h1 class="text-2xl font-bold text-center mb-4">Your Events</h1>
+			{{eventsList(events)}}
+		</div>
+	</div>
 {%endblock%}
+
+{%macro eventsList(events, format=date.format)%}
+<ul class="list-disc pl-4">
+	{% for event in events %}
+		<li class="py-2">
+			<h3 class="text-lg">
+				<a
+					href="/events/{{event.slug}}"
+					class="text-blue-700 hover:underline"
+					>{{event.name}} - {{format(event.date, "PP")}}</a
+				>
+			</h3>
+					<details>
+						<summary class="cursor-pointer">View Description</summary>
+
+						<div class="trix-c">{{event.description | safe}}</div>
+					</details>
+		</li>
+
+{%endfor%}
+
+</ul>
+{%endmacro%}

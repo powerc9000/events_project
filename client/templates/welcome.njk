@@ -1,4 +1,5 @@
 {%extends "layout.njk"%}
+{%from "homepage.njk" import eventsList %}
 {%block content %}
 <div class="container content mx-auto">
   <div class="text-xl">
@@ -28,22 +29,8 @@
       >
     </section>
     <section class="mt-8">
-      <h2 class="font-bold text-xl">Public events</h2>
-			<ul class="pl-4 list-disc">
-				{%for event in events%}
-        <li class="py-2">
-          <h3 class="text-sl">
-            <a
-              href="/events/{{event.slug}}"
-              class="text-blue-700 hover:underline"
-							>{{event.name}} - {{date.format(event.date, "PP")}}</a>
-          </h3>
-          <p class="text-lg">
-            {{event.description}}
-          </p>
-				</li>
-				{%endfor%}
-      </ul>
+			<h2 class="font-bold text-xl">Public events</h2>
+			{{eventsList(events, format=date.format)}}
     </section>
   </div>
 </div>

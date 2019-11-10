@@ -3,6 +3,7 @@ const Queue = require("bull");
 const email = require("./email_task_worker");
 const sms = require("./sms_task_worker");
 const inboundEmail = require("./inbound_email");
+const notifications = require("./notifications");
 module.exports = {
   name: "tasks",
   register: async function(hapiServer) {
@@ -33,13 +34,30 @@ module.exports = {
       redis: redisConnection
     });
 
+    const notificationsQueue = new Queue("notifications", {
+      redis: redisConnection
+    });
+
     emailQueue.process(email(server));
     smsQueue.process(sms(server));
     inboundEmailQueue.process(inboundEmail(server));
+    notificationsQueue.process(notifications(server));
 
     queues.push(emailQueue);
     queues.push(smsQueue);
     queues.push(inboundEmailQueue);
+
+    notificationsQueue.add(
+      {
+        type: "check-comments"
+      },
+      {
+        jobId: "check-comments",
+        repeat: {
+          every: 60 * 1000 * 5
+        }
+      }
+    );
 
     server.decorate("server", "createTask", function(type, data) {
       queues.forEach((queue) => {
