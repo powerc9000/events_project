@@ -1,41 +1,49 @@
 <mjml>
-  <mj-body>
-    <mj-section>
-      <mj-column>
-        <mj-image 
-                  width="200px" src="https://junipercity.com/static/img/logo_small.png"/>
-      </mj-column>
-    </mj-section>
-    <mj-section padding-bottom="0">
-      <mj-column>
-        <mj-text> There are new comments on an event you're invited to: {{event.name}} </mj-text>
-      </mj-column>
-    </mj-section>
-    <mj-section padding-top="0">
-      <mj-column>
-        <mj-button href="{{link}}" background-color="#9AE6B4" color="black" border="#48BB78" border-radius="10px">View the event</mj-button>
-      </mj-column>
-    </mj-section>
-    <mj-section padding="0">
-      <mj-column>
-        <mj-text font-size="20px">Comments</mj-text>
-      </mj-column>
-    </mj-section> 
-    {%for comment in event.comments%}
-    <mj-wrapper padding="0" border="1px #F0F0F0 solid">
-      <mj-section background-color="#EDF2F7" padding="2px">
-        <mj-column>
-          <mj-text text-decoration="underline"> {{comment.creator.name}} </mj-text>
-        </mj-column>
-      </mj-section>
-    <mj-section padding="2px" >
-      <mj-column> 
-        
-        <mj-text> {{sanitize(comment.body) | safe}} </mj-text> 
-      </mj-column>
-    </mj-section>
-      
-    </mj-wrapper>
-    {%endfor%}
-  </mj-body>
+<mj-body>
+	<mj-section>
+		<mj-column>
+			<mj-image 
+				width="200px" src="https://junipercity.com/static/img/logo_small.png"/>
+		</mj-column>
+	</mj-section>
+	<mj-section padding-bottom="0">
+		<mj-column>
+			<mj-text> There are new comments on events you're invited to on Juniper City</mj-text>
+		</mj-column>
+	</mj-section>
+	{%for event in events%}
+		<mj-section padding-top="50px" padding-bottom="0">
+			<mj-column>
+				<mj-text><a  href="https://junipercity.com/events/{{event.slug}}">{{event.name}}</a></mj-text>
+			</mj-column>
+		</mj-section>
+		<mj-section padding="0">
+			<mj-column>
+				<mj-text font-size="20px">Comments</mj-text>
+			</mj-column>
+		</mj-section> 
+		{%for comment in event.comments%}
+			<mj-wrapper padding="0" border="1px #F0F0F0 solid">
+				<mj-section background-color="#EDF2F7" padding="2px">
+					<mj-column>
+						<mj-text text-decoration="underline"> {{comment.creator.name | default(comment.creator.email, true) | default(comments.creator.phone, true)}} </mj-text>
+					</mj-column>
+				</mj-section>
+				<mj-section padding="2px" >
+					<mj-column> 
+
+						<mj-text> {{sanitize(comment.body) | safe}} </mj-text> 
+					</mj-column>
+				</mj-section>
+
+			</mj-wrapper>
+			<mj-section padding="5px">
+				<mj-column></mj-column>
+			</mj-section>
+
+		{%endfor%}
+
+
+	{%endfor%}
+</mj-body>
 </mjml>

@@ -470,32 +470,33 @@ async function getEventsCommentDigest() {
 		with updated_comments as (
 		update comments set notified = TRUE where notified is FALSE returning *
 		)
-		select e.*, (
-			select json_agg(c) from (
-				select nc.*, (
-					select row_to_json(u) from (
-						select * from users where users.id = nc.user_id
-					) u
-				) as creator 
-				from updated_comments nc where nc.entity_id = e.id			
-				) c
-		) as comments,
-		(
-			select json_agg(i) from (
-				select ni.*, (
-					select row_to_json(u) from (
-						select * from users where users.id = ni.user_id
-					) u
-				) as user 
-				from invites ni where ni.event_id = e.id
-			) i
-		) as invites,
-		(
-			select row_to_json(r) from (
-				select * from users where users.id = e.creator
-			) r
-		) as creator
-		from events e where exists (select * from updated_comments where e.id = updated_comments.entity_id)`
+		select u.*, (
+			select json_agg(e) from (
+				select events.*, (
+					select json_agg(c) from (
+						select comments.*, (
+							select row_to_json(commentor) from (
+								select * from users where users.id = comments.user_id
+							) commentor
+						) creator
+						from comments where entity_id = events.id and notified = FALSE
+					) c
+				) as comments
+				from events
+				inner join updated_comments on updated_comments.entity_id = events.id
+				inner join invites ii on ii.event_id = events.id
+				where ii.user_id = u.id or events.creator = u.id
+				group by events.id
+			) e
+		) as events
+		from users u where exists (
+			select * from updated_comments uc
+			inner join events on events.id = uc.entity_id
+			inner join invites r on uc.entity_id = r.event_id
+			where 
+			(events.creator = u.id or r.user_id = u.id) and uc.user_id != u.id
+		)
+		`
   );
 }
 

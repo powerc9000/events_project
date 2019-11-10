@@ -51,18 +51,11 @@ module.exports = (server) => async (job) => {
   }
 
   if (type === "event-comments") {
-    if (data.invite.user.phone) {
+    if (data.user.phone) {
       try {
-        let key = "";
-        if (data.invite.ivnite_key) {
-          key = `?invite_key=${data.invite.invite_key}`;
-        }
-        const short = await server
-          .getService("shortlinks")
-          .create(`https://junipercity.com/events/${data.event.slug}${key}`);
         await sendText(
-          data.invite.user.phone,
-          `New comments on an event in Juniper City https://junipercity.com/s/${short.key}`
+          data.user.phone,
+          `New comments your events in Juniper City https://junipercity.com/`
         );
       } catch (e) {
         console.log(e);

@@ -551,19 +551,25 @@ const tw = new LoginWithTwitter({
 });
 
 async function inviteToEvent(req, h) {
-  const events = server.getService("events");
-  if (!req.loggedIn()) {
-    return Boom.unauthorized();
-  }
-  const canInvite = await events.canInviteToEvent(
-    req.params.id,
-    req.app.user.id
-  );
-  if (!canInvite) {
-    return Boom.unauthorized();
-  }
+  try {
+    const events = server.getService("events");
+    if (!req.loggedIn()) {
+      return Boom.unauthorized();
+    }
+    const canInvite = await events.canInviteToEvent(
+      req.params.id,
+      req.app.user.id
+    );
+    if (!canInvite) {
+      return Boom.unauthorized();
+    }
 
-  events.inviteUsersToEvent(req.params.id, req.payload.invites);
+    events.inviteUsersToEvent(req.params.id, req.payload.invites);
 
-  return h.response().code(204);
+    console.log("hello?");
+
+    return h.response().code(204);
+  } catch (e) {
+    console.log(e);
+  }
 }
