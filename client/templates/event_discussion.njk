@@ -6,7 +6,7 @@
 {%endblock%}
 {%block content %}
 	<div class="container mx-auto content" data-controller="event-discussion">
-		{{event_nav(path, comments.length, "discussion")}}
+		{{event_nav(path, comments.length, "discussion", allowDiscussion=event.allow_comments)}}
 		<div>
 			<form
 				class="hidden"
@@ -40,5 +40,4 @@
 			</ul>
 		</div>
 	</div>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.0/trix-core.js" ></script>
 {%endblock%}

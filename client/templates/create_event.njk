@@ -1,5 +1,6 @@
 {%extends "layout.njk"%} 
 {%block title%}Create A New Event{%endblock%} 
+{%from "partials/form_messages.njk" import messages%}
 {%block css%}
 
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.0/trix.css"/>
@@ -11,10 +12,14 @@
 {%block content%}
 	<div class="container mx-auto content p-4 sm:p-none">
 		<h1 class="text-xl font-bold">Create an event</h1>
+		<div class="my-2">
+			{{messages("create")}}
+		</div>
 		<form
 			data-controller="create"
-			data-action="create#createEvent"
+			data-action="create#createEvent input->create#formInput"
 			data-target="create.form"
+			data-create-event-date="{{event.date if event.date}}"
 			autocomplete="off"
 			>
 			<input type="hidden" name="edited_event" value="{{event.id}}" />
@@ -35,12 +40,23 @@
 				<label class="font-bold cursor-pointer">
 					Event Date
 					<input
-						type="datetime-local"
+						type="date"
 						name="date"
 						class="input"
-						data-target="create.datepicker"
 						placeholder="Event Date"
-						value="{{date.fromUnixTime(event.date/1000).toISOString() if event.date}}"
+						value="{{date.format(date.fromUnixTime(event.date/1000), "yyyy-LL-dd") if event.date}}"
+						/>
+				</label>
+			</div>
+			<div class="mt-2">
+				<label class="font-bold cursor-pointer">
+					Event Time
+					<input
+						type="time"
+						name="time"
+						class="input"
+						placeholder="Event Date"
+						value="{{date.format(date.fromUnixTime(event.date/1000), "HH:mm") if event.date}}"
 						/>
 				</label>
 			</div>
@@ -114,5 +130,4 @@
 			</div>
 		</form>
 	</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.0/trix-core.js" ></script>
 {%endblock%}
