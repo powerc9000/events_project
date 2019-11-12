@@ -1,89 +1,90 @@
 {%extends "layout.njk"%}
+{%block css%}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.0/trix.css"/>
+{%endblock%} 
 {%block content%}
-<div class="content container mx-auto" data-controller="create-group">
-  <h1 class="text-2xl font-bold">Create a new group</h1>
-  <form data-target="create-group.form" data-action="create-group#submit">
-    <div class="mt-4">
-      <label class="font-bold cursor-pointer">
-        Pick a name for your group
-        <input
-          class="w-full input"
-          type="text"
-          name="name"
-          placeholder="Name"
-          required
-        />
-      </label>
-    </div>
+	<div class="content container mx-auto" data-controller="create-group">
+		<h1 class="text-2xl font-bold">Create a new group</h1>
+		<form data-target="create-group.form" data-action="create-group#submit">
+			<div class="mt-4">
+				<label class="font-bold cursor-pointer">
+					Pick a name for your group
+					<input
+						class="w-full input"
+						type="text"
+						name="name"
+						placeholder="Name"
+						required
+						/>
+				</label>
+			</div>
 
-    <div class="mt-4">
-      <label class="font-bold cursor-pointer" for="custom-path">
-        Custom path <span class="text-xs text-gray-700">(optional)</span>
-      </label>
-      <div class="flex items-center">
-        <span class="whitespace-no-wrap border border-gray-600 bg-gray-100 p-1"
-          >junipercity.com/groups/</span
-        ><input
-          type="text"
-          id="custom-path"
-          name="custom_path"
-          class="input w-full"
-          placeholder="Custom Path"
-          data-target="create-group.customPath"
-          data-action="input->create-group#customChanged"
-        />
-      </div>
-      <p class="text-xs text-gray-700">
-        By default your group will have the url
-        <span class="font-bold"
-          >https://junipercity.com/groups/&lt;group-id&gt;</span
-        >
-      </p>
-      <p class="text-xs text-gray-700">You can customize it here.</p>
-      <p class="text-xs text-gray-700">
-        Only lowercase letters, numbers, and dash allowed (a-z, 0-9, -)
-      </p>
-    </div>
+			<div class="mt-4">
+				<label class="font-bold cursor-pointer" for="custom-path">
+					Custom path <span class="text-xs text-gray-700">(optional)</span>
+				</label>
+				<div class="flex items-center">
+					<span class="whitespace-no-wrap border border-gray-600 bg-gray-100 p-1"
+								>junipercity.com/groups/</span
+							><input
+								 type="text"
+								 id="custom-path"
+								 name="custom_path"
+								 class="input w-full"
+								 placeholder="Custom Path"
+								 data-target="create-group.customPath"
+								 data-action="input->create-group#customChanged"
+								 />
+				</div>
+				<p class="text-xs text-gray-700">
+				By default your group will have the url
+				<span class="font-bold"
+							>https://junipercity.com/groups/&lt;group-id&gt;</span
+						>
+				</p>
+					<p class="text-xs text-gray-700">You can customize it here.</p>
+					<p class="text-xs text-gray-700">
+					Only lowercase letters, numbers, and dash allowed (a-z, 0-9, -)
+					</p>
+			</div>
 
-    <div class="mt-4">
-      <label class="font-bold cursor-pointer">
-        Description of your group
-        <span class="text-xs text-gray-700">(optional)</span>
+			<div class="mt-4" data-controller="trix">
+				<label class="font-bold cursor-pointer">
+					Description of your group
+					<span class="text-xs text-gray-700">(optional)</span>
+				</label>
 
-        <textarea
-          name="description"
-          class="input w-full"
-          placeholder="Description"
-        ></textarea>
-      </label>
-    </div>
+					<input type="hidden" id="description" name="description" />
+					<trix-editor input="description" id="editor"></trix-editor>
 
-    <div class="mt-4">
-      <label class="cursor-pointer font-bold"
-        >Keep this group private?
-        <input type="checkbox" name="is_private" checked
-      /></label>
-      <p class="text-xs text-gray-700">
-        Only you and group members will be able to see this group and its events
-      </p>
-    </div>
+			</div>
 
-    <div class="mt-4">
-      <label class="cursor-pointer font-bold"
-        >Allow other members to invite?
-        <input type="checkbox" name="allow_inviting"
-      /></label>
-      <p class="text-xs text-gray-700">
-        By default only group moderators and admins can invite new group
-        members. Checking this will allow anyone in the group to do so.
-      </p>
-    </div>
+			<div class="mt-4">
+				<label class="cursor-pointer font-bold"
+							 >Keep this group private?
+							 <input type="checkbox" name="is_private" checked
+																			/></label>
+				<p class="text-xs text-gray-700">
+				Only you and group members will be able to see this group and its events
+				</p>
+			</div>
 
-    <div class="mt-6">
-      <button class="btn btn-green" type="submit">
-        Create Group
-      </button>
-    </div>
-  </form>
-</div>
+			<div class="mt-4">
+				<label class="cursor-pointer font-bold"
+							 >Allow other members to invite?
+							 <input type="checkbox" name="allow_inviting"
+																			/></label>
+				<p class="text-xs text-gray-700">
+				By default only group moderators and admins can invite new group
+				members. Checking this will allow anyone in the group to do so.
+				</p>
+			</div>
+
+			<div class="mt-6">
+				<button class="btn btn-green" type="submit">
+					Create Group
+				</button>
+			</div>
+		</form>
+	</div>
 {%endblock%}

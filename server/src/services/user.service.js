@@ -13,8 +13,6 @@ async function createUser({ provider = {}, email, name = "", phone }) {
     fieldValue = normalizePhone(phone);
   }
 
-  console.log(field, fieldValue);
-
   const query = await server.app.db.query(
     sql`INSERT INTO users (provider, ${field}, name) values (${sql.json(
       provider
