@@ -4,7 +4,7 @@ const sql = require("slonik").sql;
 const crypto = require("crypto");
 const { normalizePhone } = require("../utils");
 
-async function createUser({ provider = {}, email, name, phone }) {
+async function createUser({ provider = {}, email, name = "", phone }) {
   let field = sql.identifier(["email"]);
   let fieldValue = email;
 
@@ -12,6 +12,8 @@ async function createUser({ provider = {}, email, name, phone }) {
     field = sql.identifier(["phone"]);
     fieldValue = normalizePhone(phone);
   }
+
+  console.log(field, fieldValue);
 
   const query = await server.app.db.query(
     sql`INSERT INTO users (provider, ${field}, name) values (${sql.json(

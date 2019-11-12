@@ -8,14 +8,14 @@
 															 >Create a group</a
 														 >
 		</div>
-				<ul class="mt-4">
+				<ul class="mt-4 list-disc list-inside">
 					{%for group in groups %}
 						<li class="mb-2">
 							<a
-								class="bg-black p-1 text-white hover:underline"
+								class="hover:underline text-blue-700"
 								href="/groups/{{group.custom_path if group.custom_path else group.id}}"
 								>{{group.name}}<a>
-								<p class="mt-1">{{group.description}}</p>
+								<p class="mt-1 ml-6">{{group.description}}</p>
 						</li>
 					{%endfor%}
 				</ul>

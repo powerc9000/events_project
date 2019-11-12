@@ -8,7 +8,7 @@ export default class extends ApplicationController {
   async sendInvite(e) {
     e.preventDefault();
     const form = this.targets.find("inviteForm");
-
+    const path = this.data.get("path");
     const name = form.name.value;
     const email = form.email.value;
     const phone = form.phone.value;
@@ -27,10 +27,7 @@ export default class extends ApplicationController {
         payload.name = name;
       }
 
-      const res = await this.api.Post(
-        `/api/groups/${groupId}/members`,
-        payload
-      );
+      const res = await this.api.Post(path, payload);
 
       if (res.ok) {
         this.formControl.success("User Added to Group", "group-invite");
