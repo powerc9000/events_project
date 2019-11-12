@@ -358,6 +358,7 @@ async function groupDetail(req, h) {
     events,
     members,
     canInvite,
+    canEdit: await groupService.canUserEditGroup(userId, group.id),
     invitePath: `/api/groups/${group.id}/members`
   });
 }
