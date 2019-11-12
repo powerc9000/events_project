@@ -17,8 +17,6 @@ const purgecss = require("@fullhuman/postcss-purgecss")({
 });
 let purge = [];
 
-console.log(process.env.NODE_ENV);
-
 if (process.env.NODE_ENV === "production") {
   console.log("production using purgecss");
   purge = [purgecss];
