@@ -2,8 +2,13 @@
   <mj-body>
     <mj-section>
       <mj-column>
+        <mj-image src="https://junipercity.com/static/img/logo_small.png" alt="Juniper City" width="200px"></mj-image>
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
         <mj-text>
-          Enter this code {{code}} to login
+          Enter this code <span style="font-family: monospace; font-weight:bold">{{code}}</span> to login to your Juniper City account.
         </mj-text>
       </mj-column>
     </mj-section>

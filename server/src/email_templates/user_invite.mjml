@@ -12,9 +12,9 @@
       </mj-column>
     </mj-section>
     
-    <mj-section full-width="full-width"  padding-top="100px">
+    <mj-section full-width="full-width"  padding-top="50px">
       <mj-column>
-        <mj-text font-size="15px" text-decoration="underline">Juniper City</mj-text>
+        <mj-image src="https://junipercity.com/static/img/logo_small.png" alt="Juniper City" width="200px"></mj-image>
       </mj-column>
       
     </mj-section>
@@ -35,7 +35,7 @@
     </mj-section>
     <mj-section>
       <mj-column>
-        <mj-button padding="2px 2px" color="white" href="{{link}}" text-decoration="underline" border-radius="0" background-color="black" inner-padding="5px">
+        <mj-button padding="2px 2px" color="black" href="{{link}}" border-radius="4px" background-color="#9AE6B4" inner-padding="5px">
           View Event
         </mj-button>
       </mj-column>

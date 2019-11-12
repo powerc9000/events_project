@@ -1,5 +1,4 @@
 import { ApplicationController } from "../helpers/application_controller";
-import flatpickr from "flatpickr";
 import { format } from "date-fns";
 
 export default class extends ApplicationController {

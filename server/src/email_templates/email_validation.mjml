@@ -1,6 +1,12 @@
 <mjml>
   <mj-body>
     <mj-section>
+		<mj-column>
+			<mj-image 
+				width="200px" src="https://junipercity.com/static/img/logo_small.png"/>
+		</mj-column>
+	</mj-section>
+    <mj-section>
       <mj-column>
         <mj-text>
 		We need to validate your email on Juniper City.
