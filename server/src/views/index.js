@@ -185,6 +185,12 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/groups/{idOrCustom}/edit",
+      handler: editGroup
+    });
+
+    server.route({
+      method: "GET",
       path: "/settings",
       handler: userSettings
     });
@@ -297,6 +303,25 @@ async function shortLink(req, h) {
 
 async function createGroup(req, h) {
   return h.view("create_group");
+}
+
+async function editGroup(req, h) {
+  const groupService = server.getService("groups");
+  const eventService = server.getService("events");
+  const userId = _.get(req, "app.user.id");
+
+  const group = await groupService.getGroup(req.params.idOrCustom);
+  if (!group) {
+    return Boom.notFound();
+  }
+
+  const canView = await groupService.canUserViewGroup(userId, group.id);
+
+  if (!canView) {
+    return Boom.notFound();
+  }
+
+  return h.view("create_group", { group });
 }
 
 async function groupDetail(req, h) {

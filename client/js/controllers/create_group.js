@@ -19,12 +19,15 @@ export default class extends ApplicationController {
     if (custom_path) {
       payload.custom_path = custom_path;
     }
+    let path = "/api/groups";
 
-    const req = await this.api.Post("/api/groups", payload);
+    if (form.group_id.value) {
+      path += `/${form.group_id.value}`;
+    }
+    const req = await this.api.Post(path, payload);
     const res = await req.json();
 
     if (req.ok) {
-      console.log(res);
       const part = res.custom_path || res.id;
 
       this.page.replace(`/groups/${part}`);

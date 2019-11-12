@@ -6,12 +6,14 @@
 	<div class="content container mx-auto" data-controller="create-group">
 		<h1 class="text-2xl font-bold">Create a new group</h1>
 		<form data-target="create-group.form" data-action="create-group#submit">
+			<input type="hidden" name="group_id" value="{{group.id}}" />
 			<div class="mt-4">
 				<label class="font-bold cursor-pointer">
 					Pick a name for your group
 					<input
 						class="w-full input"
 						type="text"
+						value="{{group.name}}"
 						name="name"
 						placeholder="Name"
 						required
@@ -28,6 +30,7 @@
 								>junipercity.com/groups/</span
 							><input
 								 type="text"
+								 value="{{group.custom_path}}"
 								 id="custom-path"
 								 name="custom_path"
 								 class="input w-full"
@@ -54,26 +57,23 @@
 					<span class="text-xs text-gray-700">(optional)</span>
 				</label>
 
-					<input type="hidden" id="description" name="description" />
-					<trix-editor input="description" id="editor"></trix-editor>
+				<input type="hidden" id="description" name="description" value="{{group.description}}"/>
+				<trix-editor input="description" id="editor"></trix-editor>
 
 			</div>
 
 			<div class="mt-4">
-				<label class="cursor-pointer font-bold"
-							 >Keep this group private?
-							 <input type="checkbox" name="is_private" checked
-																			/></label>
+				<label class="cursor-pointer font-bold">Keep this group private?
+					<input type="checkbox" name="is_private" {{"checked" if (not group.id) or group.is_private}} />
+				</label>
 				<p class="text-xs text-gray-700">
 				Only you and group members will be able to see this group and its events
 				</p>
 			</div>
 
 			<div class="mt-4">
-				<label class="cursor-pointer font-bold"
-							 >Allow other members to invite?
-							 <input type="checkbox" name="allow_inviting"
-																			/></label>
+				<label class="cursor-pointer font-bold">Allow other members to invite?
+							 <input type="checkbox" name="allow_inviting" {{"checked" if group.allow_inviting}}/></label>
 				<p class="text-xs text-gray-700">
 				By default only group moderators and admins can invite new group
 				members. Checking this will allow anyone in the group to do so.
@@ -82,7 +82,7 @@
 
 			<div class="mt-6">
 				<button class="btn btn-green" type="submit">
-					Create Group
+					{{"Create" if not group.id else "Update"}} Group
 				</button>
 			</div>
 		</form>
