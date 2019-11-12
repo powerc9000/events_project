@@ -25,7 +25,7 @@
     </mj-section>
     <mj-section>
       <mj-column>
-        <mj-text font-style="italic">{{event.description}}</mj-text>
+        <mj-text font-style="italic">{{{description}}}</mj-text>
       </mj-column>
     </mj-section>
      <mj-section>

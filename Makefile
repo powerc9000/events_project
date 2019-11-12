@@ -11,7 +11,6 @@ restart-dev:
 login: 
 	docker login registry.gitlab.com
 client-prod:
-	rm -rf client/build
 	cd client && make prod
 prod: login client-prod
 	docker build -t registry.gitlab.com/dropconfig/events .
