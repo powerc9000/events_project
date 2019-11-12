@@ -103,6 +103,7 @@ async function eventDetail(req, h) {
     canRSVP: await eventService.canRSVPToEvent(event.id, userId),
     canInvite,
     canSeeInvites,
+    invitePath: `/api/events/${event.id}/invite`,
     comments: await eventService.getComments(event.id),
     isCreator: event.creator.id === userId,
     mdDescription: sanitize(event.description)

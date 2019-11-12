@@ -1,5 +1,6 @@
 {%extends "layout.njk"%}
 {%import "partials/form_messages.njk" as messages%}
+{%from "partials/event_detail/invite_to_event.njk" import invite_form%}
 {%block content%}
 <div class="md:w-1/4 border-l border-black p-4">
 		</div>
@@ -8,58 +9,15 @@
 	<p>
 	{{group.description}}
 	</p>
-	{%if canInvite %}
-	<div class="mt-2">
-		<button class="p-1 text-white bg-black hover:underline" data-action="group-detail#toggleInvite">Add someone to group</button>
-	</div>
-	{%endif%}
-
-	<form class="hidden p-4 bg-gray-300 mt-4" data-target="group-detail.inviteForm" data-action="group-detail#sendInvite" >
-		<div class="mb-4">
-			{{messages.messages("group-invite")}}
-		</div>
-		<input type="hidden" name="groupId" value="{{group.id}}" />
-		<div class="flex flex-col">
-			<label class="font-bold">
-				Name <span class="font-normal text-xs">(Optional)</span>
-			</label>
-			<input type="text" name="name" class="border-gray-300 border p-1 "/>
-		</div>
-		<div class="mt-2 flex flex-col">
-			<label class="font-bold">
-				Email
-
-			</label>
-			<input type="text" name="email" class="border-gray-300 border p-1"/>
-		</div>
-		<div class="mt-2 flex flex-col">
-			<label class="font-bold">
-				Phone
-
-			</label>
-			<input type="text" name="phone" class="border-gray-300 border p-1"/>
-
-		</div>
-		<p class="mt-1">
-		<span>Email OR phone is required</span>
-		</p>
-
-		<div class="mt-2">
-			<button class="p-1 bg-black text-white hover:underline" type="submit">
-			Add	
-			</button>
-			<span class="hidden" data-target="group-detail.inviteSent">Added!</span>
-		</div>
-	</form>
-
-
-	<div class="border border-black mt-4 flex">
+	{{members | dump}}
+	{{invite_form(invitePath, canInvite, multiple=false, success_message="User added to group!")}}
+	<div class="mt-4 flex">
 		<div class="md:w-3/4 p-4">
 			<h3 class="text-xl">Events</h3>
-			<ul class="mt-4">
+			<ul class="mt-4 list-disc list-inside">
 				{%for event in events%}
 				<li class="mb-2">
-					<a href="/events/{{event.slug}}" class="text-white bg-black p-1 hover:underline">{{event.name}}</a>
+					<a href="/events/{{event.slug}}" class="text-blue-700 hover:underline">{{event.name}}</a>
 				</li>
 				{%endfor%}
 			</ul>

@@ -327,7 +327,13 @@ async function groupDetail(req, h) {
     "member"
   );
 
-  return h.view("group_detail.njk", { group, events, members, canInvite });
+  return h.view("group_detail.njk", {
+    group,
+    events,
+    members,
+    canInvite,
+    invitePath: `/api/groups/${group.id}/members`
+  });
 }
 
 async function userGroups(req, h) {
