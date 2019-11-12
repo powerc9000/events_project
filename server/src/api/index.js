@@ -153,6 +153,27 @@ module.exports = {
 
     server.route({
       method: "POST",
+      path: "/groups/{id}",
+      handler: updateGroup,
+      options: {
+        validate: {
+          payload: joi.object({
+            name: joi.string(),
+            description: joi.string(),
+            allow_inviting: joi.boolean(),
+            is_private: joi.boolean(),
+            custom_path: joi
+              .string()
+              .pattern(/^[a-z0-9\-]+$/, { name: "Path" })
+              .min(3)
+              .max(20)
+          })
+        }
+      }
+    });
+
+    server.route({
+      method: "POST",
       path: "/groups/{id}/members",
       handler: addUserToGroup,
       options: {
@@ -207,6 +228,30 @@ module.exports = {
     });
   }
 };
+
+async function updateGroup(req, h) {
+  const groupService = server.getService("groups");
+  const group = await groupService.getGroup(req.params.id);
+  const userId = _.get(req, "app.user.id");
+
+  if (!group) {
+    return Boom.notFound();
+  }
+
+  const canEdit = await groupService.canUserEditGroup(userId, group.id);
+
+  if (!canEdit) {
+    return Boom.unauthorized();
+  }
+
+  const [err, update] = await groupService.updateGroup(group.id, req.payload);
+
+  if (err) {
+    return Boom.badRequest(err);
+  }
+
+  return update;
+}
 
 async function updateSettings(req, h) {
   const user = req.app.user;
@@ -565,8 +610,6 @@ async function inviteToEvent(req, h) {
     }
 
     events.inviteUsersToEvent(req.params.id, req.payload.invites);
-
-    console.log("hello?");
 
     return h.response().code(204);
   } catch (e) {

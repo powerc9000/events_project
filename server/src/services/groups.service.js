@@ -1,5 +1,6 @@
 let server;
 
+const _ = require("lodash");
 const sql = require("slonik").sql;
 
 async function createGroup(options) {
@@ -24,7 +25,7 @@ async function createGroup(options) {
     //Check if custom_path unique
     //
     const path = await server.app.db.maybeOne(
-      sql`SELECT * FROM groups where custom_path=${options.custom_path}`
+      sql`SELECT * FROM groups where custom_path=${options.custom_path} or id::text = ${options.custom_path}`
     );
 
     if (path) {
@@ -120,11 +121,62 @@ async function canUserViewGroup(userId, groupId) {
   }
 }
 
+async function canUserEditGroup(userId, groupId) {
+  const member = await server.app.db.query(
+    sql`select * from group_members where group_id=${groupId} and user_id=${userId} and role > 'member'`
+  );
+
+  return !!member;
+}
+
+async function updateGroup(groupId, payload) {
+  const fields = [
+    "name",
+    "description",
+    "custom_path",
+    "is_private",
+    "allow_inviting"
+  ];
+
+  if (payload.custom_path) {
+    const used = await server.app.db.maybeOne(
+      sql`Select * from groups where (custom_path = ${payload.custom_path} or id::text = ${payload.custom_path}) and id != ${groupId}`
+    );
+
+    if (used) {
+      return ["Custom Path already in use"];
+    }
+  }
+
+  const data = [];
+
+  fields.forEach((f) => {
+    if (_.has(payload, f)) {
+      data.push(sql`${sql.identifier([f])}=${payload[f]}`);
+    }
+  });
+
+  if (data.length) {
+    const update = await server.app.db.maybeOne(
+      sql`update groups set ${sql.join(
+        data,
+        sql` , `
+      )} where id=${groupId} returning *`
+    );
+
+    return [null, update];
+  } else {
+    return ["Nothing to update"];
+  }
+}
+
 function init(hapiServer) {
   server = hapiServer;
 }
 
 module.exports = {
+  canUserEditGroup,
+  updateGroup,
   createGroup,
   getGroupMembers,
   getGroup,
