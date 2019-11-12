@@ -106,6 +106,12 @@ footer {
 			@apply bg-gray-300;
 		}
 	}
+	&.btn-blue {
+		@apply bg-blue-300 border border-blue-600;
+		&:hover {
+			@apply bg-blue-400 border border-blue-800;
+		}
+	}
 }
 
 .input {

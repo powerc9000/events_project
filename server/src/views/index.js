@@ -329,6 +329,7 @@ async function groupDetail(req, h) {
 
   return h.view("group_detail.njk", {
     group,
+    description: sanitize(group.description),
     events,
     members,
     canInvite,
