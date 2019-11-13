@@ -3,7 +3,7 @@
 {% from "partials/event_detail/topnav.njk" import event_nav%}
 {% from "partials/event_detail/invite_to_event.njk" import invite_form%}
 {%block content %}
-	<div class="container mx-auto content" data-controller="event-detail">
+	<div class="container mx-auto content" data-controller="event-detail" data-event-detail-event-id="{{event.id}}">
 		{{event_nav(path, comments.length, "base", allowDiscussion=event.allow_comments)}}
 		<div class="flex items-center">
 			<h1 class="font-bold text-3xl">{{event.name}}</h1>
@@ -12,6 +12,10 @@
 					<a href="{{path}}/edit" class="text-blue-700 hover:underline">Edit</a>
 				{%endif%}
 			</div>
+			{%if canDelete%}
+				<button class="ml-auto btn btn-red text-xs" data-action="event-detail#deleteEvent">Delete Event</button>
+			{%endif%}
+
 		</div>
 		{%if event.location %}
 			<h2 class="text-lg" aria-label="Location" title="Location">
@@ -34,135 +38,135 @@
 						{{invite_form(invitePath, canInvite)}}
 						{%if canRSVP%}
 
-						<div class="my-2" id="rsvp-message" data-turbolinks-permanent>
-							{{form_messages.messages("rsvp")}}
-						</div>
-						<div
-							class="{{ 'hidden' if (not invite.status) or invite.status === 'invited' }}"
-							data-target="event-detail.hasRSVP"
-							>
-							You RSVP'd as {{invite.status}} -
-							<button
-								class="hover:underline text-blue-700"
-								data-action="event-detail#changeRSVP"
+							<div class="my-2" id="rsvp-message" data-turbolinks-permanent>
+								{{form_messages.messages("rsvp")}}
+							</div>
+							<div
+								class="{{ 'hidden' if (not invite.status) or invite.status === 'invited' }}"
+								data-target="event-detail.hasRSVP"
 								>
-								Change
-							</button>
-						</div>
-							<form
-								data-target="event-detail.rsvpForm"
-								class="mt-2 bg-gray-200 p-2 {{'hidden' if invite.status and invite.status !== 'invited'}}"
-								data-action="change->event-detail#rsvp reset->event-detail#toggleRSVP"
-								autocomplete="off"
-								>
-								<h4 class="text-lg font-bold">RSVP</h4>
-								<input type="hidden" name="eventId" value="{{event.id}}" />
-								<div>
-									<label class="font-bold"
-												 >Name
-												 <input
-													 type="text"
-													 name="name"
-													 value="{{user.name if user }}"
-													 class="border-gray-600 border p-1 w-full"
-													 placeholder="name"
-													 />
-									</label>
-								</div>
-
-								<div class="mt-3">
-									<fieldset>
-										<legend
-											class="font-lg text-gray-800 mb-1 font-bold"
-											aria-label="RSVP Status"
-											>
-											Status
-										</legend>
-											<label class="font-bold cursor-pointer">
-												<span class="">Going</span> <input type="radio" name="rsvp"
-																																				value="going" {{'checked' if invite.status === 'going'}}/>
-											</label>
-											-
-											<label class="font-bold cursor-pointer">
-												<span class="">Maybe</span> <input type="radio" name="rsvp"
-																																				value="maybe" {{'checked' if invite.status === 'maybe'}}/>
-											</label>
-											-
-
-											<label class="font-bold cursor-pointer">
-												<span class="">Not Going</span> <input type="radio" name="rsvp"
-																																						value="declined" {{'checked' if invite.status === 'declined'}}/>
-											</label>
-									</fieldset>
-								</div>
-								<div class="mt-1">
-									{%set responded = invite and invite.status !== 'invited'%}
-									<label class="cursor-pointer">
-										Keep my RSVP private <input type="checkbox" name="show_name"
-																																{{'checked' if (responded and not invite.show_name) or (not
-																																responded and not event.is_private)}} />
-									</label>
-									<p>
-									<span
-										class="text-xs font-bold"
-										data-target="event-detail.privateInfo"
-										>Only the organizer will see your RSVP</span
+								You RSVP'd as {{invite.status}} -
+								<button
+									class="hover:underline text-blue-700"
+									data-action="event-detail#changeRSVP"
 									>
-									</p>
-								</div>
-								<div>
-									<button
-										type="reset"
-										class="btn btn-white {{'hidden' if not invite.status or invite.status === 'invited' }}"
-										>
-										Cancel
-									</button>
-								</div>
-							</form>
-						{%endif%}
-						<div class="mt-2">
-							Created by: {{event.creator.name}}
-						</div>
-						<div>
-							<p>
-							{{"Private" if event.is_private else "Public" | capitalize}} event
-							</p>
-							{%if not event.is_private%}
-								<div class="my-1" id="twitter-section" data-turbolinks-permanent>
-									<a
-										href="https://twitter.com/share?ref_src=twsrc%5Etfw"
-										class="twitter-share-button"
-										data-text="{{event.name}}"
-										data-show-count="false"
-										>Tweet</a
-									><script
-										 async
-										 src="https://platform.twitter.com/widgets.js"
-										 charset="utf-8"
-										 id="twitter-js"
-										 data-turbolinks-permanent
-										 ></script>
-								</div>
-										{%endif%} {%if isCreator %}
-										<p class="mt-1 mb-1">
-										<span class="bg-yellow-400 p-1 text-xs text-yellow-900 font-bold">
-											{%if event.is_private %} This event is private. Only you and the
-											people you invite can see it. {%else%} This event is public. Anyone
-											can see it. It can appear on the homepage. {%endif%}
-										</span>
-										</p>
-									{%endif%}
-						</div>
+									Change
+								</button>
+							</div>
+								<form
+									data-target="event-detail.rsvpForm"
+									class="mt-2 bg-gray-200 p-2 {{'hidden' if invite.status and invite.status !== 'invited'}}"
+									data-action="change->event-detail#rsvp reset->event-detail#toggleRSVP"
+									autocomplete="off"
+									>
+									<h4 class="text-lg font-bold">RSVP</h4>
+									<input type="hidden" name="eventId" value="{{event.id}}" />
+									<div>
+										<label class="font-bold"
+													 >Name
+													 <input
+														 type="text"
+														 name="name"
+														 value="{{user.name if user }}"
+														 class="border-gray-600 border p-1 w-full"
+														 placeholder="name"
+														 />
+										</label>
+									</div>
 
-						<div class="mt-2 md mb-2">
-							<details open class="">
-								<summary class="cursor-pointer border-b border-gray-300">Description</summary>
-								<div class="mt-4">
-									{{mdDescription | safe}}
-								</div>
-							</details>
-						</div>
-						<hr class="sm:hidden" />
+									<div class="mt-3">
+										<fieldset>
+											<legend
+												class="font-lg text-gray-800 mb-1 font-bold"
+												aria-label="RSVP Status"
+												>
+												Status
+											</legend>
+												<label class="font-bold cursor-pointer">
+													<span class="">Going</span> <input type="radio" name="rsvp"
+																																					value="going" {{'checked' if invite.status === 'going'}}/>
+												</label>
+												-
+												<label class="font-bold cursor-pointer">
+													<span class="">Maybe</span> <input type="radio" name="rsvp"
+																																					value="maybe" {{'checked' if invite.status === 'maybe'}}/>
+												</label>
+												-
+
+												<label class="font-bold cursor-pointer">
+													<span class="">Not Going</span> <input type="radio" name="rsvp"
+																																							value="declined" {{'checked' if invite.status === 'declined'}}/>
+												</label>
+										</fieldset>
+									</div>
+									<div class="mt-1">
+										{%set responded = invite and invite.status !== 'invited'%}
+										<label class="cursor-pointer">
+											Keep my RSVP private <input type="checkbox" name="show_name"
+																																	{{'checked' if (responded and not invite.show_name) or (not
+																																	responded and not event.is_private)}} />
+										</label>
+										<p>
+										<span
+											class="text-xs font-bold"
+											data-target="event-detail.privateInfo"
+											>Only the organizer will see your RSVP</span
+										>
+										</p>
+									</div>
+									<div>
+										<button
+											type="reset"
+											class="btn btn-white {{'hidden' if not invite.status or invite.status === 'invited' }}"
+											>
+											Cancel
+										</button>
+									</div>
+								</form>
+							{%endif%}
+							<div class="mt-2">
+								Created by: {{event.creator.name}}
+							</div>
+							<div>
+								<p>
+								{{"Private" if event.is_private else "Public" | capitalize}} event
+								</p>
+								{%if not event.is_private%}
+									<div class="my-1" id="twitter-section" data-turbolinks-permanent>
+										<a
+											href="https://twitter.com/share?ref_src=twsrc%5Etfw"
+											class="twitter-share-button"
+											data-text="{{event.name}}"
+											data-show-count="false"
+											>Tweet</a
+										><script
+											 async
+											 src="https://platform.twitter.com/widgets.js"
+											 charset="utf-8"
+											 id="twitter-js"
+											 data-turbolinks-permanent
+											 ></script>
+									</div>
+											{%endif%} {%if isCreator %}
+											<p class="mt-1 mb-1">
+											<span class="bg-yellow-400 p-1 text-xs text-yellow-900 font-bold">
+												{%if event.is_private %} This event is private. Only you and the
+												people you invite can see it. {%else%} This event is public. Anyone
+												can see it. It can appear on the homepage. {%endif%}
+											</span>
+											</p>
+										{%endif%}
+							</div>
+
+							<div class="mt-2 md mb-2">
+								<details open class="">
+									<summary class="cursor-pointer border-b border-gray-300">Description</summary>
+									<div class="mt-4">
+										{{mdDescription | safe}}
+									</div>
+								</details>
+							</div>
+							<hr class="sm:hidden" />
 					</div>
 					<div
 						class="sm:w-1/4 sm:ml-5 p-2 sm:border-l border-gray-300 sm:pl-5 mt-5 sm:mt-0"

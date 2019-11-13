@@ -131,6 +131,12 @@ module.exports = {
     });
 
     server.route({
+      method: "DELETE",
+      path: "/events/{id}",
+      handler: deleteEvent
+    });
+
+    server.route({
       method: "POST",
       path: "/groups",
       handler: createGroup,
@@ -228,6 +234,26 @@ module.exports = {
     });
   }
 };
+
+async function deleteEvent(req, h) {
+  const eventService = server.getService("events");
+  const userId = _.get(req, "app.user.id");
+  const event = await eventService.getEventById(req.params.id);
+
+  if (!event) {
+    return Boom.notFound();
+  }
+
+  const canDelete = await eventService.canUserDeleteEvent(userId, event.id);
+
+  if (!canDelete) {
+    return Boom.unauthorized();
+  }
+
+  await eventService.deleteEvent(event.id);
+
+  return h.response().status(204);
+}
 
 async function updateGroup(req, h) {
   const groupService = server.getService("groups");
