@@ -384,12 +384,11 @@ async function loginWithOTP(req, h) {
     codeSource = "Email";
   }
 
-  console.log("hello");
   return h.view("login_otp", { codeSource });
 }
 
 async function homepage(req, h) {
-  const options = { future: true };
+  const options = { maxAge: "1 month", maxUntil: "5 months" };
   if (req.app.user) {
     options.user = req.app.user.id;
   }
@@ -398,16 +397,21 @@ async function homepage(req, h) {
   if (!req.app.user) {
     view = "welcome";
   }
-  events.forEach((e) => {
+  const payload = {};
+
+  payload.events = events.upcoming;
+  payload.past = events.past;
+
+  payload.events.forEach((e) => {
     e.description = sanitize(e.description);
   });
-  return h.view(view, { events });
+
+  return h.view(view, payload);
 }
 
 async function login(req, h) {
   if (!req.app.user) {
     if (req.query.redirect_to) {
-      console.log(req.query);
       h.state("login_redirect", req.query.redirect_to);
     }
     return h.view("login.njk");
