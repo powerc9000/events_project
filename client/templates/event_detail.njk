@@ -125,7 +125,11 @@
 								</form>
 							{%endif%}
 							<div class="mt-2">
-								Created by: {{event.creator.name}}
+								{%if user and user.id === event.creator.id%}
+									You created this event
+								{%else%}
+									Created by: {{event.creator.name}}
+								{%endif%}
 							</div>
 							<div>
 								<p>
