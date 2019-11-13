@@ -472,8 +472,8 @@ async function canUserDeleteEvent(userId, eventId) {
   if (!creator) {
     const group = await server.app.db.maybeOne(
       sql`select * from events 
-			inner join group_members g on g.event_id = events.id
-			where id=${eventId} and g.user_id= ${userId} and g.role > 'member'`
+			inner join group_members g on g.group_id = events.group_id
+			where events.id=${eventId} and g.user_id= ${userId} and g.role > 'member'`
     );
 
     if (group) {
