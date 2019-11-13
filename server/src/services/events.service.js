@@ -464,6 +464,39 @@ async function createComment(userId, eventId, parentId, body) {
   );
 }
 
+async function canUserDeleteEvent(userId, eventId) {
+  const creator = await server.app.db.maybeOne(
+    sql`select * from events where creator = ${userId} and id=${eventId}`
+  );
+
+  if (!creator) {
+    const group = await server.app.db.maybeOne(
+      sql`select * from events 
+			inner join group_members g on g.event_id = events.id
+			where id=${eventId} and g.user_id= ${userId} and g.role > 'member'`
+    );
+
+    if (group) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
+}
+
+async function deleteEvent(eventId) {
+  //Delete invites
+  await server.app.db.query(sql`delete from invites where event_id=${eventId}`);
+  //Delete the comments
+  await server.app.db.query(
+    sql`delete from comments where entity_id=${eventId}`
+  );
+  //Delete the event
+  await server.app.db.query(sql`delete from events where id=${eventId}`);
+}
+
 async function getEventsCommentDigest() {
   return server.app.db.any(
     sql`
@@ -526,5 +559,7 @@ module.exports = {
   resendInvite,
   getComments,
   createComment,
-  getEventsCommentDigest
+  getEventsCommentDigest,
+  canUserDeleteEvent,
+  deleteEvent
 };

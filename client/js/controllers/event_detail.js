@@ -20,6 +20,17 @@ export default class extends ApplicationController {
     this.toggleTarget("hasRSVP");
     this.toggleTarget("rsvpForm");
   }
+  async deleteEvent(e) {
+    const yes = confirm(
+      "Are you sure you want to delete this event? It cannot be undone"
+    );
+
+    if (yes) {
+      const eventId = this.data.get("eventId");
+      await this.api.Delete(`/api/events/${eventId}`);
+      this.page.replace("/");
+    }
+  }
 
   async rsvp(e) {
     e.preventDefault();
