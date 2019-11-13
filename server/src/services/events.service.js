@@ -108,18 +108,41 @@ async function findEvents(constraints) {
       where.push(sql`is_private = false`);
     }
 
+    if (constraints.maxAge) {
+      where.push(sql`date > now() - ${constraints.maxAge}::interval`);
+    }
+    if (constraints.maxUntil) {
+      where.push(sql`date < now() + ${constraints.maxUntil}::interval`);
+    }
+
     if (constraints.future) {
       where.push(sql`date > now()`);
     }
   }
-  const query = sql`SELECT * from events e where ${sql.join(
-    where,
-    sql` AND `
-  )}  order by date`;
-
+  const query = sql`SELECT *,
+		(
+			select json_agg(r) from (
+				select * from invites where event_id = e.id
+			) r
+		) invites
+		from events e where ${sql.join(where, sql` AND `)}  order by date`;
+  console.log(query);
   const events = await server.app.db.query(query);
 
-  return events.rows;
+  const upcoming = [];
+  const past = [];
+
+  events.rows.forEach((event) => {
+    const date = new Date(event.date);
+
+    if (date >= Date.now()) {
+      upcoming.push(event);
+    } else {
+      past.push(event);
+    }
+  });
+
+  return { upcoming, past };
 }
 
 async function getGroupEventsForUser(groupId, userId) {
