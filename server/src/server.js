@@ -113,6 +113,8 @@ async function start() {
   await server.register(services);
   await server.register(tasks);
 
+  server.app.featureFlags = {};
+
   await server.start();
 
   console.log("server running");

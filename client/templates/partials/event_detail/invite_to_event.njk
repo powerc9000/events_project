@@ -1,15 +1,17 @@
 {%import "partials/form_messages.njk" as messages %}
 {%macro invite_form(path, canInvite, multiple=true, success_message="Invite Sent!")%}
 <div data-controller="invite-to" data-invite-to-path="{{path}}" data-invite-to-multiple="{{multiple}}" data-invite-to-success-message="{{success_message}}">
-	<div class="mt-2">
+	<div class="mt-2 flex items-center" data-target="invite-to.canInviteButton">
 		{%if(canInvite)%}
 			<button
-				data-target="invite-to.canInviteButton"
 				class="btn btn-green"
 				data-action="invite-to#toggleInviteForm"
 				>
-				Invite People
+				Invite Someone 
 			</button>
+				{%if caller %}
+					{{caller()}}
+				{%endif%}
 			{%endif%}
 	</div>
 

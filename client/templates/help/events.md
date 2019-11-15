@@ -16,5 +16,6 @@ We are doing are best to make them easy to use an manage!
 * [RSVPing to an event](/help/rsvping)
 * [Hiding attendees](/help/hiding-event-attendees)
 * [Allow others to invite](/help/allow-others-to-invite)
+* [Deleting an event](/help/delete-event)
 
 </div>
