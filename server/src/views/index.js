@@ -63,6 +63,7 @@ module.exports = {
         NODE_ENV: process.env.NODE_ENV,
         date: fns,
         user: req.app.user,
+        flags: server.app.featureFlags,
         _className: (name, condition) => {
           if (condition) {
             return name;

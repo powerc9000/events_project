@@ -234,14 +234,6 @@ async function inviteUsersToEvent(eventId, users) {
     const queried = notFound.map((user) => {
       let phone = null;
       if (user.phone) {
-        async function getAllEventsForUser(user) {
-          const data = await server.app.db.query(`
-	SELECT * from events 
-	`);
-
-          return data.rows;
-        }
-
         phone = normalizePhone(user.phone);
       }
       return [user.name || "", user.email, phone];
@@ -556,6 +548,12 @@ async function getEventsCommentDigest() {
   );
 }
 
+function getEventByEmailHash(hash) {
+  return server.app.db.maybeOne(
+    sql`select * from events where email_hash_id = ${hash}`
+  );
+}
+
 function init(hapiServer) {
   server = hapiServer;
   //set up database
@@ -584,5 +582,6 @@ module.exports = {
   createComment,
   getEventsCommentDigest,
   canUserDeleteEvent,
-  deleteEvent
+  deleteEvent,
+  getEventByEmailHash
 };

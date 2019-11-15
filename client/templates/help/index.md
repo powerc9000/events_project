@@ -14,8 +14,12 @@ If you can't find your answers here don't hesitate to email us at [friends@junip
 	* [RSVPing to an event](/help/rsvping)
 	* [Hiding attendees](/help/hiding-event-attendees)
 	* [Allow others to invite](/help/allow-others-to-invite)
+	* [Deleting an event](/help/delete-event)
 * [Groups](/help/groups)
 	* [Create a group](/help/groups#creating-a-group)
 	* [Public vs Private Groups](/help/groups#public-and-private-groups)
 	* [Adding people to your group](/help/groups#adding-people-to-your-group)
+* [Account Settings](/help/user-settings)
+* [Privacy](/help/privacy)
+
 </div>

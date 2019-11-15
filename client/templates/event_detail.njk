@@ -35,7 +35,12 @@
 
 				<div class="sm:flex">
 					<div class="flex-1">
-						{{invite_form(invitePath, canInvite)}}
+						{% call invite_form(invitePath, canInvite)%}
+							<div class="ml-2">
+								or <a target="_blank" rel="noopener noreferer" class="text-blue-700 hover:underline" href="mailto:events+{{event.email_hash_id}}@inbound.junipercity.com?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">Bulk Invite Via Email</a>
+
+							</div>
+						{%endcall%}
 						{%if canRSVP%}
 
 							<div class="my-2" id="rsvp-message" data-turbolinks-permanent>

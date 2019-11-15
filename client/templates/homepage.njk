@@ -5,7 +5,9 @@
 			<div class="mt-4 sm:w-2/3">
 				<div class="items-center mb-4">
 					<h2 class="text-2xl font-bold">Upcoming events</h2>
-					<a href="/my-events" class="text-blue-700 hover:underline sm:text-xs ml-auto mr-4 text-xl"><i class="fas fa-sliders-h"></i> Manage Events</a>
+					{%if flags.manageEvents%}
+						<a href="/my-events" class="text-blue-700 hover:underline sm:text-xs ml-auto mr-4 text-xl"><i class="fas fa-sliders-h"></i> Manage Events</a>
+						{%endif%}
 				</div>
 				{{eventsList(events)}}
 			</div>

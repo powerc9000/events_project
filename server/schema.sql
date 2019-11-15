@@ -94,7 +94,7 @@ CREATE TABLE public.events (
     can_invite boolean DEFAULT false,
     group_id uuid,
     source text DEFAULT 'web'::text,
-    email_message_id text
+    email_hash_id uuid DEFAULT public.uuid_generate_v4()
 );
 
 
@@ -225,6 +225,14 @@ CREATE TABLE public.validations (
 
 ALTER TABLE ONLY public.comments
     ADD CONSTRAINT comments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: events events_email_hash_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.events
+    ADD CONSTRAINT events_email_hash_id_key UNIQUE (email_hash_id);
 
 
 --
