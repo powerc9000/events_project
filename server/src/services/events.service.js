@@ -6,7 +6,7 @@ const sql = require("slonik").sql;
 const PhoneNumber = require("awesome-phonenumber");
 const { normalizePhone } = require("../utils");
 
-async function canUserViewEvent(userId, eventId, key) {
+async function canUserViewEvent(userId, eventId, event_key) {
   const event = await server.app.db.maybeOne(
     sql`select id, is_private, creator from events where id=${eventId}`
   );
@@ -19,14 +19,10 @@ async function canUserViewEvent(userId, eventId, key) {
     return true;
   }
 
-  if (key) {
-    const invite = await server.app.db.maybeOne(
-      sql`select * from invites where invite_key=${key}`
+  if (event_key) {
+    return server.app.db.maybeOne(
+      sql`select * from events where secret_key=${event_key}`
     );
-
-    if (invite) {
-      return true;
-    }
   }
 
   if (!userId) {
@@ -360,16 +356,17 @@ async function canCreateForGroup(user, group) {
   return true;
 }
 
-async function canRSVPToEvent(eventId, userId) {
-  const eventQuery = await server.app.db.query(
+async function canRSVPToEvent(eventId, userId, event_key) {
+  const event = await server.app.db.maybeOne(
     sql`SELECT * from events where id = ${eventId}`
   );
 
-  const event = eventQuery.rows;
-
   const invites = await server.app.db.any(
-    sql`SELECt * from invites where event_id=${eventId}`
+    sql`SELECT * from invites where event_id=${eventId}`
   );
+  if (event_key && event.secret_key === event_key) {
+    return true;
+  }
 
   if (!event) {
     return false;
@@ -386,7 +383,7 @@ async function canRSVPToEvent(eventId, userId) {
   return (isOwner || isInvited || isPublic) && userId;
 }
 
-async function rsvpToEvent(eventId, userId, status, show_name) {
+async function rsvpToEvent(eventId, userId, status, show_name, event_key) {
   const event = await server.app.db.maybeOne(
     sql`select * from events where id=${eventId}`
   );
@@ -397,16 +394,20 @@ async function rsvpToEvent(eventId, userId, status, show_name) {
   const invite = await server.app.db.maybeOne(
     sql`select * from invites where user_id = ${userId} and event_id=${eventId}`
   );
+  const notCreator = event.creator !== userId;
+  const wrongKey = event_key !== event.secret_key;
 
-  if (!invite && event.is_private && event.creator !== userId) {
+  if (!invite && event.is_private && notCreator && wrongKey) {
     return;
   }
 
   //Create or update an invite
   const key = crypto.randomBytes(16).toString("hex");
-  await server.app.db.query(
+  const res = await server.app.db.query(
     sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name) values (${userId}, ${eventId}, ${key}, ${status}, ${show_name}) ON CONFLICT (user_id, event_id) DO UPDATE set status = ${status}, show_name = ${show_name}`
   );
+
+  console.log(res);
 }
 
 async function canUserEditEvent(user, event) {
@@ -480,6 +481,9 @@ async function createComment(userId, eventId, parentId, body) {
 }
 
 async function canUserDeleteEvent(userId, eventId) {
+  if (!userId) {
+    return false;
+  }
   const creator = await server.app.db.maybeOne(
     sql`select * from events where creator = ${userId} and id=${eventId}`
   );

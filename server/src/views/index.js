@@ -64,6 +64,10 @@ module.exports = {
         date: fns,
         user: req.app.user,
         flags: server.app.featureFlags,
+        __currentPath: () => {
+          console.log(req.url);
+          return req.url.pathname + req.url.search;
+        },
         _className: (name, condition) => {
           if (condition) {
             return name;

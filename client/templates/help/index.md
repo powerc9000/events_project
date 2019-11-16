@@ -11,6 +11,8 @@ If you can't find your answers here don't hesitate to email us at [friends@junip
 	* [Creating an event](/help/creating-an-event)
 	* [Public vs private events](/help/public-v-private-events)
 	* [Inviting People](/help/inviting-people-to-event)
+		* [Private event link](/help/private-event-link)
+		* [Bulk invite via Email](/help/bulk-invite-via-email)
 	* [Bulk invite via Email](/help/bulk-invite-via-email)
 	* [RSVPing to an event](/help/rsvping)
 	* [Hiding attendees](/help/hiding-event-attendees)

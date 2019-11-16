@@ -9,6 +9,7 @@ const client = new OAuth2Client(CLIENT_ID);
 const LoginWithTwitter = require("login-with-twitter");
 const Boom = require("@hapi/boom");
 const sql = require("slonik").sql;
+const { emailOrPhone } = require("../utils");
 let server;
 module.exports = {
   name: "Api",
@@ -458,8 +459,23 @@ async function createGroup(req, h) {
 }
 
 async function rsvpToEvent(req, h) {
-  const user = req.app.user;
+  let user = req.app.user;
   const events = server.getService("events");
+  const userService = server.getService("user");
+
+  const event = await events.getEventById(req.params.id);
+
+  if (!event) {
+    return Boom.notFound();
+  }
+
+  if (!user && req.payload.email_or_phone) {
+    const { type, value } = emailOrPhone(req.payload.email_or_phone);
+    user = await userService.findOrCreateUser({
+      name: req.payload.name,
+      [type]: value
+    });
+  }
 
   if (!user) {
     return Boom.unauthorized();
@@ -468,21 +484,22 @@ async function rsvpToEvent(req, h) {
   const canInvite = await events.canRSVPToEvent(
     req.params.id,
     user.id,
-    req.query.invite_key
+    req.payload.event_key
   );
   if (!canInvite) {
     return Boom.unauthorized();
   }
 
   if (req.payload.name) {
-    await server.getService("user").setName(user.id, req.payload.name);
+    server.getService("user").setName(user.id, req.payload.name);
   }
 
   await events.rsvpToEvent(
     req.params.id,
     user.id,
     req.payload.status,
-    req.payload.show_name
+    req.payload.show_name,
+    req.payload.event_key
   );
 
   return h.response().code(204);
