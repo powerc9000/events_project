@@ -308,12 +308,23 @@ async function createValidation(user, options) {
   });
 }
 
+async function findOrCreateUser(details) {
+  let user = await findUser(details);
+
+  if (!user) {
+    user = await createUser(details);
+  }
+
+  return user;
+}
+
 function init(hapiServer) {
   server = hapiServer;
 }
 
 module.exports = {
   name: "user",
+  findOrCreateUser,
   findUser,
   findUserByEmail,
   findUserByPhone,

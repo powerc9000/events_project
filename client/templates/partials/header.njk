@@ -6,7 +6,8 @@
 				<img src="/static/img/logo_small.png" alt="Juniper City Logo" class="object-contain block" width="150"/>
 			</a>
 			{%if not loggedIn %}
-				<a href="/login" class="text-lg underline ml-auto">Login / Signup</a>
+				{%set thePath = __currentPath() if __currentPath else '' %}
+				<a href="/login?redirect_to={{thePath | urlencode}}" class="text-lg underline ml-auto">Login / Signup</a>
 				{%endif%}
 		</div>
 		{%if loggedIn %}

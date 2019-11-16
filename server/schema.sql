@@ -94,7 +94,8 @@ CREATE TABLE public.events (
     can_invite boolean DEFAULT false,
     group_id uuid,
     source text DEFAULT 'web'::text,
-    email_hash_id uuid DEFAULT public.uuid_generate_v4()
+    email_hash_id uuid DEFAULT public.uuid_generate_v4(),
+    secret_key uuid DEFAULT public.uuid_generate_v4()
 );
 
 
@@ -241,6 +242,14 @@ ALTER TABLE ONLY public.events
 
 ALTER TABLE ONLY public.events
     ADD CONSTRAINT events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: events events_secret_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.events
+    ADD CONSTRAINT events_secret_key_key UNIQUE (secret_key);
 
 
 --

@@ -3,12 +3,14 @@ import { ApplicationController } from "../helpers/application_controller";
 export default class extends ApplicationController {
   connect() {
     const form = this.targets.find("rsvpForm");
-    const show_name = form.show_name.checked;
-    const hasRSVPd = form.rsvp.value;
-    if (show_name && hasRSVPd) {
-      this.showTarget("privateInfo");
-    } else {
-      this.hideTarget("privateInfo");
+    if (form) {
+      const show_name = form.show_name.checked;
+      const hasRSVPd = form.rsvp.value;
+      if (show_name && hasRSVPd) {
+        this.showTarget("privateInfo");
+      } else {
+        this.hideTarget("privateInfo");
+      }
     }
   }
   async changeRSVP(e) {
@@ -36,7 +38,9 @@ export default class extends ApplicationController {
     e.preventDefault();
     this.formControl.hide("rsvp");
     const form = this.targets.find("rsvpForm");
+    const params = new URL(document.location).searchParams;
 
+    const emailOrPhoneEl = form.email_or_phone;
     const rsvp = form.rsvp.value;
     const hide_name = form.show_name.checked;
     const eventId = form.eventId.value;
@@ -53,6 +57,21 @@ export default class extends ApplicationController {
     if (form.name.value) {
       payload.name = form.name.value;
     }
+
+    if (params.get("event_key")) {
+      payload.event_key = params.get("event_key");
+    }
+
+    if (emailOrPhoneEl) {
+      if (!emailOrPhoneEl.value) {
+        this.formControl.error("You must provide a phone or an email", "rsvp");
+        return;
+      } else {
+        payload.email_or_phone = emailOrPhoneEl.value;
+      }
+    }
+
+    console.log(payload);
 
     await this.api.Post(`/api/events/${eventId}/rsvp`, payload);
     this.formControl.success("RSVP saved!", "rsvp");

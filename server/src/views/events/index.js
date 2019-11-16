@@ -1,5 +1,6 @@
 let server;
 const _ = require("lodash");
+const Boom = require("@hapi/boom");
 const { sanitize } = require("../../utils");
 
 function init(hapiServer) {
@@ -49,66 +50,78 @@ async function createEvent(req, h) {
 }
 
 async function eventDetail(req, h) {
-  const eventService = server.getService("events");
-  const event = await eventService.getEventBySlug(req.params.slug);
-  let userId = _.get(req, "app.user.id");
+  try {
+    const eventService = server.getService("events");
+    const event = await eventService.getEventBySlug(req.params.slug);
+    let userId = _.get(req, "app.user.id");
 
-  if (!event) {
-    return Boom.notFound();
-  }
-  const viewData = {};
-
-  if (!userId && req.query.invite_key) {
-    const user = await server
-      .getService("user")
-      .findUser({ invite_key: req.query.invite_key });
-
-    if (user) {
-      h.loginUser(user);
-      userId = user.id;
-      viewData.user = user;
+    if (!event) {
+      return Boom.notFound();
     }
+    const viewData = {};
+
+    if (!userId && req.query.invite_key) {
+      const user = await server
+        .getService("user")
+        .findUser({ invite_key: req.query.invite_key });
+
+      if (user) {
+        h.loginUser(user);
+        userId = user.id;
+        viewData.user = user;
+      }
+    }
+    const canViewEvent = await eventService.canUserViewEvent(
+      userId,
+      event.id,
+      req.query.event_key
+    );
+
+    if (!canViewEvent) {
+      return Boom.notFound();
+    }
+
+    const statuses = { going: [], maybe: [], declined: [], invited: [] };
+
+    event.invites.reduce((carry, invite) => {
+      carry[invite.status].push(invite);
+
+      return carry;
+    }, statuses);
+
+    const isPublic = !event.is_private;
+    const isOwner = event.creator.id === userId;
+    const canInvite = await eventService.canInviteToEvent(event.id, userId);
+    const canSeeInvites = canInvite || event.show_participants;
+
+    const invite =
+      event.invites.find((invite) => {
+        return invite.user_id === userId;
+      }) || false;
+
+    return h.view("event_detail.njk", {
+      ...viewData,
+      event: { ...event, ...statuses },
+      path: `/events/${event.slug}`,
+      title: event.name,
+      canEdit: await eventService.canUserEditEvent(userId, event.id),
+      invite,
+      canRSVP: await eventService.canRSVPToEvent(
+        event.id,
+        userId,
+        req.query.event_key
+      ),
+      canInvite,
+      canSeeInvites,
+      canDelete: await eventService.canUserDeleteEvent(userId, event.id),
+      invitePath: `/api/events/${event.id}/invite`,
+      comments: await eventService.getComments(event.id),
+      isCreator: event.creator.id === userId,
+      mdDescription: sanitize(event.description)
+    });
+  } catch (e) {
+    console.log(e);
   }
-  const canViewEvent = await eventService.canUserViewEvent(userId, event.id);
-
-  if (!canViewEvent) {
-    return Boom.notFound();
-  }
-
-  const statuses = { going: [], maybe: [], declined: [], invited: [] };
-
-  event.invites.reduce((carry, invite) => {
-    carry[invite.status].push(invite);
-
-    return carry;
-  }, statuses);
-
-  const isPublic = !event.is_private;
-  const isOwner = event.creator.id === userId;
-  const canInvite = await eventService.canInviteToEvent(event.id, userId);
-  const canSeeInvites = canInvite || event.show_participants;
-
-  const invite =
-    event.invites.find((invite) => {
-      return invite.user_id === userId;
-    }) || false;
-
-  return h.view("event_detail.njk", {
-    ...viewData,
-    event: { ...event, ...statuses },
-    path: `/events/${event.slug}`,
-    title: event.name,
-    canEdit: await eventService.canUserEditEvent(userId, event.id),
-    invite,
-    canRSVP: await eventService.canRSVPToEvent(event.id, userId),
-    canInvite,
-    canSeeInvites,
-    canDelete: await eventService.canUserDeleteEvent(userId, event.id),
-    invitePath: `/api/events/${event.id}/invite`,
-    comments: await eventService.getComments(event.id),
-    isCreator: event.creator.id === userId,
-    mdDescription: sanitize(event.description)
-  });
 }
 
 async function editEvent(req, h) {
@@ -156,7 +169,7 @@ async function eventDisussion(req, h) {
     return Boom.notFound();
   }
 
-  if (!event.allow_comments) {
+  if (!event.allow_comments || !userId) {
     return h.turboRedirect(`/events/${event.slug}`);
   }
 

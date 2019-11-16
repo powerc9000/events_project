@@ -4,7 +4,8 @@
 {% from "partials/event_detail/invite_to_event.njk" import invite_form%}
 {%block content %}
 	<div class="container mx-auto content" data-controller="event-detail" data-event-detail-event-id="{{event.id}}">
-		{{event_nav(path, comments.length, "base", allowDiscussion=event.allow_comments)}}
+		{%set discussion = event.allow_comments and user%}
+		{{event_nav(path, comments.length, "base", allowDiscussion=discussion)}}
 		<div class="flex items-center">
 			<h1 class="font-bold text-3xl">{{event.name}}</h1>
 			<div class="ml-4">
@@ -32,15 +33,34 @@
 				>{{date.format(date.fromUnixTime(event.date/1000), "PPpp OOOO")}}</span
 			>
 		</div>
-
+				{%if not user and canRSVP%}
+				<div class="bg-blue-100 p-1 border-l-4 border-blue-400 my-2 pl-4">
+					<p>You are not logged in. You can still RSVP but other features are limited.</p>
+					<a href="/login?redirect_to={{__currentPath() | urlencode}}" class="text-blue-700 hover:underline">Login</a> to enable all features.
+				</div>
+				{%endif%}
 				<div class="sm:flex">
 					<div class="flex-1">
 						{% call invite_form(invitePath, canInvite)%}
-							<div class="ml-2">
-								or <a target="_blank" rel="noopener noreferer" class="text-blue-700 hover:underline" href="mailto:events+{{event.email_hash_id}}@inbound.junipercity.com?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">Bulk Invite Via Email</a>
+						<div class="ml-2">
+							or <a target="_blank" rel="noopener noreferer" class="text-blue-700 hover:underline" href="mailto:events+{{event.email_hash_id}}@inbound.junipercity.com?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">Bulk Invite Via Email</a>
 
-							</div>
+						</div>
 						{%endcall%}
+						{%if isCreator %}
+							<div data-target="event.detail.shareableLink" data-controller="copy-to-clipboard" class="mt-2 lg:w-2/3 border-gray-200 border p-2">
+								<p class="font-bold">Shareable link</p>
+								<div class="mb-2">
+									{{form_messages.messages("copy")}}
+								</div>
+								<div class="flex items-center">
+									<div class="w-full mr-2">
+										<input type="text" value="https://junipercity.com/events/{{event.slug}}?event_key={{event.secret_key}}" class="input w-full text-xs " data-target="copy-to-clipboard.input" readonly/>
+									</div>
+									<button data-action="copy-to-clipboard#copy" class="btn btn-green flex items-center"><i class="fas fa-clipboard mr-2"></i> Copy</button>
+								</div>
+							</div>
+						{%endif%}
 						{%if canRSVP%}
 
 							<div class="my-2" id="rsvp-message" data-turbolinks-permanent>
@@ -60,7 +80,7 @@
 							</div>
 								<form
 									data-target="event-detail.rsvpForm"
-									class="mt-2 bg-gray-200 p-2 {{'hidden' if invite.status and invite.status !== 'invited'}}"
+									class="mt-2 border border-gray-200 bg-gray-100 p-2 {{'hidden' if invite.status and invite.status !== 'invited'}}"
 									data-action="change->event-detail#rsvp reset->event-detail#toggleRSVP"
 									autocomplete="off"
 									>
@@ -74,10 +94,24 @@
 														 name="name"
 														 value="{{user.name if user }}"
 														 class="border-gray-600 border p-1 w-full"
-														 placeholder="name"
+														 placeholder="Your Name"
 														 />
 										</label>
 									</div>
+
+									{%if not user %}
+										<div class="mt-2">
+											<label class="font-bold">Email or Phone
+												<input
+													type="text"
+													name="email_or_phone"
+													value="{{user.name if user }}"
+													class="border-gray-600 border p-1 w-full"
+													placeholder="Your Email or Phone"
+													/>
+											</label>
+										</div>
+									{%endif%}
 
 									<div class="mt-3">
 										<fieldset>

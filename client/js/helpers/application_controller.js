@@ -36,7 +36,8 @@ function Post(path, data) {
 }
 
 function reload() {
-  replace(window.location.pathname);
+  const url = new URL(window.location.href);
+  replace(`${url.pathname}${url.search}`);
 }
 function replace(path) {
   turbolinks.visit(path);

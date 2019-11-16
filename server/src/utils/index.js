@@ -2,7 +2,7 @@ const PhoneNumber = require("awesome-phonenumber");
 const sanitizeHtml = require("sanitize-html");
 const _ = require("lodash");
 
-module.exports = {
+const utils = (module.exports = {
   normalizePhone: (number) => {
     try {
       const ph = new PhoneNumber(
@@ -19,6 +19,16 @@ module.exports = {
       console.log(e);
     }
   },
+  emailOrPhone(input) {
+    const phoneCheck = utils.normalizePhone(input);
+
+    if (!phoneCheck) {
+      return { type: "email", value: input };
+    } else {
+      return { type: "phone", value: phoneCheck };
+    }
+  },
+
   sanitize: (text) => {
     return sanitizeHtml(text, {
       allowedTags: [
@@ -206,4 +216,4 @@ module.exports = {
     { value: "Samoa", description: "(GMT+13:00) Samoa" },
     { value: "Tokelau Is.", description: "(GMT+13:00) Tokelau Is." }
   ]
-};
+});
