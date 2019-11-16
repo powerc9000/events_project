@@ -1,4 +1,5 @@
-Events on Juniper City can be deleted.
+[&lt; Back to events help](/help/events)
+# Deleting an Event
 
 You will only be able to delete an event if you meet any of the following conditions.  
 1. You created the event. 
