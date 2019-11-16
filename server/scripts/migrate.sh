@@ -29,5 +29,7 @@ for f in $(ls -1 $BASEDIR/migrations/*.sql | sort); do
   fi
 done
 
-
+if [ "$1" != "prod" ] 
+then
 pg_dump $PSQL_OPTS -s events -O > schema.sql
+fi
