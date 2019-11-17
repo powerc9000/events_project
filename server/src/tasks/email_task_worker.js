@@ -96,31 +96,12 @@ module.exports = (hapiServer) => async (job) => {
       });
     }
   }
-  if (type === "event-created") {
-    try {
-      console.log(data.event);
-      if (data.event.group_id) {
-        const groupService = server.getService("groups");
-        const group = await groupService.getGroup(data.event.group_id);
-        const members = await groupService.getGroupMembers(group.id);
-        members.forEach((member) => {
-          server.createTask("email-group-member-about-event", {
-            member,
-            group,
-            event: data.event
-          });
-        });
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  }
 
-  if (type === "email-group-member-about-event") {
+  if (type === "notify-group-member-about-event") {
     if (data.member.email) {
       sendEmail("new_group_event.njk", {
         to: data.member.email,
-        subject: `Event your Juniper City group`,
+        subject: `New event in your Juniper City group`,
         data: {
           event: data.event,
           group: data.group,
