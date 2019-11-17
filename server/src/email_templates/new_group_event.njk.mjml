@@ -1,0 +1,45 @@
+<mjml>
+   <mj-head>
+    <mj-attributes>
+      <mj-all font-family="monospace" />
+      <mj-section background-color="white" full-width="full-width"/>
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#F0F0F0">
+    <mj-section background-color="#F0F0F0">
+      <mj-column>
+        <mj-spacer height="20px"/>
+      </mj-column>
+    </mj-section>
+    
+    <mj-section full-width="full-width"  padding-top="50px">
+      <mj-column>
+        <mj-image src="https://junipercity.com/static/img/logo_small.png" alt="Juniper City" width="200px"></mj-image>
+      </mj-column>
+      
+    </mj-section>
+    <mj-section >
+			<mj-column>
+				<mj-text>New event in your group {{group.name}}</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section>
+			<mj-column>
+				<mj-text font-size="16px" font-weight="bold">{{event.name}}</mj-text>
+        <mj-text>{{date}}</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section>
+			<mj-column>
+				<mj-text>{{description | safe}}</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
+        <mj-button padding="2px 2px" color="black" href="https://junipercity.com/events/{{event.slug}}" border-radius="4px" background-color="#9AE6B4" inner-padding="5px">
+          View Event
+        </mj-button>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

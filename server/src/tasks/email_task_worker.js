@@ -5,6 +5,7 @@ const path = require("path");
 const postmark = require("postmark");
 const client = new postmark.Client(process.env.POSTMARK_API_KEY);
 const nunjucks = require("nunjucks");
+const fns = require("date-fns");
 const { sanitize } = require("../utils");
 let server;
 module.exports = (hapiServer) => async (job) => {
@@ -67,7 +68,6 @@ module.exports = (hapiServer) => async (job) => {
   if (type === "event-comments") {
     try {
       if (data.user.email) {
-        console.log(data);
         await sendEmail("event_comments.njk", {
           to: data.user.email,
           subject: "New comments on events you're invited to",
@@ -80,6 +80,54 @@ module.exports = (hapiServer) => async (job) => {
       }
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  if (type === "user-did-rsvp") {
+    if (data.user.email) {
+      await sendEmail("user_did_rsvp.njk", {
+        to: data.user.email,
+        subject: "Someone RSVP'd to your event",
+        data: {
+          event: data.event,
+          user: data.user,
+          invite: data.invite
+        }
+      });
+    }
+  }
+  if (type === "event-created") {
+    try {
+      console.log(data.event);
+      if (data.event.group_id) {
+        const groupService = server.getService("groups");
+        const group = await groupService.getGroup(data.event.group_id);
+        const members = await groupService.getGroupMembers(group.id);
+        members.forEach((member) => {
+          server.createTask("email-group-member-about-event", {
+            member,
+            group,
+            event: data.event
+          });
+        });
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  if (type === "email-group-member-about-event") {
+    if (data.member.email) {
+      sendEmail("new_group_event.njk", {
+        to: data.member.email,
+        subject: `Event your Juniper City group`,
+        data: {
+          event: data.event,
+          group: data.group,
+          date: new Date(data.event.date),
+          description: sanitize(data.event.description)
+        }
+      });
     }
   }
 };
