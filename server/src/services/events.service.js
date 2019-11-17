@@ -345,7 +345,10 @@ async function createEvent(user, event) {
 
 async function canCreateForGroup(user, group) {
   if (!group) {
-    return true;
+    return false;
+  }
+  if (!user) {
+    return false;
   }
   const data = await server.app.db.maybeOne(
     sql`SELECT * from group_members where group_id=${group} and user_id=${user} and role > 'moderator'`
