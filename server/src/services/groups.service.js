@@ -59,7 +59,7 @@ async function canAddUserToGroup(userId, groupId, role) {
 
 async function addUserToGroup(userId, groupId, role = "member") {
   try {
-    await server.app.db.query(
+    const member = await server.app.db.maybeOne(
       sql`INSERT INTO group_members (user_id, group_id, role) VALUES (${userId}, ${groupId}, ${role})`
     );
 

@@ -190,6 +190,12 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/groups/{idOrCustom}/events",
+      handler: groupEvents
+    });
+
+    server.route({
+      method: "GET",
       path: "/groups/{idOrCustom}/edit",
       handler: editGroup
     });
@@ -328,44 +334,70 @@ async function editGroup(req, h) {
 
   return h.view("create_group", { group });
 }
-
-async function groupDetail(req, h) {
+async function commonGroupData(user, groupIdOrCustom) {
   const groupService = server.getService("groups");
   const eventService = server.getService("events");
-  const userId = _.get(req, "app.user.id");
+  const userId = _.get(user, "id");
 
-  const group = await groupService.getGroup(req.params.idOrCustom);
+  const group = await groupService.getGroup(groupIdOrCustom);
   if (!group) {
-    return Boom.notFound();
+    return [Boom.notFound()];
   }
 
   const canView = await groupService.canUserViewGroup(userId, group.id);
 
   if (!canView) {
-    return Boom.notFound();
+    return [Boom.notFound()];
   }
 
-  const events = await eventService.getGroupEventsForUser(
-    group.id,
-    req.app.user.id
-  );
+  const events = await eventService.getGroupEventsForUser(group.id, userId);
   const members = await groupService.getGroupMembers(group.id);
 
   const canInvite = await groupService.canAddUserToGroup(
     group.id,
-    req.app.user.id,
+    userId,
     "member"
   );
 
-  return h.view("group_detail.njk", {
-    group,
-    description: sanitize(group.description),
-    events,
-    members,
-    canInvite,
-    canEdit: await groupService.canUserEditGroup(userId, group.id),
-    invitePath: `/api/groups/${group.id}/members`
-  });
+  return [
+    null,
+    {
+      group,
+      description: sanitize(group.description),
+      events,
+      members,
+      canInvite,
+      path: `/groups/${group.custom_path || group.id}`,
+      canEdit: await groupService.canUserEditGroup(userId, group.id),
+      canCreate: await eventService.canCreateForGroup(userId, group.id),
+      invitePath: `/api/groups/${group.id}/members`
+    }
+  ];
+}
+async function groupDetail(req, h) {
+  const [err, data] = await commonGroupData(
+    req.app.user,
+    req.params.idOrCustom
+  );
+
+  if (err) {
+    return err;
+  }
+
+  return h.view("group_detail.njk", data);
+}
+
+async function groupEvents(req, h) {
+  const [err, data] = await commonGroupData(
+    req.app.user,
+    req.params.idOrCustom
+  );
+
+  if (err) {
+    return err;
+  }
+
+  return h.view("group_events.njk", data);
 }
 
 async function userGroups(req, h) {
