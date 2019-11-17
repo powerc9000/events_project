@@ -328,7 +328,6 @@ async function createEvent(user, event) {
       }
     }
   });
-  console.log(fields, values);
   const result = await server.app.db.query(
     sql`
 	INSERT into events (${sql.join(fields, sql`, `)}) VALUES (${sql.join(
@@ -337,6 +336,9 @@ async function createEvent(user, event) {
     )}) returning *
 	`
   );
+  server.createTask("event-created", {
+    event: result.rows[0]
+  });
 
   return result.rows[0];
 }
@@ -403,11 +405,15 @@ async function rsvpToEvent(eventId, userId, status, show_name, event_key) {
 
   //Create or update an invite
   const key = crypto.randomBytes(16).toString("hex");
-  const res = await server.app.db.query(
-    sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name) values (${userId}, ${eventId}, ${key}, ${status}, ${show_name}) ON CONFLICT (user_id, event_id) DO UPDATE set status = ${status}, show_name = ${show_name}`
+  const res = await server.app.db.maybeOne(
+    sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name) values (${userId}, ${eventId}, ${key}, ${status}, ${show_name}) ON CONFLICT (user_id, event_id) DO UPDATE set status = ${status}, show_name = ${show_name} returning *`
   );
 
-  console.log(res);
+  server.createTask("user-did-rsvp", {
+    event,
+    user: await server.getService("user").findById(userId),
+    invite: res
+  });
 }
 
 async function canUserEditEvent(user, event) {
