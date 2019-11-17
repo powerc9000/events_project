@@ -46,6 +46,7 @@ module.exports = {
     queues.push(emailQueue);
     queues.push(smsQueue);
     queues.push(inboundEmailQueue);
+    queues.push(notificationsQueue);
 
     notificationsQueue.add(
       {

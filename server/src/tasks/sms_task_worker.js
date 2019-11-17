@@ -62,6 +62,24 @@ module.exports = (server) => async (job) => {
       }
     }
   }
+
+  if (type === "notify-group-member-about-event") {
+    if (data.member.phone) {
+      try {
+        const idOrCustom = data.group.custom_path || data.group.id;
+        const shortlink = await server
+          .getService("shortlinks")
+          .create(`https://junipercity.com/groups/${idOrCustom}/events`);
+        const link = `https://junipercity.com/s/${shortlink.key}`;
+        await sendText(
+          data.member.phone,
+          `New event in your Juniper City Group ${link}`
+        );
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
 };
 
 async function sendText(phone, message) {
@@ -75,5 +93,7 @@ async function sendText(phone, message) {
     )}&key=${process.env.TEXTBELT_API_KEY}`
   });
 
-  return req.json();
+  const json = await req.json();
+  console.log(json);
+  return json;
 }
