@@ -87,7 +87,10 @@ async function getGroup(idOrCustom) {
 
 async function getGroupMembers(groupId) {
   const members = await server.app.db.any(
-    sql`select * from users where id in (select gm.user_id from group_members gm where gm.group_id = ${groupId})`
+    sql`select users.*, role from users 
+		inner join group_members gm on gm.group_id = ${groupId}
+		where users.id = gm.user_id
+		`
   );
 
   return members;

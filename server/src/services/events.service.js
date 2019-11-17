@@ -156,12 +156,12 @@ async function getGroupEventsForUser(groupId, userId) {
 
   if (inGroup) {
     return server.app.db.any(
-      sql`select * from events where group_id = ${groupId}`
+      sql`select * from events where group_id = ${groupId} and date > now()`
     );
   } else {
     if (!group.is_private) {
       return server.app.db.any(
-        sql`select * from events where group_id=${groupId} and is_private=FALSE`
+        sql`select * from events where group_id=${groupId} and is_private=FALSE and date > now()`
       );
     } else {
       return [];
