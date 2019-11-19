@@ -202,6 +202,12 @@ module.exports = {
 
     server.route({
       method: "POST",
+      path: "/groups/{id}/members/{memberId}",
+      handler: updateGroupMember
+    });
+
+    server.route({
+      method: "POST",
       path: "/invites/{id}/resend",
       handler: resendInvite
     });
@@ -235,6 +241,36 @@ module.exports = {
     });
   }
 };
+
+async function updateGroupMember(req, h) {
+  const groupService = server.getService("groups");
+  const userId = _.get(req, "app.user.id");
+
+  const group = await groupService.getGroup(req.params.id);
+
+  if (!group) {
+    return Boom.notFound();
+  }
+
+  const canUpdate = await groupService.canUserUpdateRole(
+    userId,
+    group.id,
+    req.params.memberId,
+    req.payload.role
+  );
+
+  if (!canUpdate) {
+    return Boom.unauthorized();
+  }
+
+  await groupService.updateUserRole(
+    req.params.memberId,
+    group.id,
+    req.payload.role
+  );
+
+  return h.response().code(204);
+}
 
 async function deleteEvent(req, h) {
   const eventService = server.getService("events");
@@ -389,6 +425,7 @@ async function editEvent(req, h) {
     req.payload.group_id
   );
 
+  console.log(target);
   if (!canCreate) {
     return Boom.unauthorized();
   }
@@ -467,6 +504,7 @@ async function rsvpToEvent(req, h) {
 
   if (!event) {
     return Boom.notFound();
+    console.log(target);
   }
 
   if (!user && req.payload.email_or_phone) {

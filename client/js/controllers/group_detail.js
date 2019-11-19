@@ -5,39 +5,42 @@ export default class extends ApplicationController {
     this.toggleTarget("inviteForm");
   }
 
-  async sendInvite(e) {
-    e.preventDefault();
-    const form = this.targets.find("inviteForm");
-    const path = this.data.get("path");
-    const name = form.name.value;
-    const email = form.email.value;
-    const phone = form.phone.value;
-    const groupId = form.groupId.value;
+  async toggleUpdate(e) {
+    const forms = this.targets.findAll("roleForms");
 
-    if (email || phone) {
-      const payload = {};
+    forms.forEach(() => {
+      forms.classList.add("hidden");
+    });
+    const id = e.target.dataset.for;
+    const form = document.getElementById(id);
 
-      if (email) {
-        payload.email = email;
-      }
-      if (phone) {
-        payload.phone = phone;
-      }
-      if (name) {
-        payload.name = name;
-      }
+    console.log(form);
 
-      const res = await this.api.Post(path, payload);
+    form.classList.remove("hidden");
+  }
 
-      if (res.ok) {
-        this.formControl.success("User Added to Group", "group-invite");
-        form.reset();
+  async updateRole(e) {
+    let target = e.target;
+    if (target.form) {
+      target = target.form;
+    }
+
+    const user = target.dataset.user;
+
+    if (user) {
+      const id = this.data.get("id");
+      const req = await this.api.Post(`/api/groups/${id}/members/${user}`, {
+        role: target.role.value
+      });
+
+      if (req.ok) {
+        this.formControl.success("User role updated", "management");
+        this.page.reload();
       } else {
-        const data = await res.json();
-        this.formControl.error(data.message, "group-invite");
+        const res = await req.json();
+        this.formControl.error(res.message, "management");
+        target.reset();
       }
-    } else {
-      console.log("bad data");
     }
   }
 }
