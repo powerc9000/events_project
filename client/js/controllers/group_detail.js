@@ -14,7 +14,7 @@ export default class extends ApplicationController {
     const id = e.target.dataset.for;
     const form = document.getElementById(id);
 
-    console.log(form);
+    e.target.classList.add("hidden");
 
     form.classList.remove("hidden");
   }

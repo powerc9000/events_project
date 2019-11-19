@@ -37,15 +37,16 @@
 								<span class="text-lg">{{member.name | default(member.email, true) | default(member.phone, true)}}</span>
 								<span> - </span>
 								{% if role === "admin" or role === "owner"%}
+									<span class="italic">{{member.role}} </span>
+									<button data-action="group-detail#toggleUpdate" class="text-blue-700 hover:underline" data-for="edit-{{member.id}}">change</button>
 									<form data-action="input->group-detail#updateRole" data-user="{{member.id}}" class="hidden" id="edit-{{member.id}}" data-target="group-detail.roleForm">
-									<select class="input cursor-pointer" autocomplete="off" name="role">
-										<option value="member" {{"selected" if member.role === "member"}}>Member</option>
-										<option value="moderator" {{"selected" if member.role === "moderator"}}>Moderator</option>
-										<option value="admin" {{"selected" if member.role === "admin"}}>Admin</option>
-										<option value="owner" {{"selected" if member.role === "owner"}}>Owner</option>
-									</select>
+										<select class="input cursor-pointer w-full" autocomplete="off" name="role">
+											<option value="member" {{"selected" if member.role === "member"}}>Member</option>
+											<option value="moderator" {{"selected" if member.role === "moderator"}}>Moderator</option>
+											<option value="admin" {{"selected" if member.role === "admin"}}>Admin</option>
+											<option value="owner" {{"selected" if member.role === "owner"}}>Owner</option>
+										</select>
 									</form>
-									<span class="italic">{{member.role}} <button data-action="group-detail#toggleUpdate" class="text-blue-700 hover:underline" data-for="edit-{{member.id}}">change</button></span>
 								{%else %}
 									<span class="italic">{{member.role}}</span>
 								{%endif%}
