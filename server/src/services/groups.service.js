@@ -173,12 +173,51 @@ async function updateGroup(groupId, payload) {
   }
 }
 
+async function canUserUpdateRole(userId, groupId, changedUser, role) {
+  if (!userId) {
+    return false;
+  }
+  if (changedUser === userId) {
+    return false;
+  }
+  console.log(changedUser, groupId, userId, role);
+  const changed = await server.app.db.maybeOne(
+    sql`SELECT * from group_members where user_id=${changedUser} and group_id=${groupId}`
+  );
+
+  if (!changed) {
+    return false;
+  }
+
+  const exists = await server.app.db.maybeOne(
+    sql`SELECT * from group_members where group_id=${groupId} and role >= 'admin' and user_id = ${userId} and role >= ${role}`
+  );
+
+  if (!exists) {
+    return false;
+  }
+
+  if (changed.role > exists.role) {
+    return false;
+  }
+
+  return true;
+}
+
+async function updateUserRole(userId, groupId, role) {
+  await server.app.db.query(
+    sql`UPDATE group_members set role=${role} where user_id=${userId} and group_id=${groupId}`
+  );
+}
+
 function init(hapiServer) {
   server = hapiServer;
 }
 
 module.exports = {
+  name: "groups",
   canUserEditGroup,
+  updateUserRole,
   updateGroup,
   createGroup,
   getGroupMembers,
@@ -188,5 +227,5 @@ module.exports = {
   canAddUserToGroup,
   canUserViewGroup,
   addUserToGroup,
-  name: "groups"
+  canUserUpdateRole
 };

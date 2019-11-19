@@ -202,6 +202,12 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/groups/{idOrCustom}/manage",
+      handler: manageGroup
+    });
+
+    server.route({
+      method: "GET",
       path: "/settings",
       handler: userSettings
     });
@@ -358,12 +364,15 @@ async function commonGroupData(user, groupIdOrCustom) {
     userId,
     "member"
   );
-
+  const membership = members.find((member) => {
+    return member.id === userId;
+  });
   return [
     null,
     {
       group,
       description: sanitize(group.description),
+      role: _.get(membership, "role"),
       events,
       members,
       canInvite,
@@ -398,6 +407,19 @@ async function groupEvents(req, h) {
   }
 
   return h.view("group_events.njk", data);
+}
+
+async function manageGroup(req, h) {
+  const [err, data] = await commonGroupData(
+    req.app.user,
+    req.params.idOrCustom
+  );
+
+  if (err) {
+    return err;
+  }
+
+  return h.view("group_management", data);
 }
 
 async function userGroups(req, h) {
