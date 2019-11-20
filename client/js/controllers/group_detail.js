@@ -39,10 +39,12 @@ export default class extends ApplicationController {
       });
 
       if (req.ok) {
+        this.formControl.hide("management");
         this.formControl.success("User role updated", "management");
         this.page.reload();
       } else {
         const res = await req.json();
+        this.formControl.hide("management");
         this.formControl.error(res.message, "management");
         target.reset();
       }
