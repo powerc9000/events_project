@@ -46,7 +46,6 @@ module.exports = {
           },
 
           prepare: (options, next) => {
-            console.log(options.path);
             options.compileOptions.environment = Nunjucks.configure(
               options.path,
               { watch: false }
@@ -62,10 +61,10 @@ module.exports = {
       context: (req) => ({
         NODE_ENV: process.env.NODE_ENV,
         date: fns,
+        jsBundlePath: "/static/js/index.js",
         user: req.app.user,
         flags: server.app.featureFlags,
         __currentPath: () => {
-          console.log(req.url);
           return req.url.pathname + req.url.search;
         },
         _className: (name, condition) => {
@@ -277,7 +276,6 @@ async function validateContact(req, h) {
 
 async function userSettings(req, h) {
   const user = req.app.user;
-  console.log(user);
   if (!user) {
     h.state("turbo_redirect", "/");
     return h.redirect("/");
@@ -376,6 +374,7 @@ async function commonGroupData(user, groupIdOrCustom) {
       events,
       members,
       canInvite,
+      canDelete: await groupService.canUserDeleteGroup(userId, group.id),
       path: `/groups/${group.custom_path || group.id}`,
       canEdit: await groupService.canUserEditGroup(userId, group.id),
       canCreate: await eventService.canCreateForGroup(userId, group.id),

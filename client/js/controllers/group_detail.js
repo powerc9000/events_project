@@ -24,6 +24,16 @@ export default class extends ApplicationController {
     e.stopPropagation();
   }
 
+  async requestDelete() {
+    const yes = confirm("Are you sure you want to delete this group?");
+    const groupId = this.data.get("id");
+    if (yes) {
+      await this.api.Delete(`/api/groups/${groupId}`);
+
+      this.page.replace("/groups");
+    }
+  }
+
   async updateRole(e) {
     let target = e.target;
     if (target.form) {

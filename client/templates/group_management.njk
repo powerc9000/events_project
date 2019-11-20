@@ -2,7 +2,7 @@
 {%import "partials/form_messages.njk" as messages%}
 {%from "partials/group_topnav.njk" import group_nav%}
 {%block content%}
-	<div class="content container mx-auto h-full" data-controller="group-detail">
+	<div class="content container mx-auto h-full" data-controller="group-detail" data-group-detail-id="{{group.id}}">
 
 
 		<h1 class="text-2xl flex items-center justify-center"><span>{{group.name}}</span> <span class="ml-2 align-middle"><span class="p-1 text-sm text-white bg-green-800 rounded align-middle">{{members.length}} {{"members" if members.length > 1 else "member"}}</span></span>
@@ -10,6 +10,18 @@
 		{{group_nav(path, active="manage", role=role)}}
 
 		<div class="">
+			<div class="bg-red-200 border-red-600 p-2">
+				<h2 class="text-xl">Danger Zone</h2>
+				{%if canDelete %}
+				<div class="mt-2">
+					<p class="py-2">
+					Deleting a group will delete all its associated events as well.
+					Be careful.
+					</p>
+					<button class="btn btn-red" data-action="group-detail#requestDelete">Delete Group</button>
+				</div>
+				{% endif %}
+			</div>
 		</div>
 	</div>
 {%endblock%}
