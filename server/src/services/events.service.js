@@ -345,7 +345,7 @@ async function createEvent(user, event) {
 
 async function canCreateForGroup(user, group) {
   if (!group) {
-    return false;
+    return true;
   }
   if (!user) {
     return false;
