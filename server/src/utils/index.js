@@ -1,8 +1,10 @@
 const PhoneNumber = require("awesome-phonenumber");
+const { createIcsFileBuilder } = require("./ics_builder");
 const sanitizeHtml = require("sanitize-html");
 const _ = require("lodash");
 
 const utils = (module.exports = {
+  createIcsFileBuilder,
   normalizePhone: (number) => {
     try {
       const ph = new PhoneNumber(
