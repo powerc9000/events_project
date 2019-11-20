@@ -33,6 +33,7 @@
 					</div>
 					<ul class="">
 						{%for member in members%}
+							{%set idx = loop.index%}
 							<li class="border-b border-gray-300">
 								<span class="text-lg">{{member.name | default(member.email, true) | default(member.phone, true)}}</span>
 								<span> - </span>
@@ -44,8 +45,8 @@
 											<legend class="font-bold">Select New Role</legend>
 											{%for role in ["member", "moderator", "admin", "owner"]%}
 											<div class="cursor-pointer">
-												<input type="radio" value="{{role}}" {{"checked" if member.role === role}} name="role" id="role-{{role}}" class="cursor-pointer">
-												<label for="role-{{role}}" class="cursor-pointer">
+												<input type="radio" value="{{role}}" {{"checked" if member.role === role}} name="role" id="role-{{role}}-{{idx}}" class="cursor-pointer">
+												<label for="role-{{role}}-{{idx}}" class="cursor-pointer">
 													{{role | capitalize}}
 												</label>
 											</div>
