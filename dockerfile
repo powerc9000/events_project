@@ -1,6 +1,8 @@
 FROM node:10.16.3
 
 RUN mkdir -p /var/www/events
+ADD server/ca-certificate.crt /usr/local/share/ca-certificates/DO-PG-CA.crt
+RUN chmod 644 /usr/local/share/ca-certificates/DO-PG-CA.crt && update-ca-certificates
 
 WORKDIR /var/www/events
 
