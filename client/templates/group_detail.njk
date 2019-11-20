@@ -38,14 +38,18 @@
 								<span> - </span>
 								{% if role === "admin" or role === "owner"%}
 									<span class="italic">{{member.role}} </span>
-									<button data-action="group-detail#toggleUpdate" class="text-blue-700 hover:underline" data-for="edit-{{member.id}}">change</button>
-									<form data-action="input->group-detail#updateRole" data-user="{{member.id}}" class="hidden" id="edit-{{member.id}}" data-target="group-detail.roleForm">
-										<select class="input cursor-pointer w-full" autocomplete="off" name="role">
-											<option value="member" {{"selected" if member.role === "member"}}>Member</option>
-											<option value="moderator" {{"selected" if member.role === "moderator"}}>Moderator</option>
-											<option value="admin" {{"selected" if member.role === "admin"}}>Admin</option>
-											<option value="owner" {{"selected" if member.role === "owner"}}>Owner</option>
-										</select>
+									<button data-action="group-detail#toggleUpdate" class="text-blue-700 hover:underline" data-for="edit-{{member.id}}" data-target="group-detail.roleButton">change</button>
+									<form data-action="input->group-detail#updateRole" data-user="{{member.id}}" class="hidden p-2 bg-gray-100 border-gray-500 border" id="edit-{{member.id}}" data-target="group-detail.roleForm">
+										<fieldset>
+											<legend class="font-bold">Select New Role</legend>
+											{%for role in ["member", "moderator", "admin", "owner"]%}
+											<div class="cursor-pointer">
+												<input type="radio" value="{{role}}" {{"checked" if member.role === role}} name="role" id="role-{{role}}" class="cursor-pointer">
+												<label for="role-{{role}}" class="cursor-pointer">
+													{{role | capitalize}}
+												</label>
+											</div>
+											{%endfor%}
 									</form>
 								{%else %}
 									<span class="italic">{{member.role}}</span>

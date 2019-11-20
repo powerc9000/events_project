@@ -6,10 +6,13 @@ export default class extends ApplicationController {
   }
 
   async toggleUpdate(e) {
-    const forms = this.targets.findAll("roleForms");
-
-    forms.forEach(() => {
-      forms.classList.add("hidden");
+    const forms = this.targets.findAll("roleForm");
+    const buttons = this.targets.findAll("roleButton");
+    forms.forEach((form) => {
+      form.classList.add("hidden");
+    });
+    buttons.forEach((button) => {
+      button.classList.remove("hidden");
     });
     const id = e.target.dataset.for;
     const form = document.getElementById(id);
@@ -17,6 +20,8 @@ export default class extends ApplicationController {
     e.target.classList.add("hidden");
 
     form.classList.remove("hidden");
+
+    e.stopPropagation();
   }
 
   async updateRole(e) {
