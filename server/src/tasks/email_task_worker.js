@@ -1,4 +1,5 @@
 const mustache = require("mustache");
+const ical = require("ical-toolkit");
 const fs = require("fs");
 const mjml = require("mjml");
 const path = require("path");
@@ -16,11 +17,20 @@ module.exports = (hapiServer) => async (job) => {
   if (type === "invite-user-to-event") {
     const user = data.user;
     if (user.email) {
-      await sendEmail("user_invite", {
+      const creator = await server
+        .getService("user")
+        .findById(data.event.creator);
+      let method = sendInviteEmail;
+
+      if (!creator.email) {
+        method = sendEmail;
+      }
+      await method("user_invite", {
         to: user.email,
         subject: "You were invited to an event",
         data: {
           ...data,
+          creator,
           description: sanitize(data.event.description)
         }
       });
@@ -130,6 +140,68 @@ async function sendEmail(templateName, payload) {
       ReplyTo: "branch@stem.junipercity.com",
       Subject: subject,
       HtmlBody: html
+    });
+
+    console.log(res);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function sendInviteEmail(templateName, payload) {
+  try {
+    const templateString = await getTemplate(templateName);
+    let template;
+    if (templateName.includes(".njk")) {
+      template = nunjucks.renderString(templateString, payload.data);
+    } else {
+      template = mustache.render(templateString, payload.data);
+    }
+    const builder = ical.createIcsFileBuilder();
+    const subject = mustache.render(payload.subject, payload.data);
+    const html = mjml(template).html;
+
+    const data = payload.data;
+    builder.method = "REQUEST";
+    builder.events.push({
+      start: new Date(data.event.date),
+      end: new Date(data.event.date + 1000 * 60 * 30),
+      summary: data.event.name,
+      stamp: data.event.created,
+      status: "CONFIRMED",
+      description: data.event.description,
+      organizer: {
+        name: data.creator.name || data.creator.email,
+        email: data.creator.email,
+        sentBy: "invites@test.stem.junipercity.com"
+      },
+      attendees: [
+        {
+          email: payload.to,
+          name: data.user.name || data.user.email,
+          status: "NEEDS-ACTION",
+          role: "REQ-PARTICIPANT",
+          rsvp: true
+        }
+      ],
+      uid: data.event.id,
+      url: data.link
+    });
+    const content = builder.toString();
+
+    const res = await client.sendEmail({
+      To: payload.to,
+      From: `"Juniper Branch" <branch@junipercity.com>`,
+      ReplyTo: "branch@stem.junipercity.com",
+      Subject: subject,
+      HtmlBody: html,
+      attachments: [
+        {
+          Name: "invitation.ics",
+          Content: Buffer.from(content).toString("base64"),
+          ContentType: "text/calendar; charset=utf-8; method=REQUEST"
+        }
+      ]
     });
 
     console.log(res);

@@ -30,7 +30,7 @@
     </mj-section>
      <mj-section>
       <mj-column>
-        <mj-text>Created by: {{event.creator.name}}</mj-text>
+        <mj-text>Created by: {{creator.name}}</mj-text>
       </mj-column>
     </mj-section>
     <mj-section>
