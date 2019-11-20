@@ -70,6 +70,10 @@ module.exports = {
       return !!this.app.user;
     });
 
+    server.decorate("request", "userId", function() {
+      return _.get(this, "app.user.id");
+    });
+
     server.decorate("request", "getLoggedInUser", async function() {
       if (this.app.user) {
         return this.app.user;

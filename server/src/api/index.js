@@ -159,6 +159,12 @@ module.exports = {
     });
 
     server.route({
+      method: "DELETE",
+      path: "/groups/{id}",
+      handler: deleteGroup
+    });
+
+    server.route({
       method: "POST",
       path: "/groups/{id}",
       handler: updateGroup,
@@ -241,6 +247,22 @@ module.exports = {
     });
   }
 };
+
+async function deleteGroup(req, h) {
+  const groupService = server.getService("groups");
+
+  const userId = req.userId();
+  const groupId = req.params.id;
+  const canDelete = await groupService.canUserDeleteGroup(userId, groupId);
+
+  if (!canDelete) {
+    return Boom.unauthorized();
+  }
+
+  await groupService.deleteGroup(groupId);
+
+  return h.response().code(204);
+}
 
 async function updateGroupMember(req, h) {
   const groupService = server.getService("groups");

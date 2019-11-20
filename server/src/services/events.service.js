@@ -83,7 +83,7 @@ async function getEventInvites(id) {
 
   return attendees.rows;
 }
-
+const cache = {};
 async function findEvents(constraints) {
   const where = [sql`is_private = false`];
   if (constraints) {
@@ -122,7 +122,7 @@ async function findEvents(constraints) {
 			) r
 		) invites
 		from events e where ${sql.join(where, sql` AND `)}  order by date`;
-  console.log(query);
+
   const events = await server.app.db.query(query);
 
   const upcoming = [];

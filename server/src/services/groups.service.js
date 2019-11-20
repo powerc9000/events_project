@@ -75,6 +75,7 @@ async function getGroupsForUser(userId) {
   );
 
   return groups;
+  conso;
 }
 
 async function getGroup(idOrCustom) {
@@ -210,6 +211,45 @@ async function updateUserRole(userId, groupId, role) {
   );
 }
 
+async function canUserDeleteGroup(userId, groupId) {
+  if (!userId) {
+    return false;
+  }
+
+  if (!groupId) {
+    return false;
+  }
+
+  const data = await server.app.db.maybeOne(
+    sql`SELECT * from group_members where group_id = ${groupId} and user_id=${userId} and role = 'owner'`
+  );
+
+  return !!data;
+}
+
+async function deleteGroup(groupId) {
+  //Delete the event invites
+  await server.app.db.query(
+    sql`delete from invites where event_id in (select id from events where group_id=${groupId})`
+  );
+  //Delete event comments
+  await server.app.db.query(
+    sql`delete from comments where entity_id in (select id from events where group_id=${groupId})`
+  );
+  //Delete events
+  //
+  await server.app.db.query(sql`delete from events where group_id=${groupId}`);
+
+  //Delete members
+  await server.app.db.query(
+    sql`delete from group_members where group_id=${groupId}`
+  );
+
+  //Delete the group
+  //
+  await server.app.db.query(sql`delete from groups where id=${groupId}`);
+}
+
 function init(hapiServer) {
   server = hapiServer;
 }
@@ -227,5 +267,7 @@ module.exports = {
   canAddUserToGroup,
   canUserViewGroup,
   addUserToGroup,
-  canUserUpdateRole
+  canUserUpdateRole,
+  canUserDeleteGroup,
+  deleteGroup
 };
