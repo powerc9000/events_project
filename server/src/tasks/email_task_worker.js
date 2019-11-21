@@ -1,5 +1,4 @@
 const mustache = require("mustache");
-const ical = require("ical-toolkit");
 const fs = require("fs");
 const mjml = require("mjml");
 const path = require("path");
@@ -7,7 +6,7 @@ const postmark = require("postmark");
 const client = new postmark.Client(process.env.POSTMARK_API_KEY);
 const nunjucks = require("nunjucks");
 const fns = require("date-fns");
-const { sanitize } = require("../utils");
+const { sanitize, createIcsFileBuilder } = require("../utils");
 let server;
 module.exports = (hapiServer) => async (job) => {
   server = hapiServer;
@@ -15,25 +14,31 @@ module.exports = (hapiServer) => async (job) => {
   const data = job.data.taskData;
 
   if (type === "invite-user-to-event") {
-    const user = data.user;
-    if (user.email) {
-      const creator = await server
-        .getService("user")
-        .findById(data.event.creator);
-      let method = sendInviteEmail;
+    try {
+      const user = data.user;
 
-      if (!creator.email) {
-        method = sendEmail;
-      }
-      await method("user_invite", {
-        to: user.email,
-        subject: "You were invited to an event",
-        data: {
-          ...data,
-          creator,
-          description: sanitize(data.event.description)
+      if (user.email) {
+        let creator;
+        if (!data.event.creator.id) {
+          creator = await server
+            .getService("user")
+            .findById(data.event.creator);
+        } else {
+          creator = data.event.creator;
         }
-      });
+
+        await sendInviteEmail("user_invite", {
+          to: user.email,
+          subject: "You were invited to an event",
+          data: {
+            ...data,
+            creator,
+            description: sanitize(data.event.description)
+          }
+        });
+      }
+    } catch (e) {
+      console.log(e);
     }
   }
 
@@ -157,7 +162,7 @@ async function sendInviteEmail(templateName, payload) {
     } else {
       template = mustache.render(templateString, payload.data);
     }
-    const builder = ical.createIcsFileBuilder();
+    const builder = createIcsFileBuilder();
     const subject = mustache.render(payload.subject, payload.data);
     const html = mjml(template).html;
 
@@ -172,8 +177,10 @@ async function sendInviteEmail(templateName, payload) {
       description: data.event.description,
       organizer: {
         name: data.creator.name || data.creator.email,
-        email: data.creator.email,
-        sentBy: "invites@test.stem.junipercity.com"
+        email: "invites@test.stem.junipercity.com"
+      },
+      additionalTags: {
+        "X-INVITE-ID": data.invite.id
       },
       attendees: [
         {
@@ -192,7 +199,6 @@ async function sendInviteEmail(templateName, payload) {
     const res = await client.sendEmail({
       To: payload.to,
       From: `"Juniper Branch" <branch@junipercity.com>`,
-      ReplyTo: "branch@stem.junipercity.com",
       Subject: subject,
       HtmlBody: html,
       attachments: [

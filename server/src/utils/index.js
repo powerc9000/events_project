@@ -18,7 +18,7 @@ const utils = (module.exports = {
         return null;
       }
     } catch (e) {
-      console.log(e);
+      return null;
     }
   },
   emailOrPhone(input) {
