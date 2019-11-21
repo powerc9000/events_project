@@ -1,48 +1,102 @@
-module.exports = (server) => async (job) => {
-  const task = job.data;
-  const data = task.taskData;
+let server;
+const ics = require("ical.js");
+module.exports = (hapiServer) => {
+  server = hapiServer;
 
-  if (task.type === "inbound-email") {
-    try {
-      const eventService = server.getService("events");
-      const userService = server.getService("user");
+  return async (job) => {
+    const task = job.data;
+    const data = task.taskData;
 
-      const user = await userService.findUserByEmail(data.FromFull.Email);
-      const allToAddr = data.ToFull.filter((to) => {
-        return to.MailboxHash !== data.MailboxHash;
-      }).map((to) => {
-        return {
-          name: to.Name || "",
-          email: to.Email
-        };
+    if (task.type === "inbound-email") {
+      const juniperCityEmail = data.ToFull.find((from) => {
+        return from.Email.indexOf("junipercity.com") > -1;
       });
-
-      if (!user) {
-        //They need to create an account. I think I want to do that.
-        //Beucase we need time zone etc for it.
-        console.log("no user");
+      if (!juniperCityEmail) {
         return;
       }
-      console.log(data.MailboxHash);
-      const event = await eventService.getEventByEmailHash(data.MailboxHash);
-
-      if (!event) {
-        console.log("no event");
-        return;
+      if (juniperCityEmail.Email.indexOf("invites") > -1) {
+        inviteResponse(data);
       }
 
-      const canInvite = await eventService.canInviteToEvent(event.id, user.id);
-
-      if (!canInvite) {
-        console.log("can't invite");
-        return;
+      if (juniperCityEmail.Email.indexOf("events") > -1) {
+        bulkInvite(data);
       }
-      console.log(allToAddr);
-      await eventService.inviteUsersToEvent(event.id, allToAddr);
-      console.log("complete");
-    } catch (e) {
-      console.log(e);
+    }
+  };
+};
+const statusMap = {
+  ACCEPTED: "going",
+  DECLINED: "declined",
+  TENTATIVE: "maybe"
+};
+async function inviteResponse(data) {
+  const eventsService = server.getService("events");
+  const userService = server.getService("user");
+
+  if (data.Attachments) {
+    const attachment = data.Attachments.find((attach) => {
+      return attach.ContentType.indexOf("text/calendar") > -1;
+    });
+
+    if (attachment) {
+      const file = Buffer.from(attachment.Content, "base64").toString("utf-8");
+      // Get the basic data out
+      const jCalData = ics.parse(file);
+      const comp = new ics.Component(jCalData);
+
+      // Fetch the VEVENT part
+      const vevent = comp.getFirstSubcomponent("vevent");
+      const event = new ics.Event(vevent);
+
+      const status = vevent
+        .getFirstProperty("attendee")
+        .getParameter("partstat");
+
+      await eventsService.updateInviteRSVP(
+        data.MailboxHash,
+        statusMap[status] || "maybe"
+      );
     }
   }
-  return true;
-};
+}
+
+async function bulkInvite(data) {
+  try {
+    const eventService = server.getService("events");
+    const userService = server.getService("user");
+    const user = await userService.findUserByEmail(data.FromFull.Email);
+    const allToAddr = data.ToFull.filter((to) => {
+      return to.MailboxHash !== data.MailboxHash;
+    }).map((to) => {
+      return {
+        name: to.Name || "",
+        email: to.Email
+      };
+    });
+
+    if (!user) {
+      //They need to create an account. I think I want to do that.
+      //Beucase we need time zone etc for it.
+      console.log("no user");
+      return;
+    }
+    const event = await eventService.getEventByEmailHash(data.MailboxHash);
+
+    if (!event) {
+      console.log("no event");
+      return;
+    }
+
+    const canInvite = await eventService.canInviteToEvent(event.id, user.id);
+
+    if (!canInvite) {
+      console.log("can't invite");
+      return;
+    }
+    console.log(allToAddr);
+    await eventService.inviteUsersToEvent(event.id, allToAddr);
+    console.log("complete");
+  } catch (e) {
+    console.log(e);
+  }
+}

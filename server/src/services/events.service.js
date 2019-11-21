@@ -392,6 +392,27 @@ async function canRSVPToEvent(eventId, userId, event_key) {
   return (isOwner || isInvited || isPublic) && userId;
 }
 
+async function updateInviteRSVP(inviteId, status) {
+  const invite = await server.app.db.maybeOne(
+    sql`update invites set status=${status} where id=${inviteId} returning *`
+  );
+
+  if (!invite) {
+    return;
+  }
+
+  (async () => {
+    const event = await getEventById(invite.event_id);
+    console.log(invite, event);
+    server.createTask("user-did-rsvp", {
+      event,
+      creator: event.creator,
+      user: await server.getService("user").findById(invite.user_id),
+      invite
+    });
+  })();
+}
+
 async function rsvpToEvent(eventId, userId, status, show_name, event_key) {
   const event = await server.app.db.maybeOne(
     sql`select * from events where id=${eventId}`
@@ -418,6 +439,7 @@ async function rsvpToEvent(eventId, userId, status, show_name, event_key) {
 
   server.createTask("user-did-rsvp", {
     event,
+    creator: await server.getService("user").findById(event.creator),
     user: await server.getService("user").findById(userId),
     invite: res
   });
@@ -580,6 +602,7 @@ function init(hapiServer) {
 module.exports = {
   name: "events",
   inviteUsersToEvent,
+  updateInviteRSVP,
   canInviteToEvent,
   canRSVPToEvent,
   rsvpToEvent,

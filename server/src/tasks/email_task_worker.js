@@ -101,7 +101,7 @@ module.exports = (hapiServer) => async (job) => {
   if (type === "user-did-rsvp") {
     if (data.user.email) {
       await sendEmail("user_did_rsvp.njk", {
-        to: data.user.email,
+        to: data.creator.email,
         subject: "Someone RSVP'd to your event",
         data: {
           event: data.event,
@@ -177,7 +177,7 @@ async function sendInviteEmail(templateName, payload) {
       description: data.event.description,
       organizer: {
         name: data.creator.name || data.creator.email,
-        email: "invites@test.stem.junipercity.com"
+        email: `invites+${data.invite.id}@test.stem.junipercity.com`
       },
       additionalTags: {
         "X-INVITE-ID": data.invite.id
