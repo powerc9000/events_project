@@ -60,6 +60,7 @@ module.exports = {
       path: path.join(__dirname, "../../../", "templates"),
       context: (req) => ({
         NODE_ENV: process.env.NODE_ENV,
+        inboundEmailDomain: process.env.INBOUND_EMAIL_DOMAIN,
         date: fns,
         jsBundlePath: "/static/js/index.js",
         user: req.app.user,
