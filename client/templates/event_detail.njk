@@ -43,7 +43,7 @@
 					<div class="flex-1">
 						{% call invite_form(invitePath, canInvite)%}
 						<div class="ml-2">
-							or <a target="_blank" rel="noopener noreferer" class="text-blue-700 hover:underline" href="mailto:events+{{event.email_hash_id}}@inbound.junipercity.com?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">Bulk Invite Via Email</a>
+							or <a target="_blank" rel="noopener noreferer" class="text-blue-700 hover:underline" href="mailto:events+{{event.email_hash_id}}@{{inboundEmailDomain}}?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">Bulk Invite Via Email</a>
 
 						</div>
 						{%endcall%}

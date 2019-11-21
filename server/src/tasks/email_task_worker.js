@@ -177,7 +177,7 @@ async function sendInviteEmail(templateName, payload) {
       description: data.event.description,
       organizer: {
         name: data.creator.name || data.creator.email,
-        email: `invites+${data.invite.id}@test.stem.junipercity.com`
+        email: `invites+${data.invite.id}@${process.env.INBOUND_EMAIL_DOMAIN}`
       },
       additionalTags: {
         "X-INVITE-ID": data.invite.id

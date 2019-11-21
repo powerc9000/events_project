@@ -360,7 +360,7 @@ async function updateSettings(req, h) {
 async function inboundEmail(req, h) {
   const key = req.query.key;
 
-  if (key !== process.env.INBOUND_EMAIL_KEY) {
+  if (key === process.env.INBOUND_EMAIL_KEY) {
     server.createTask("inbound-email", req.payload);
     return h.response().code(200);
   } else {
