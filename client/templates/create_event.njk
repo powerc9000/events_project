@@ -16,6 +16,7 @@
 			data-action="create#createEvent input->create#formInput"
 			data-target="create.form"
 			data-create-event-date="{{event.date if event.date}}"
+			data-create-end-date="{{event.end_date if event.end_date}}"
 			autocomplete="off"
 			>
 			<input type="hidden" name="edited_event" value="{{event.id}}" />
