@@ -250,6 +250,18 @@ async function deleteGroup(groupId) {
   await server.app.db.query(sql`delete from groups where id=${groupId}`);
 }
 
+async function isUserInGroup(userId, groupId) {
+  if (!groupId || !userId) {
+    return false;
+  }
+
+  const lookup = await server.app.db.maybeOne(
+    sql`select * from group_members where user_id=${userId} and group_id=${groupId}`
+  );
+
+  return !!lookup;
+}
+
 function init(hapiServer) {
   server = hapiServer;
 }
@@ -257,6 +269,7 @@ function init(hapiServer) {
 module.exports = {
   name: "groups",
   canUserEditGroup,
+  isUserInGroup,
   updateUserRole,
   updateGroup,
   createGroup,

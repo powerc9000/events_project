@@ -393,6 +393,10 @@ async function canRSVPToEvent(eventId, userId, event_key) {
     return false;
   }
 
+  const inGroup = await server
+    .getService("groups")
+    .isUserInGroup(userId, event.group_id);
+
   const isOwner = event.creator === userId;
 
   const isInvited = invites.find((invite) => {
@@ -401,7 +405,7 @@ async function canRSVPToEvent(eventId, userId, event_key) {
 
   const isPublic = !event.is_private;
 
-  return (isOwner || isInvited || isPublic) && userId;
+  return (isOwner || isInvited || isPublic || inGroup) && userId;
 }
 
 async function updateInviteRSVP(inviteId, status) {
@@ -438,8 +442,11 @@ async function rsvpToEvent(eventId, userId, status, show_name, event_key) {
   );
   const notCreator = event.creator !== userId;
   const wrongKey = event_key !== event.secret_key;
+  const notInGroup = !(await server
+    .getService("groups")
+    .isUserInGroup(userId, event.group_id));
 
-  if (!invite && event.is_private && notCreator && wrongKey) {
+  if (!invite && event.is_private && notCreator && wrongKey && notInGroup) {
     return;
   }
 
