@@ -533,7 +533,6 @@ async function rsvpToEvent(req, h) {
 
   if (!event) {
     return Boom.notFound();
-    console.log(target);
   }
 
   if (!user && req.payload.email_or_phone) {
@@ -548,12 +547,12 @@ async function rsvpToEvent(req, h) {
     return Boom.unauthorized();
   }
 
-  const canInvite = await events.canRSVPToEvent(
+  const canRSVP = await events.canRSVPToEvent(
     req.params.id,
     user.id,
     req.payload.event_key
   );
-  if (!canInvite) {
+  if (!canRSVP) {
     return Boom.unauthorized();
   }
 

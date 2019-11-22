@@ -71,8 +71,6 @@ export default class extends ApplicationController {
       }
     }
 
-    console.log(payload);
-
     await this.api.Post(`/api/events/${eventId}/rsvp`, payload);
     this.formControl.success("RSVP saved!", "rsvp");
     this.page.reload();
