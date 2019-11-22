@@ -311,7 +311,20 @@ async function createEvent(user, event) {
     "name",
     "description",
     "location",
-    "date",
+    {
+      name: "date",
+      format: (date) => {
+        return sql`to_timestamp(${new Date(date).getTime() / 1000})`;
+      }
+    },
+    {
+      name: "end_date",
+      format: (date) => {
+        console.log(new Date(date).getTime());
+        return sql`to_timestamp(${new Date(date).getTime() / 1000})`;
+      }
+    },
+
     "is_private",
     "allow_comments",
     "show_participants",
@@ -321,17 +334,16 @@ async function createEvent(user, event) {
   ];
   const fields = [sql.identifier(["slug"]), sql.identifier(["creator"])];
   const values = [slug, user_id];
-
-  validFields.forEach((f) => {
-    if (event.hasOwnProperty(f)) {
-      fields.push(sql.identifier([f]));
-      if (f !== "date") {
-        values.push(event[f]);
-      } else {
-        values.push(sql`to_timestamp(${event["date"] / 1000})`);
-      }
+  validFields.forEach((field) => {
+    const key = field.name || field;
+    if (_.has(event, key)) {
+      const format = field.format || ((val) => val);
+      console.log(key, format(event[key]));
+      fields.push(sql.identifier([key]));
+      values.push(format(event[key]));
     }
   });
+
   const result = await server.app.db.query(
     sql`
 	INSERT into events (${sql.join(fields, sql`, `)}) VALUES (${sql.join(
@@ -476,6 +488,12 @@ async function editEvent(eventId, payload) {
     "description",
     {
       name: "date",
+      format: (date) => {
+        return sql`to_timestamp(${new Date(date).getTime() / 1000})`;
+      }
+    },
+    {
+      name: "end_date",
       format: (date) => {
         return sql`to_timestamp(${new Date(date).getTime() / 1000})`;
       }

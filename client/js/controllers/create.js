@@ -16,16 +16,27 @@ export default class extends ApplicationController {
   connect() {
     const form = this.targets.find("form");
     const eventTime = this.data.get("eventDate");
+    const endTime = this.data.get("endDate");
 
     if (eventTime) {
-      const date = new Date(parseInt(eventTime, 10));
-
-      const day = formatISO(date, { representation: "date" });
-      const time = formatISO(date, { representation: "time" });
-
+      const { day, time } = this.splitDateAndTime(eventTime);
       form.date.value = day;
       form.time.value = time;
     }
+
+    if (endTime) {
+      const { day, time } = this.splitDateAndTime(endTime);
+      form.end_date.value = day;
+      form.end_time.value = time;
+    }
+  }
+  splitDateAndTime(value) {
+    const date = new Date(parseInt(value, 10));
+
+    const day = formatISO(date, { representation: "date" });
+    const time = formatISO(date, { representation: "time" });
+
+    return { day, time };
   }
   async formInput() {
     const form = this.targets.find("form");

@@ -23,7 +23,11 @@ module.exports = {
         validate: {
           payload: joi.object({
             name: joi.string().required(),
-            date: joi.date().timestamp(),
+            date: joi
+              .date()
+              .timestamp()
+              .required(),
+            end_date: joi.date().timestamp(),
             description: joi.string().required(),
             is_private: joi.boolean(),
             show_participants: joi.boolean(),
@@ -109,7 +113,11 @@ module.exports = {
         validate: {
           payload: joi.object({
             name: joi.string().required(),
-            date: joi.date().timestamp(),
+            date: joi
+              .date()
+              .timestamp()
+              .required(),
+            end_date: joi.date().timestamp(),
             description: joi.string().required(),
             is_private: joi.boolean(),
             show_participants: joi.boolean(),
