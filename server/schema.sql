@@ -95,7 +95,8 @@ CREATE TABLE public.events (
     group_id uuid,
     source text DEFAULT 'web'::text,
     email_hash_id uuid DEFAULT public.uuid_generate_v4(),
-    secret_key uuid DEFAULT public.uuid_generate_v4()
+    secret_key uuid DEFAULT public.uuid_generate_v4(),
+    end_date timestamp with time zone
 );
 
 

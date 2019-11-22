@@ -12,6 +12,7 @@
 		</div>
 		<form
 			data-controller="create"
+			data-create-editing="{{"true" if event.id else "false"}}"
 			data-action="create#createEvent input->create#formInput"
 			data-target="create.form"
 			data-create-event-date="{{event.date if event.date}}"
@@ -19,59 +20,101 @@
 			>
 			<input type="hidden" name="edited_event" value="{{event.id}}" />
 			<div>
-				<label class="font-bold cursor-pointer">
-					Event Name
-					<input
-						class="input w-full"
-						type="text"
-						name="name"
-						placeholder="Event Name"
-						required
-						value="{{event.name}}"
-						/>
-				</label>
+				<label class="font-bold cursor-pointer required-text" for="event-name">Event Name</label>
+				<input
+					id="event-name"
+					class="input w-full"
+					type="text"
+					name="name"
+					placeholder="Event Name"
+					required
+					value="{{event.name}}"
+					/>
+			</div>
+
+			<div class="mt-2">
+				<fieldset>
+					<legend class="font-bold">Event Date</legend>
+					<div class="ml-2">
+						<div class="p-2 border border-gray-300">
+							<div class="w-2/12 required-text">Start</div>
+							<div class="flex items-center">
+								<div class="">
+									<label class="sr-only font-bold cursor-pointer" for="event-start-date">
+										Start Date
+									</label>
+									<input
+										id="event-start-date"
+										type="date"
+										name="date"
+										class="input"
+										placeholder="Start Date"
+										value="{{date.format(date.fromUnixTime(event.date/1000), "yyyy-LL-dd") if event.date}}"
+										/>
+								</div>
+								<div class="ml-2">
+									<label class="sr-only font-bold cursor-pointer" for="event-start-time">
+										Start Time
+									</label>
+									<input
+										id="event-start-time"
+										type="time"
+										name="time"
+										class="input"
+										placeholder="Start Time"
+										value="{{date.format(date.fromUnixTime(event.date/1000), "HH:mm") if event.date}}"
+										/>
+								</div>
+							</div>
+						</div>
+						<div class="p-2 border border-gray-300 mt-1">
+							<div class="w-2/12">End</div>
+							<div class="flex items-center">
+								<div class="">
+									<label class="sr-only font-bold cursor-pointer" id="event-end-date">
+										End Date 
+									</label>
+									<input
+										id="event-end-date"
+										type="date"
+										name="end_date"
+										class="input"
+										placeholder="End Date"
+										value="{{date.format(date.fromUnixTime(event.end_date/1000), "yyyy-LL-dd") if event.end_date}}"
+										/>
+								</div>
+								<div class="ml-2">
+									<label class="sr-only font-bold cursor-pointer" id="event-end-time">
+										Time
+									</label>
+									<input
+										id="event-end-time"
+										type="time"
+										name="end_time"
+										class="input"
+										placeholder="End Time"
+										value="{{date.format(date.fromUnixTime(event.end_date/1000), "HH:mm") if event.end_date}}"
+										/>
+								</div>
+							</div>
+						</div>
+					</div>
+				</fieldset>
 			</div>
 			<div class="mt-2">
-				<label class="font-bold cursor-pointer">
-					Event Date
-					<input
-						type="date"
-						name="date"
-						class="input"
-						placeholder="Event Date"
-						value="{{date.format(date.fromUnixTime(event.date/1000), "yyyy-LL-dd") if event.date}}"
-						/>
-				</label>
-			</div>
-			<div class="mt-2">
-				<label class="font-bold cursor-pointer">
-					Event Time
-					<input
-						type="time"
-						name="time"
-						class="input"
-						placeholder="Event Date"
-						value="{{date.format(date.fromUnixTime(event.date/1000), "HH:mm") if event.date}}"
-						/>
-				</label>
-			</div>
-			<div class="mt-2">
-				<label class="font-bold cursor-pointer">
-					Event Location
-					<input
-						class="input w-full"
-						type="text"
-						name="location"
-						placeholder="Event Location"
-						value="{{event.location}}"
-						/>
-				</label>
+				<label class="font-bold cursor-pointer" for="event-location">Event Location</label>
+				<input
+					id="event-location"
+					class="input w-full"
+					type="text"
+					name="location"
+					placeholder="Event Location"
+					value="{{event.location}}"
+					/>
 			</div>
 			<div class="mt-2" data-controller="trix">
 				<input type="hidden" id="description" value="{{event.description}}" name="description" />
-				<label class="font-bold cursor-pointer" for="editor">
-					Event Description
-				</label>
+				<label class="font-bold cursor-pointer required-text" for="editor">Event Description</label>
 				<trix-editor input="description" id="editor"></trix-editor>
 			</div>
 			{%if groups.length %}

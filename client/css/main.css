@@ -128,6 +128,13 @@ footer {
 	}
 }
 
+.required-text {
+	&::after {
+		content: "*";
+		@apply text-red-700;
+	}
+}
+
 @import url("./md.css");
 
 @tailwind utilities;
