@@ -148,7 +148,7 @@ module.exports = {
       path: "/logout",
       handler: (req, h) => {
         h.unstate("user");
-        return h.response.code(204);
+        return h.response().code(204);
       }
     });
 

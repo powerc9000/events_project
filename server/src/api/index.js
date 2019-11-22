@@ -447,7 +447,6 @@ async function editEvent(req, h) {
     req.payload.group_id
   );
 
-  console.log(target);
   if (!canCreate) {
     return Boom.unauthorized();
   }
