@@ -450,9 +450,21 @@ async function canUserEditEvent(user, event) {
   if (!user) {
     return false;
   }
-  return server.app.db.maybeOne(
+  const creator = await server.app.db.maybeOne(
     sql`select * from events where creator = ${user} and id=${event}`
   );
+
+  if (creator) {
+    return true;
+  }
+
+  const adminUp = await server.app.db.maybeOne(
+    sql`select * from events e
+		inner join group_members gm on gm.group_id = e.group_id
+		where gm.user_id=${user} and e.id=${event} and gm.role > 'moderator'`
+  );
+
+  return adminUp;
 }
 
 async function editEvent(eventId, payload) {
