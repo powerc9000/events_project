@@ -76,6 +76,16 @@ export default class extends ApplicationController {
     if (res.ok) {
       const data = await res.json();
       this.page.visit(`/events/${data.slug}`);
+    } else {
+      try {
+        const data = await res.json();
+        this.formControl.error(data.message, "create");
+      } catch (e) {
+        this.formControl.error(
+          "Something went wrong please try again",
+          "create"
+        );
+      }
     }
   }
 }
