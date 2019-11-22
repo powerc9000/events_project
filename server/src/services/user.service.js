@@ -66,8 +66,6 @@ async function findUserByEmail(email) {
 async function findUser(options) {
   let where;
 
-  console.log(options);
-
   if (options.email) {
     return findUserByEmail(options.email);
   }

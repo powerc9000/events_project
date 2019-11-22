@@ -8,7 +8,7 @@ const { normalizePhone } = require("../utils");
 
 async function canUserViewEvent(userId, eventId, event_key) {
   const event = await server.app.db.maybeOne(
-    sql`select id, is_private, creator from events where id=${eventId}`
+    sql`select id, is_private, creator, group_id from events where id=${eventId}`
   );
 
   if (!event) {
@@ -36,13 +36,13 @@ async function canUserViewEvent(userId, eventId, event_key) {
   const invited = await server.app.db.maybeOne(
     sql`select * from invites where user_id=${userId} and event_id=${eventId}`
   );
-
   if (invited) {
     return true;
   }
-
   const inGroup = await server.app.db.maybeOne(
-    sql`select * from events e inner join groups g on g.id = e.group_id inner join group_members gm on gm.group_id = g.id where gm.user_id=${userId}`
+    sql`select * from events e 
+		inner join group_members gm on gm.group_id = e.group_id
+		where gm.user_id=${userId} and gm.group_id=${event.group_id} and e.id=${event.id}`
   );
 
   if (inGroup) {

@@ -12,7 +12,9 @@ module.exports = (hapiServer) => async (job) => {
   server = hapiServer;
   const type = job.data.type;
   const data = job.data.taskData;
-
+  server.log(["taskWorker", "email_task_worker", "start"], {
+    status: "started"
+  });
   if (type === "invite-user-to-event") {
     try {
       const user = data.user;
@@ -29,7 +31,7 @@ module.exports = (hapiServer) => async (job) => {
 
         await sendInviteEmail("user_invite", {
           to: user.email,
-          subject: "You were invited to an event",
+          subject: `You were invited to an event: ${data.event.name} on Juniper City`,
           data: {
             ...data,
             creator,
@@ -59,7 +61,7 @@ module.exports = (hapiServer) => async (job) => {
       if (user.email) {
         await sendEmail("login_code", {
           to: user.email,
-          subject: "Your login code",
+          subject: "Your Juniper City login code",
           data: {
             code: data.code
           }
@@ -85,7 +87,7 @@ module.exports = (hapiServer) => async (job) => {
       if (data.user.email) {
         await sendEmail("event_comments.njk", {
           to: data.user.email,
-          subject: "New comments on events you're invited to",
+          subject: "New comments on events you're invited to on Juniper City",
           data: {
             events: data.events,
             sanitize,
@@ -102,7 +104,7 @@ module.exports = (hapiServer) => async (job) => {
     if (data.user.email) {
       await sendEmail("user_did_rsvp.njk", {
         to: data.creator.email,
-        subject: "Someone RSVP'd to your event",
+        subject: `Someone RSVP'd to your event ${data.event.name} on Juniper City`,
         data: {
           event: data.event,
           user: data.user,
@@ -116,7 +118,7 @@ module.exports = (hapiServer) => async (job) => {
     if (data.member.email) {
       sendEmail("new_group_event.njk", {
         to: data.member.email,
-        subject: `New event in your Juniper City group`,
+        subject: `New event in your Juniper City group ${data.group.name}`,
         data: {
           event: data.event,
           group: data.group,
@@ -126,6 +128,10 @@ module.exports = (hapiServer) => async (job) => {
       });
     }
   }
+
+  server.log(["taskWorker"], {
+    status: "complete"
+  });
 };
 
 async function sendEmail(templateName, payload) {
@@ -147,9 +153,13 @@ async function sendEmail(templateName, payload) {
       HtmlBody: html
     });
 
-    console.log(res);
+    server.log(["taskWorker", "email-task-worker", "info"], {
+      sendEmailResponse: res
+    });
   } catch (e) {
-    console.log(e);
+    server.log(["taskWorker", "email-task-worker", "error"], {
+      sendEmailError: e
+    });
   }
 }
 
@@ -174,13 +184,14 @@ async function sendInviteEmail(templateName, payload) {
       summary: data.event.name,
       stamp: data.event.created,
       status: "CONFIRMED",
-      description: data.event.description,
+      description: `${data.event.description}\n link: ${data.link}`,
       organizer: {
         name: data.creator.name || data.creator.email,
-        email: `invites+${data.invite.id}@${process.env.INBOUND_EMAIL_DOMAIN}`
+        email: `invites+${data.user.id}@${process.env.INBOUND_EMAIL_DOMAIN}`
       },
       additionalTags: {
-        "X-INVITE-ID": data.invite.id
+        "X-INVITE-ID": data.invite.id,
+        "X-USER-ID": data.user.id
       },
       attendees: [
         {
@@ -209,10 +220,13 @@ async function sendInviteEmail(templateName, payload) {
         }
       ]
     });
-
-    console.log(res);
+    server.log(["taskWorker", "email-task-worker", "info"], {
+      sendEmailResponse: res
+    });
   } catch (e) {
-    console.log(e);
+    server.log(["taskWorker", "email-task-worker", "error"], {
+      sendEmailError: e
+    });
   }
 }
 

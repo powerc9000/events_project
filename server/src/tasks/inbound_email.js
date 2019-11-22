@@ -15,7 +15,11 @@ module.exports = (hapiServer) => {
         return;
       }
       if (juniperCityEmail.Email.indexOf("invites") > -1) {
-        inviteResponse(data);
+        try {
+          inviteResponse(data);
+        } catch (e) {
+          console.log(e);
+        }
       }
 
       if (juniperCityEmail.Email.indexOf("events") > -1) {
@@ -32,7 +36,6 @@ const statusMap = {
 async function inviteResponse(data) {
   const eventsService = server.getService("events");
   const userService = server.getService("user");
-
   if (data.Attachments) {
     const attachment = data.Attachments.find((attach) => {
       return attach.ContentType.indexOf("text/calendar") > -1;
@@ -46,15 +49,28 @@ async function inviteResponse(data) {
 
       // Fetch the VEVENT part
       const vevent = comp.getFirstSubcomponent("vevent");
-      const event = new ics.Event(vevent);
 
       const status = vevent
         .getFirstProperty("attendee")
         .getParameter("partstat");
 
-      await eventsService.updateInviteRSVP(
-        data.MailboxHash,
-        statusMap[status] || "maybe"
+      const eventId = vevent.getFirstPropertyValue("uid");
+      const userId = vevent.getFirstPropertyValue("x-user-id");
+      if (!userId || !eventId) {
+        return;
+      }
+
+      const canRSVP = await eventsService.canRSVPToEvent(eventId, userId);
+
+      if (!canRSVP) {
+        return;
+      }
+
+      await eventsService.rsvpToEvent(
+        eventId,
+        userId,
+        statusMap[status] || "maybe",
+        false
       );
     }
   }

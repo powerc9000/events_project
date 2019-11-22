@@ -1,7 +1,8 @@
 let server;
 const _ = require("lodash");
+const joi = require("@hapi/joi");
 const Boom = require("@hapi/boom");
-const { sanitize } = require("../../utils");
+const { sanitize, createIcsFileBuilder } = require("../../utils");
 
 function init(hapiServer) {
   server = hapiServer;
@@ -14,6 +15,19 @@ function init(hapiServer) {
     method: "GET",
     path: "/events/{slug}",
     handler: eventDetail
+  });
+  server.route({
+    method: "GET",
+    path: "/events/{slug}.{ext}",
+    handler: eventDetail,
+    options: {
+      validate: {
+        params: joi.object({
+          slug: joi.string().required(),
+          ext: joi.string().valid("ics")
+        })
+      }
+    }
   });
 
   server.route({
@@ -99,7 +113,7 @@ async function eventDetail(req, h) {
         return invite.user_id === userId;
       }) || false;
 
-    return h.view("event_detail.njk", {
+    const data = {
       ...viewData,
       event: { ...event, ...statuses },
       path: `/events/${event.slug}`,
@@ -118,7 +132,48 @@ async function eventDetail(req, h) {
       comments: await eventService.getComments(event.id),
       isCreator: event.creator.id === userId,
       mdDescription: sanitize(event.description)
-    });
+    };
+
+    if (req.params.ext && req.params.ext === "ics") {
+      const statusToICS = {
+        going: "ATTENDING",
+        maybe: "TENNATIVE",
+        declined: "DECLINED",
+        invited: "NEEDS-ACTION"
+      };
+      const builder = createIcsFileBuilder();
+      builder.events.push({
+        start: new Date(data.event.date),
+        end: new Date(data.event.data + 1000 * 60 * 30),
+        summary: data.event.name,
+        stamp: data.event.created,
+        status: "CONFIRMED",
+        description: data.event.description,
+        organizer: {
+          name: data.event.creator.name || data.event.creator.email,
+          email: `invites+${userId}@${process.env.INBOUND_EMAIL_DOMAIN}`
+        },
+        attendees: event.invites.map((invite) => {
+          const showInfo =
+            (canSeeInvites && invite.show_name) || invite.user.id === userId;
+          const defaultEmail = `protected+${invite.user.id}@${process.env.INBOUND_EMAIL_DOMAIN}`;
+          const email = invite.email || defaultEmail;
+          return {
+            email: showInfo ? email : defaultEmail,
+            name: showInfo
+              ? invite.user.name || "Anonymous User"
+              : "Anonymous User",
+            status: statusToICS[invite.status]
+          };
+        }),
+        uid: data.event.id,
+        url: `https://junipercity.com/events/${event.slug}`
+      });
+      return h
+        .response(builder.toString())
+        .header("Content-Type", "text/calendar");
+    }
+    return h.view("event_detail.njk", data);
   } catch (e) {
     console.log(e);
   }
