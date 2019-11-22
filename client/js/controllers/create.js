@@ -1,5 +1,16 @@
 import { ApplicationController } from "../helpers/application_controller";
-import { format } from "date-fns";
+import { format, addHours, formatISO } from "date-fns";
+
+function getGMTOffset() {
+  const tz = new Date().getTimezoneOffset();
+
+  const sign = tz < 0 ? "+" : "-";
+  const offset = Math.abs(tz);
+  // offset/60 | 0 turns it into an integer
+  const hours = `${(offset / 60) | 0}`.padStart(2, "0");
+  const minutes = `${offset % 60}`.padStart(2, "0");
+  return `${sign}${hours}:${minutes}`;
+}
 
 export default class extends ApplicationController {
   connect() {
@@ -9,8 +20,8 @@ export default class extends ApplicationController {
     if (eventTime) {
       const date = new Date(parseInt(eventTime, 10));
 
-      const day = format(date, "yyyy-LL-dd");
-      const time = format(date, "HH:mm");
+      const day = formatISO(date, { representation: "date" });
+      const time = formatISO(date, { representation: "time" });
 
       form.date.value = day;
       form.time.value = time;
@@ -24,7 +35,24 @@ export default class extends ApplicationController {
         el.setCustomValidity("");
       }
     });
+
+    if (
+      form.date.value &&
+      form.time.value &&
+      !form.end_date.value &&
+      !form.end_time.value &&
+      !this.editing
+    ) {
+      const updated = addHours(
+        new Date(`${form.date.value}T${form.time.value}${getGMTOffset()}`),
+        1
+      );
+
+      form.end_date.value = formatISO(updated, { representation: "date" });
+      form.end_time.value = formatISO(updated, { representation: "time" });
+    }
   }
+
   async createEvent(e) {
     e.preventDefault();
     const form = this.targets.find("form");
@@ -56,21 +84,38 @@ export default class extends ApplicationController {
       const date = form.date.value;
       const time = form.time.value;
 
-      const dateString = `${date}T${time}`;
-
+      const dateString = `${date}T${time}${getGMTOffset()}`;
+      console.log(dateString, new Date(dateString));
       payload.date = new Date(dateString).getTime();
+    }
+
+    if (payload.date && (form.end_date.value || form.end_time.value)) {
+      if (!form.end_date.value && form.end_time.value) {
+        payload.end_date = setHours(
+          startOfDay(new Date(payload.date)),
+          form.end_time.value
+        ).getTime();
+      }
+
+      if (form.end_date.value && form.end_time.value) {
+        payload.end_date = new Date(
+          `${form.end_date.value}T${form.end_time.value}${getGMTOffset()}`
+        ).getTime();
+      }
+    } else if (payload.date && !this.editing) {
+      payload.end_date = addHours(new Date(payload.date), 1).getTime();
     }
 
     if (form.group_id && form.group_id.value) {
       payload.group_id = form.group_id.value;
     }
     let extra = "";
-    if (form.edited_event && form.edited_event.value) {
+
+    if (this.editing) {
       extra = `/${form.edited_event.value}`;
     }
 
     const base = "/api/events";
-
     const res = await this.api.Post(`${base}${extra}`, payload);
 
     if (res.ok) {
@@ -87,5 +132,10 @@ export default class extends ApplicationController {
         );
       }
     }
+  }
+
+  get editing() {
+    console.log(this.data.get("editing"));
+    return this.data.get("editing") === "true";
   }
 }

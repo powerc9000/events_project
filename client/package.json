@@ -20,12 +20,14 @@
     "@babel/runtime": "^7.6.2",
     "@hapi/vision": "^5.5.4",
     "autoprefixer": "^9.6.1",
-    "date-fns": "^2.4.1",
+    "date-fns": "^2.8.1",
+    "date-input-polyfill": "^2.14.0",
     "flatpickr": "^4.6.3",
     "lodash": "^4.17.15",
     "postcss-modules": "^1.4.1",
     "stimulus": "^1.1.1",
     "tailwindcss": "^1.1.2",
+    "time-input-polyfill": "^1.0.7",
     "turbolinks": "^5.2.0"
   },
   "devDependencies": {

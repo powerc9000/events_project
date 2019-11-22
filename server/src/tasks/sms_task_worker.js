@@ -8,7 +8,7 @@ module.exports = (server) => async (job) => {
       try {
         const res = await sendText(
           user.phone,
-          `You occassions login code is: ${data.code}`
+          `You Juniper City login code is: ${data.code}`
         );
         console.log(res);
       } catch (e) {
