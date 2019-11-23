@@ -2,7 +2,7 @@
 {%import "partials/form_messages.njk" as form_messages%} 
 {% from "partials/event_detail/topnav.njk" import event_nav%}
 {%block content%}
-	<div class="container mx-auto content" data-controller="event-detail">
+	<div class="container mx-auto content" data-controller="event-detail" data-event-detail-event-id="{{event.id}}">
 		{%set discussion = event.allow_comments and user%}
 		{%include "partials/event_detail/top_part.njk"%}
 		
@@ -10,7 +10,7 @@
 
 		<div class="mt-8">
 			<div class="mt-4">
-				<button class="text-blue-700 hover:underline text-xl">Edit Event</button>
+				<a href="{{path}}/edit" class="text-blue-700 hover:underline text-xl">Edit Event</a>
 			</div>
 			<div class="bg-red-200 border-red-600 p-2 mt-4">
 				<h2 class="text-xl">Danger Zone</h2>

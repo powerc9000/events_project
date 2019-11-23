@@ -319,7 +319,7 @@ async function deleteEvent(req, h) {
 
   await eventService.deleteEvent(event.id);
 
-  return h.response().status(204);
+  return h.response().code(204);
 }
 
 async function updateGroup(req, h) {
