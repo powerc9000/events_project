@@ -108,7 +108,9 @@ async function findEvents(constraints) {
       where.push(sql`date > now() - ${constraints.maxAge}::interval`);
     }
     if (constraints.maxUntil) {
-      where.push(sql`date < now() + ${constraints.maxUntil}::interval`);
+      where.push(
+        sql`(date < now() + ${constraints.maxUntil}::interval or (end_date is not null and end_date < now() + ${constraints.maxUntil}::interval))`
+      );
     }
 
     if (constraints.future) {
@@ -123,6 +125,8 @@ async function findEvents(constraints) {
 		) invites
 		from events e where ${sql.join(where, sql` AND `)}  order by date`;
 
+  console.log(query);
+
   const events = await server.app.db.query(query);
 
   const upcoming = [];
@@ -130,8 +134,8 @@ async function findEvents(constraints) {
 
   events.rows.forEach((event) => {
     const date = new Date(event.date);
-
-    if (date >= Date.now()) {
+    const end_date = new Date(event.end_date);
+    if (date >= Date.now() || (event.end_date && end_date >= Date.now())) {
       upcoming.push(event);
     } else {
       past.push(event);

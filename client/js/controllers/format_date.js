@@ -14,6 +14,9 @@ export default class extends ApplicationController {
         }
       }
     }
+    if (this.data.has("formatString")) {
+      formatString = this.data.get("formatString");
+    }
     dateEl.textContent = format(value, formatString);
   }
 }
