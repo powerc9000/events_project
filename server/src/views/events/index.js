@@ -163,7 +163,8 @@ async function eventDetail(req, h) {
         },
         attendees: data.event.invites.map((invite) => {
           const showInfo =
-            (canSeeInvites && invite.show_name) || invite.user.id === userId;
+            (data.canSeeInvites && invite.show_name) ||
+            invite.user.id === userId;
           const defaultEmail = `protected+${invite.user.id}@${process.env.INBOUND_EMAIL_DOMAIN}`;
           const email = invite.email || defaultEmail;
           return {
