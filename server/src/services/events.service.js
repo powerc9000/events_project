@@ -125,8 +125,6 @@ async function findEvents(constraints) {
 		) invites
 		from events e where ${sql.join(where, sql` AND `)}  order by date`;
 
-  console.log(query);
-
   const events = await server.app.db.query(query);
 
   const upcoming = [];
