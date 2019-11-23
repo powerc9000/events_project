@@ -177,10 +177,15 @@ async function sendInviteEmail(templateName, payload) {
     const html = mjml(template).html;
 
     const data = payload.data;
+
+    const end = data.event.end_date
+      ? new Date(data.event.end_date)
+      : new Date(data.event.date + 1000 * 60 * 60);
+
     builder.method = "REQUEST";
     builder.events.push({
       start: new Date(data.event.date),
-      end: new Date(data.event.date + 1000 * 60 * 30),
+      end: end,
       summary: data.event.name,
       stamp: data.event.created,
       status: "CONFIRMED",

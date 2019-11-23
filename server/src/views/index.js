@@ -46,11 +46,12 @@ module.exports = {
           },
 
           prepare: (options, next) => {
-            options.compileOptions.environment = Nunjucks.configure(
-              options.path,
-              { watch: false }
-            );
+            const env = Nunjucks.configure(options.path, { watch: false });
 
+            env.addGlobal("date", fns);
+            env.addGlobal("NODE_ENV", process.env.NODE_ENV);
+
+            options.compileOptions.environment = env;
             return next();
           }
         }

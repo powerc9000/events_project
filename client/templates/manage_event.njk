@@ -1,0 +1,30 @@
+{%extends "layout.njk"%}
+{%import "partials/form_messages.njk" as form_messages%} 
+{% from "partials/event_detail/topnav.njk" import event_nav%}
+{%block content%}
+	<div class="container mx-auto content" data-controller="event-detail">
+		{%set discussion = event.allow_comments and user%}
+		{%include "partials/event_detail/top_part.njk"%}
+		
+		{{event_nav(path, comments.length, "manage", allowDiscussion=discussion, canEdit=canEdit)}}
+
+		<div class="mt-8">
+			<div class="mt-4">
+				<button class="text-blue-700 hover:underline text-xl">Edit Event</button>
+			</div>
+			<div class="bg-red-200 border-red-600 p-2 mt-4">
+				<h2 class="text-xl">Danger Zone</h2>
+				{%if canDelete %}
+				<div class="mt-2">
+					<p class="py-2">
+					Deleting an is permanant. It cannot be undone
+					</p>
+					<button class="btn btn-red" data-action="event-detail#deleteEvent">Delete Event</button>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+
+		</div>
+	</div>
+{%endblock%}
