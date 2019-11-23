@@ -159,9 +159,9 @@ async function eventDetail(req, h) {
         description: data.event.description,
         organizer: {
           name: data.event.creator.name || data.event.creator.email,
-          email: `invites+${userId}@${process.env.INBOUND_EMAIL_DOMAIN}`
+          email: `invites+${req.userId()}@${process.env.INBOUND_EMAIL_DOMAIN}`
         },
-        attendees: event.invites.map((invite) => {
+        attendees: data.event.invites.map((invite) => {
           const showInfo =
             (canSeeInvites && invite.show_name) || invite.user.id === userId;
           const defaultEmail = `protected+${invite.user.id}@${process.env.INBOUND_EMAIL_DOMAIN}`;
@@ -175,7 +175,7 @@ async function eventDetail(req, h) {
           };
         }),
         uid: data.event.id,
-        url: `https://junipercity.com/events/${event.slug}`
+        url: `https://junipercity.com/events/${data.event.slug}`
       });
       return h
         .response(builder.toString())
