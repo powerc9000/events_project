@@ -16,6 +16,12 @@ function init(hapiServer) {
     path: "/events/{slug}",
     handler: eventDetail
   });
+
+  server.route({
+    method: "GET",
+    path: "/events/{slug}/settings",
+    handler: manageEvent
+  });
   server.route({
     method: "GET",
     path: "/events/{slug}.{ext}",
@@ -63,77 +69,76 @@ async function createEvent(req, h) {
   });
 }
 
+async function commonEventData(userId, slug, event_key) {
+  const eventService = server.getService("events");
+  const event = await eventService.getEventBySlug(slug);
+
+  if (!event) {
+    return [Boom.notFound()];
+  }
+  const viewData = {};
+
+  const canViewEvent = await eventService.canUserViewEvent(
+    userId,
+    event.id,
+    event_key
+  );
+
+  if (!canViewEvent) {
+    return [Boom.notFound()];
+  }
+  const statuses = { going: [], maybe: [], declined: [], invited: [] };
+
+  event.invites.reduce((carry, invite) => {
+    carry[invite.status].push(invite);
+
+    return carry;
+  }, statuses);
+
+  const isPublic = !event.is_private;
+  const isOwner = event.creator.id === userId;
+  const canInvite = await eventService.canInviteToEvent(event.id, userId);
+  const canSeeInvites = canInvite || event.show_participants;
+
+  const invite =
+    event.invites.find((invite) => {
+      return invite.user_id === userId;
+    }) || false;
+
+  const data = {
+    ...viewData,
+    event: { ...event, ...statuses },
+    path: `/events/${event.slug}`,
+    title: event.name,
+    canEdit: await eventService.canUserEditEvent(userId, event.id),
+    invite,
+    canRSVP: await eventService.canRSVPToEvent(event.id, userId, event_key),
+    canInvite,
+    canSeeInvites,
+    canDelete: await eventService.canUserDeleteEvent(userId, event.id),
+    invitePath: `/api/events/${event.id}/invite`,
+    comments: await eventService.getComments(event.id),
+    isCreator: event.creator.id === userId,
+    mdDescription: sanitize(event.description)
+  };
+
+  return [null, data];
+}
+
 async function eventDetail(req, h) {
   try {
-    const eventService = server.getService("events");
-    const event = await eventService.getEventBySlug(req.params.slug);
-    let userId = _.get(req, "app.user.id");
-
-    if (!event) {
-      return Boom.notFound();
+    if (req.query.invite_key) {
+      return h.consumeInviteKey(req.query.invite_key);
     }
-    const viewData = {};
-
-    if (!userId && req.query.invite_key) {
-      const user = await server
-        .getService("user")
-        .findUser({ invite_key: req.query.invite_key });
-
-      if (user) {
-        h.loginUser(user);
-        userId = user.id;
-        viewData.user = user;
-      }
-    }
-    const canViewEvent = await eventService.canUserViewEvent(
-      userId,
-      event.id,
+    const [err, data] = await commonEventData(
+      req.userId(),
+      req.params.slug,
       req.query.event_key
     );
-
-    if (!canViewEvent) {
-      return Boom.notFound();
+    if (err) {
+      console.log(err);
+      return err;
     }
-
-    const statuses = { going: [], maybe: [], declined: [], invited: [] };
-
-    event.invites.reduce((carry, invite) => {
-      carry[invite.status].push(invite);
-
-      return carry;
-    }, statuses);
-
-    const isPublic = !event.is_private;
-    const isOwner = event.creator.id === userId;
-    const canInvite = await eventService.canInviteToEvent(event.id, userId);
-    const canSeeInvites = canInvite || event.show_participants;
-
-    const invite =
-      event.invites.find((invite) => {
-        return invite.user_id === userId;
-      }) || false;
-
-    const data = {
-      ...viewData,
-      event: { ...event, ...statuses },
-      path: `/events/${event.slug}`,
-      title: event.name,
-      canEdit: await eventService.canUserEditEvent(userId, event.id),
-      invite,
-      canRSVP: await eventService.canRSVPToEvent(
-        event.id,
-        userId,
-        req.query.event_key
-      ),
-      canInvite,
-      canSeeInvites,
-      canDelete: await eventService.canUserDeleteEvent(userId, event.id),
-      invitePath: `/api/events/${event.id}/invite`,
-      comments: await eventService.getComments(event.id),
-      isCreator: event.creator.id === userId,
-      mdDescription: sanitize(event.description)
-    };
-
     if (req.params.ext && req.params.ext === "ics") {
       const statusToICS = {
         going: "ATTENDING",
@@ -142,9 +147,12 @@ async function eventDetail(req, h) {
         invited: "NEEDS-ACTION"
       };
       const builder = createIcsFileBuilder();
+      const end = data.event.end_date
+        ? new Date(data.event.end_date)
+        : new Date(data.event.date + 1000 * 60 * 60);
       builder.events.push({
         start: new Date(data.event.date),
-        end: new Date(data.event.data + 1000 * 60 * 30),
+        end,
         summary: data.event.name,
         stamp: data.event.created,
         status: "CONFIRMED",
@@ -175,7 +183,9 @@ async function eventDetail(req, h) {
     }
     return h.view("event_detail.njk", data);
   } catch (e) {
-    console.log(e);
+    server.log(["error"], e);
+
+    return Boom.badImplementation();
   }
 }
 
@@ -214,17 +224,21 @@ async function editEvent(req, h) {
 }
 
 async function eventDisussion(req, h) {
-  const userId = _.get(req, "app.user.id");
+  if (req.query.invite_key) {
+    return h.consumeInviteKey(req.query.invite_key);
+  }
+  const userId = req.userId();
   const eventService = server.getService("events");
-  const event = await eventService.getEventBySlug(req.params.slug);
-  const canView = await eventService.canUserViewEvent(userId, event.id);
-  const allComments = await eventService.getComments(event.id);
 
-  if (!canView) {
-    return Boom.notFound();
+  const [err, data] = await commonEventData(userId, req.params.slug);
+
+  if (err) {
+    return err;
   }
 
-  if (!event.allow_comments || !userId) {
+  const allComments = await eventService.getComments(data.event.id);
+
+  if (!data.event.allow_comments || !userId) {
     return h.turboRedirect(`/events/${event.slug}`);
   }
 
@@ -246,11 +260,24 @@ async function eventDisussion(req, h) {
   });
 
   return h.view("event_discussion.njk", {
-    title: `${event.name} Discussion`,
-    event,
-    comments,
-    path: `/events/${event.slug}`
+    ...data,
+    title: `${data.event.name} Discussion`,
+    comments
   });
+}
+
+async function manageEvent(req, h) {
+  const [err, data] = await commonEventData(
+    req.userId(),
+    req.params.slug,
+    req.query.event_key
+  );
+
+  if (err) {
+    return err;
+  }
+
+  return h.view("manage_event", data);
 }
 
 module.exports = {

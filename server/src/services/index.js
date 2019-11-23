@@ -29,7 +29,21 @@ module.exports = {
     server.decorate("server", "getService", (name) => {
       return _.get(server, ["app", "services", name]);
     });
+    server.decorate("toolkit", "consumeInviteKey", async function(key) {
+      if (!this.request.app.user) {
+        const user = await server
+          .getService("user")
+          .findUser({ invite_key: key });
+        if (user) {
+          const token = await server
+            .getService("user")
+            .generateLoginToken(user.id);
+          this.state("user", token);
+        }
+      }
 
+      return this.redirect(this.request.path);
+    });
     server.decorate("toolkit", "loginUser", async function(user) {
       const token = await server.getService("user").generateLoginToken(user.id);
       this.state("user", token);

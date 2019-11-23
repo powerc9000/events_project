@@ -21,6 +21,7 @@ if (process.env.NODE_ENV === "production") {
   console.log("production using purgecss");
   purge = [purgecss];
 }
+
 module.exports = {
   plugins: [
     nested,
