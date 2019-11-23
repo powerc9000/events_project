@@ -21,6 +21,10 @@ module.exports = {
     server.ext({
       type: "onPreHandler",
       method: async function(req, h) {
+        //We don't need to get logged in user with static pages
+        if (req.url.pathname.slice(0, 7) === "/static") {
+          return h.continue;
+        }
         const user = await req.getLoggedInUser();
         return h.continue;
       }

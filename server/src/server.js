@@ -35,6 +35,9 @@ async function start() {
     if (!request.response) {
       return;
     }
+    if (request.app.isStatic) {
+      return;
+    }
     request.log("info", {
       method: request.method.toUpperCase(),
       path: request.url.pathname,

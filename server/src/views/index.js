@@ -136,6 +136,16 @@ module.exports = {
     server.route({
       method: "GET",
       path: "/static/{param*}",
+      options: {
+        pre: [
+          {
+            method: (req, h) => {
+              req.app.isStatic = true;
+              return h.continue;
+            }
+          }
+        ]
+      },
       handler: {
         directory: {
           path: path.join(__dirname, "../../../", "client"),
@@ -240,6 +250,15 @@ module.exports = {
     });
 
     if (process.env.NODE_ENV !== "production") {
+      server.route({
+        method: "GET",
+        path: "/test-cookie",
+        handler: (req, h) => {
+          h.state("user", req.query.cookie);
+
+          return h.response();
+        }
+      });
       server.route({
         method: "GET",
         path: "/500",
