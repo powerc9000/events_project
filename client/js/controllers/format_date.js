@@ -1,10 +1,19 @@
 import { ApplicationController } from "../helpers/application_controller";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 
 export default class extends ApplicationController {
   connect() {
     const dateEl = this.targets.find("date");
-    const value = this.data.get("epoch");
-    dateEl.textContent = format(new Date(parseInt(value, 10)), "PPpp");
+    const value = new Date(parseInt(this.data.get("epoch"), 10));
+    let formatString = "PPpp";
+    if (this.data.has("formatType")) {
+      if (this.data.get("formatType") === "time-if-same-day") {
+        const compare = new Date(parseInt(this.data.get("compare"), 10));
+        if (isSameDay(value, compare)) {
+          formatString = "p";
+        }
+      }
+    }
+    dateEl.textContent = format(value, formatString);
   }
 }
