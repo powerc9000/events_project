@@ -24,11 +24,14 @@
 				data-controller="format-date"
 				data-format-date-epoch="{{event.date}}"
 				data-target="format-date.date">{{date.format(date.fromUnixTime(event.date/1000), "PPpp OOOO")}}</span>
+			{%if event.end_date%}
+				<span> - </span>
 			<span data-controller="format-date"
 						data-format-date-epoch="{{event.end_date}}"
-						data-format-date-action="time-if-same"
+						data-format-date-format-type="time-if-same-day"
 						data-format-date-compare="{{event.date}}"
 						data-target="format-date.date">{{date.format(date.fromUnixTime(event.date/1000), "PPpp OOOO")}}</span>
+			{%endif%}
 		</div>
 	</div>
 		<a href="/events/{{event.slug}}.ics" class="text-blue-700 hover:underline text-sm sm:ml-5">Add to Calendar</a>
