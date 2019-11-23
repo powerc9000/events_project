@@ -22,7 +22,7 @@
 
 {%macro eventsList(events, format=date.format, showDate=true, showDescription=true)%}
 <ul class="list-disc pl-8" data-controller="event-list" data-target="event-list.parent" data-event-list-colors="border-green-200,border-purple-200,border-blue-200, border-orange-200,border-black">
-	<li class="hidden text-xl font-bold list-none border-l-4 pl-4 mt-2" data-target="event-list.titleTemplate"></li>
+	<li class="hidden text-xl font-bold list-none border-l-4 pl-4 mt-2 border" data-target="event-list.titleTemplate"></li>
 	{% for event in events %}
 		<li class="py-2 ml-4" data-target="event-list.event" data-date="{{event.date}}">
 			<h3 class="text-lg">
@@ -42,7 +42,7 @@
 			</h3>
 			{%if showDescription%}
 				<details>
-					<summary class="cursor-pointer bg-gray-200 px-2">Details</summary>
+					<summary class="cursor-pointer bg-gray-100 px-2">Details</summary>
 					<div>
 						<div class="trix-c">{{event.description | safe}}</div>
 					</div>
