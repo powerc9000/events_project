@@ -4,6 +4,7 @@ const views = require("./views");
 const aws = require("aws-sdk");
 const services = require("./services");
 const tasks = require("./tasks");
+const fetch = require("node-fetch");
 
 global.__projectdir = "/var/www/events";
 async function start() {
@@ -38,6 +39,7 @@ async function start() {
     if (request.app.isStatic) {
       return;
     }
+
     request.log("info", {
       method: request.method.toUpperCase(),
       path: request.url.pathname,
@@ -50,6 +52,25 @@ async function start() {
     const options = {
       depth: null
     };
+
+    if (tags.error) {
+      fetch(`${process.env.BASECAMP_LOG_CHAT}.json`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          content: `
+						<details><summary>Server Error 🚨</summary><pre>${JSON.stringify(
+              event.data,
+              null,
+              2
+            )}</pre></details>
+						`
+        })
+      });
+    }
+
     if (process.env["NODE_ENV"] !== "production") {
       //Hard to see logs with worker counts in dev
       if (!tags.TaskWorker) {

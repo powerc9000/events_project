@@ -1,4 +1,5 @@
 const vision = require("@hapi/vision");
+const fetch = require("node-fetch");
 const Boom = require("@hapi/boom");
 const _ = require("lodash");
 const inert = require("@hapi/inert");
@@ -114,6 +115,27 @@ module.exports = {
           if (err.output.payload.statusCode === 404) {
             return h.view("404").code(404);
           } else {
+            const data = {
+              statusCode: req.response.output.statusCode,
+              message: req.response.message,
+              error: req.response
+            };
+            fetch(`${process.env.BASECAMP_LOG_CHAT}.json`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                content: `
+						<details><summary>500 Error 🚨</summary><pre>${JSON.stringify(
+              data,
+              null,
+              2
+            )}</pre></details>
+						`
+              })
+            });
+
             return h.view("500").code(500);
           }
         }

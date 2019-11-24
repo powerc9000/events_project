@@ -171,6 +171,10 @@ function mergeUsers(toUser, fromUser) {
         resolve();
         return Promise.resolve();
       } catch (e) {
+        server.log(["error", "user.service", "mergeuser"], {
+          message: "couldn't merge user",
+          error: e
+        });
         reject(e);
         return Promise.reject();
       }
