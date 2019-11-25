@@ -62,7 +62,7 @@ async function start() {
         body: JSON.stringify({
           content: `
 						<details><summary>Server Error 🚨</summary><pre>${JSON.stringify(
-              event.data,
+              event,
               null,
               2
             )}</pre></details>

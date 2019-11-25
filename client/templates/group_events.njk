@@ -1,6 +1,7 @@
 {%extends "layout.njk"%}
 {%import "partials/form_messages.njk" as messages%}
 {%from "partials/group_topnav.njk" import group_nav%}
+{%from "./homepage.njk" import eventsList%}
 {%block content%}
 	<div class="content container mx-auto h-full" data-controller="group-detail">
 
@@ -11,25 +12,16 @@
 
 		<div class="">
 			<div class="sm:flex items-center">
-			<h3 class="text-xl">Events </h3>
-			{%if canCreate %}
+				<h3 class="text-xl">Events </h3>
+				{%if canCreate %}
 
-				
-				<a href="/create?group={{group.id}}" class="btn btn-blue text-sm sm:ml-8">Create Event</a>
-			{%endif%}
+
+					<a href="/create?group={{group.id}}" class="btn btn-blue text-sm sm:ml-8">Create Event</a>
+				{%endif%}
 			</div>
-			<ul class="mt-4 list-disc ml-4">
-				{%for event in events%}
-					<li class="mb-2">
-						<div>
-							<a href="/events/{{event.slug}}" class="block text-blue-700 hover:underline">{{event.name}}</a>
-							<span class="text-xs" data-controller="format-date" data-format-date-epoch="{{event.date}}" data-target="format-date.date">
-								{{event.date}}
-							</span>
-						</div>
-					</li>
-				{%endfor%}
-			</ul>
+			<div class="mt-5">
+				{{eventsList(events)}}
+			</div>
 		</div>
 	</div>
 {%endblock%}
