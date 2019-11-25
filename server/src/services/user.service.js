@@ -320,6 +320,23 @@ async function findOrCreateUser(details) {
   return user;
 }
 
+async function markMessageAsViewed(userId, messageId) {
+  const path = `{"viewed_messages"}`;
+  console.log(path, userId, messageId);
+  console.log(
+    sql`update users set settings = settings || jsonb_set(settings, ${path}, ${sql.json(
+      true
+    )}) where id=${userId}`
+  );
+  const res = await server.app.db.query(
+    sql`update users set settings = settings || jsonb_set(settings, ${path}, coalesce(settings->'viewed_messages', '{}'::jsonb) || ${sql.json(
+      { [messageId]: true }
+    )}) where id=${userId}`
+  );
+
+  console.log(res);
+}
+
 function init(hapiServer) {
   server = hapiServer;
 }
@@ -338,6 +355,7 @@ module.exports = {
   createUser,
   init,
   generateInboundEmail,
+  markMessageAsViewed,
   validateContact,
   updateUser
 };

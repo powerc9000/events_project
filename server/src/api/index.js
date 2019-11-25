@@ -253,8 +253,25 @@ module.exports = {
       path: "/settings",
       handler: updateSettings
     });
+
+    server.route({
+      method: "POST",
+      path: "/settings/view_message",
+      handler: markMessageAsViewed
+    });
   }
 };
+
+async function markMessageAsViewed(req, h) {
+  if (!req.userId()) {
+    return Boom.forbidden();
+  }
+  await server
+    .getService("user")
+    .markMessageAsViewed(req.userId(), req.payload.id);
+
+  return h.response().code(204);
+}
 
 async function deleteGroup(req, h) {
   const groupService = server.getService("groups");
