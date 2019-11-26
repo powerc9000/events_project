@@ -134,7 +134,6 @@ function mergeUsers(toUser, fromUser) {
         //If the toUser was already invited ignore it
         //We will delete it later
         //
-        console.log("merge invites");
         await con.query(
           sql`INSERT INTO invites (user_id, event_id, status, invite_key) 
 					select ${toUser} as user_id, event_id, status, invite_key from invites where user_id=${fromUser}
@@ -145,7 +144,6 @@ function mergeUsers(toUser, fromUser) {
 
         //Merge groups
         //
-        console.log("merge groups");
         await con.query(
           sql`INSERT INTO group_members (user_id, group_id, role)
 					select ${toUser} as user_id, group_id, role from group_members where user_id=${fromUser}
@@ -171,7 +169,7 @@ function mergeUsers(toUser, fromUser) {
         resolve();
         return Promise.resolve();
       } catch (e) {
-        server.log(["error", "user.service", "mergeuser"], {
+        server.log(["serverError", "user.service", "mergeuser"], {
           message: "couldn't merge user",
           error: e
         });
@@ -250,7 +248,6 @@ async function updateUser(userId, payload) {
       sets,
       sql` , `
     )} where id=${userId} returning *`;
-    console.log(query);
     user = await server.app.db.maybeOne(query);
   } else {
     user = current;

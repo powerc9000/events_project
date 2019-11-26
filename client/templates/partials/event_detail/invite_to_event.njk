@@ -3,9 +3,9 @@
 <div data-controller="invite-to" data-invite-to-path="{{path}}" data-invite-to-multiple="{{multiple}}" data-invite-to-success-message="{{success_message}}">
 
 	{%if(canInvite)%}
-		<div class="mt-2 flex items-center p-2 border border-gray-300 lg:w-2/3" data-target="invite-to.canInviteButton">
+		<div class="mt-2 sm:flex items-center p-2 border border-gray-300 lg:w-2/3" data-target="invite-to.canInviteButton">
 			<button
-				class="btn btn-green"
+				class="btn btn-green text-xs sm:text-sm mb-2 sm:mb-0"
 				data-action="invite-to#toggleInviteForm"
 				>
 				Invite Someone 

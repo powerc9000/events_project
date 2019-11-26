@@ -29,6 +29,7 @@
 		<script src="{{jsBundlePath}}" async></script>
 	</head>
 	<body>
+		<div data-controller="user-events" data-user-events-user-id={{user.id}}></div>
 		{%include "partials/header.njk"%}
 			{% if user and not user.settings.viewed_messages.saw_welcome_banner %}
 				<div class="bg-green-200 border-b-2 border-green-400" data-controller="top-message" data-top-message-id="saw_welcome_banner" data-target="top-message.container">

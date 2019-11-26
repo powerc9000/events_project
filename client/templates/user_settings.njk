@@ -34,7 +34,7 @@
 						Time Zone
 						<select class="input w-full" name="timezone">
 							{%for zone in timezones %}
-								<option value="{{zone.value}}" {{"selected" if user.settings.timezone === zone.value}}>{{zone.description}}</option>
+								<option value="{{zone}}" {{"selected" if user.settings.timezone === zone}}>{{zone | replace("_", " ")}} {{now() | tzOffset(zone, "OOO")}}</option>
 							{%endfor%}
 						</select>
 					</label>

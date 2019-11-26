@@ -6,6 +6,7 @@ const inert = require("@hapi/inert");
 const ejs = require("ejs");
 const path = require("path");
 const fns = require("date-fns");
+const tz_fns = require("date-fns-tz");
 const util = require("util");
 const fs = require("fs");
 const anchor = require("markdown-it-anchor");
@@ -50,6 +51,13 @@ module.exports = {
             const env = Nunjucks.configure(options.path, { watch: false });
 
             env.addGlobal("date", fns);
+            env.addGlobal("now", () => {
+              return new Date();
+            });
+            env.addFilter("tzOffset", (value, zone, format) => {
+              return tz_fns.format(value, format, { timeZone: zone });
+            });
+            env.addGlobal("date_tz", tz_fns);
             env.addGlobal("NODE_ENV", process.env.NODE_ENV);
 
             options.compileOptions.environment = env;
