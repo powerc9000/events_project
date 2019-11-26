@@ -19,11 +19,31 @@
 		</div>
 	</div>
 {%endblock%}
-
+{%macro tzLi(date, colors, index)%}
+{%set idx = index % colors.length %}
+<li class="{{"hidden" if not date}} {{colors[idx]}} text-xl font-bold list-none border-l-4 pl-4 mt-2 border"
+		{%if not date %}
+	data-target="event-list.titleTemplate" data-new-target="event-list.dayTitle"
+		{%else%}
+	data-target="event-list.dayTitle"
+		{%endif%}
+		>{{date_tz.format(date, "PP") if date}}</li>
+{%endmacro%}
 {%macro eventsList(events, format=date.format, showDate=true, showDescription=true)%}
-<ul class="list-disc" data-controller="event-list" data-target="event-list.parent" data-event-list-colors="border-green-200,border-purple-200,border-blue-200, border-orange-200,border-black">
-	<li class="hidden text-xl font-bold list-none border-l-4 pl-4 mt-2 border" data-target="event-list.titleTemplate"></li>
+{%set colors = "border-green-200,border-purple-200,border-blue-200, border-orange-200,border-black".split(",")%}
+<ul class="list-disc" data-controller="event-list" data-target="event-list.parent" data-event-list-colors="{{colors | join(",")}}" data-event-list-user-tz="{{user.settings.timezone}}">
+	{{tzLi()}}
+	{%set lastDate = null%}
+	{%set index = 0%}
 	{% for event in events %}
+			{%if user.settings.timezone%}
+			{% set day = date_tz.utcToZonedTime(event.date, user.settings.timezone)%}
+			{%if date.getDayOfYear(day) !== lastDate%}
+				{{tzLi(day, colors, index)}}
+				{%set lastDate = date.getDayOfYear(day)%}
+				{%set index = index + 1%}
+			{%endif%}
+			{%endif%}
 		<li class="py-2 ml-8" data-target="event-list.event" data-date="{{event.date}}">
 			<h3 class="text-lg">
 				<a

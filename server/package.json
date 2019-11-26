@@ -19,6 +19,7 @@
     "aws-sdk": "^2.545.0",
     "bull": "^3.11.0",
     "date-fns": "^2.4.1",
+    "date-fns-tz": "^1.0.8",
     "ejs": "^2.7.1",
     "google-auth-library": "^5.3.0",
     "ical-toolkit": "^1.0.9",

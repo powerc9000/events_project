@@ -53,7 +53,7 @@ async function start() {
       depth: null
     };
 
-    if (tags.error) {
+    if (tags.serverError) {
       fetch(`${process.env.BASECAMP_LOG_CHAT}.json`, {
         method: "POST",
         headers: {

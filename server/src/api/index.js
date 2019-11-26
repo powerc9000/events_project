@@ -259,8 +259,28 @@ module.exports = {
       path: "/settings/view_message",
       handler: markMessageAsViewed
     });
+
+    server.route({
+      method: "POST",
+      path: "/settings/tz",
+      handler: userTzPing
+    });
   }
 };
+
+async function userTzPing(req, h) {
+  const user = req.app.user;
+
+  if (req.userId()) {
+    if (!user.settings.timezone) {
+      await server.getService("user").updateUser(user.id, {
+        timezone: req.payload.timezone
+      });
+    }
+  }
+
+  return h.response().code(204);
+}
 
 async function markMessageAsViewed(req, h) {
   if (!req.userId()) {
