@@ -3,28 +3,29 @@
 <div data-controller="invite-to" data-invite-to-path="{{path}}" data-invite-to-multiple="{{multiple}}" data-invite-to-success-message="{{success_message}}">
 
 	{%if(canInvite)%}
-		<div class="mt-2 sm:flex items-center p-2 border border-gray-300 lg:w-2/3" data-target="invite-to.canInviteButton">
+		<div class="my-4" data-target="invite-to.canInviteButton">
 			<button
-				class="btn btn-green text-xs sm:text-sm mb-2 sm:mb-0"
+				class="btn btn-green text-lg w-full sm:w-auto"
 				data-action="invite-to#toggleInviteForm"
 				>
-				Invite Someone 
+				Invite People
 			</button>
-				{%if caller %}
-					{{caller()}}
-				{%endif%}
 		</div>
 
 	{%endif%}
-
+	<div data-target="invite-to.hideContainer" class="hidden mt-4 bg-gray-100  border border-gray-400 ">
+		{%if caller %}
+			{{caller()}}
+		{%endif%}
 	<form
-		class="hidden mt-4 bg-gray-100  border border-gray-400 p-4"
+		class="p-4"
 		data-target="invite-to.inviteForm"
 		data-action="invite-to#sendInvite reset->invite-to#toggleInviteForm input->invite-to#inviteChange"
 		>
-		<div class="my-2">
+		<div class="mb-2">
 			{{messages.messages("invite", 4000)}}
 		</div>
+		<p class="text-xl font-bold mb-2">Send an invite by email or phone</p>
 		<div class="flex flex-col">
 			<label class="font-bold" for="name">
 				Name of person to invite
@@ -32,8 +33,16 @@
 			</label>
 			<input id="name" type="text" name="name" class="input" placeholder="Name" />
 		</div>
-		<div class="mt-2 flex flex-col">
-			<label class="font-bold" for="email">
+		<fieldset class="mt-2">
+			<legend class="required-text font-bold">Send invite using</legend>
+			<label for="invite-using-email-radio" class="cursor-pointer">Email</label>
+			<input type="radio" name="method" value="email" id="invite-using-email-radio" data-action="invite-to#selectMethod" checked/>
+			<label for="invite-using-sms-radio" class="cursor-pointer">Text Message</label>
+			<input type="radio" name="method" value="phone" id="invite-using-sms-radio" data-action="invite-to#selectMethod"/>
+		</fieldset>
+
+		<div class="mt-2 flex flex-col" data-target="invite-to.emailField">
+			<label class="font-bold sr-only" for="email">
 				Email
 			</label>
 			<input
@@ -44,8 +53,8 @@
 				placeholder="Email"
 				/>
 		</div>
-		<div class="mt-2 flex flex-col">
-			<label class="font-bold" for="phone">
+		<div class="mt-2 flex flex-col hidden" data-target="invite-to.phoneField">
+			<label class="font-bold sr-only" for="phone">
 				Phone
 			</label>
 			<input
@@ -56,18 +65,15 @@
 				placeholder="Phone"
 				/>
 		</div>
-		<p class="mt-1">
-		<span class="font-bold">Email OR phone is required</span>
-		</p>
-
-		<div class="mt-2">
+		<div class="mt-4">
 			<button class="btn btn-green" type="submit">
-				Invite
+				Send Invite
 			</button>
 			<button class="btn btn-white" type="reset">
 				Cancel
 			</button>
 		</div>
 	</form>
+	</div>
 </div>
 {%endmacro%}
