@@ -1,11 +1,14 @@
 import { ApplicationController } from "../helpers/application_controller";
 
 export default class extends ApplicationController {
+  connect() {
+    const form = this.targets.find("inviteForm");
+    this.toggleMethodTarget(form.method.value);
+  }
   async inviteChange(e) {
     const form = this.targets.find("inviteForm");
     const email = form.email.value;
     const phone = form.phone.value;
-
     if (email || phone) {
       form.email.setCustomValidity("");
       form.phone.setCustomValidity("");
@@ -13,8 +16,26 @@ export default class extends ApplicationController {
     }
   }
   toggleInviteForm() {
-    this.toggleTarget("inviteForm");
+    this.toggleTarget("hideContainer");
     this.toggleTarget("canInviteButton");
+  }
+  toggleMethodTarget(value) {
+    const form = this.targets.find("inviteForm");
+    form.email.setCustomValidity("");
+    form.phone.setCustomValidity("");
+    if (value === "email") {
+      this.hideTarget("phoneField");
+      this.showTarget("emailField");
+    } else {
+      this.hideTarget("emailField");
+      this.showTarget("phoneField");
+    }
+  }
+  selectMethod(e) {
+    if (e.target.checked) {
+      const value = e.target.value;
+      this.toggleMethodTarget(value);
+    }
   }
   async sendInvite(e) {
     e.preventDefault();
@@ -26,31 +47,29 @@ export default class extends ApplicationController {
     const name = form.name.value;
     const email = form.email.value;
     const phone = form.phone.value;
+    const method = form.method.value;
     const payload = {};
 
     if (name) {
       payload.name = name;
     }
 
-    if (email) {
-      payload.email = email;
-    }
-
-    if (phone) {
+    if (method === "phone") {
       payload.phone = phone;
+      if (!phone) {
+        form.phone.setCustomValidity("Phone number is required");
+        this.formControl.error("Phone number is required", "invite", true);
+        return;
+      }
     }
 
-    if (!email && !phone) {
-      form.email.setCustomValidity("Email or Phone is required");
-      form.phone.setCustomValidity("Email or Phone is required");
-
-      this.formControl.error("Email or Phone is required", "invite", true);
-
-      return;
-    } else {
-      form.email.setCustomValidity("");
-      form.phone.setCustomValidity("");
-      form.reportValidity(true);
+    if (method === "email") {
+      payload.email = email;
+      if (!email) {
+        form.email.setCustomValidity("Email is required");
+        this.formControl.error("Email is required", "invite", true);
+        return;
+      }
     }
 
     let final = payload;

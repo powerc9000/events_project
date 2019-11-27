@@ -17,9 +17,15 @@
 		<div class="sm:flex">
 			<div class="flex-1">
 				{% call invite_form(invitePath, canInvite)%}
-				<div class="ml-2">
-					or <a target="_blank" rel="noopener noreferer" class="text-blue-700 hover:underline" href="mailto:events+{{event.email_hash_id}}@{{inboundEmailDomain}}?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">Bulk Invite Via Email</a>
+				<div class="p-4">
+					<div class="my-2">
+						<a target="_blank" rel="noopener noreferer" class="btn btn-white text-xl w-full block text-center" href="mailto:events+{{event.email_hash_id}}@{{inboundEmailDomain}}?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">Bulk Invite Via Email</a>
+						<a href="/help/bulk-invite-via-email" class="text-sm text-blue-700 block mt-2 hover:underline">What is bulk invite?</a>
+					</div>
 
+					<div class="hr-text">
+						<span class="text-xl font-bold">OR</span>
+					</div>
 				</div>
 				{%endcall%}
 				{%if isCreator %}
