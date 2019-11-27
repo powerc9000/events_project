@@ -1,5 +1,6 @@
 {%extends "layout.njk"%}
 {%import "partials/form_messages.njk" as form_messages%} 
+{% from "partials/icons.njk" import icon %}
 {% from "partials/event_detail/topnav.njk" import event_nav%}
 {%block content%}
 	<div class="container mx-auto content" data-controller="event-detail" data-event-detail-event-id="{{event.id}}">
@@ -10,7 +11,7 @@
 
 		<div class="mt-8">
 			<div class="mt-4">
-				<a href="{{path}}/edit" class="text-blue-700 hover:underline text-xl">Edit Event</a>
+				<a href="{{path}}/edit" class="text-blue-700 hover:underline text-xl">{{icon("pencil", "mr-2")}}Edit Event</a>
 			</div>
 			<div class="bg-red-200 border-red-600 p-2 mt-4">
 				<h2 class="text-xl">Danger Zone</h2>
@@ -19,7 +20,7 @@
 					<p class="py-2">
 					Deleting an event is permanent. 
 					</p>
-					<button class="btn btn-red" data-action="event-detail#deleteEvent">Delete Event</button>
+					<button class="btn btn-red" data-action="event-detail#deleteEvent">{{icon("trash", "mr-2")}}Delete Event</button>
 				</div>
 				{% endif %}
 			</div>

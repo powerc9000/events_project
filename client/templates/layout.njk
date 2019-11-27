@@ -6,7 +6,7 @@
 		<meta content="{{title()}} Juniper City" property="og:title" />
 		<meta property="og:image" content="https://junipercity.com/static/img/logo.png" />
 		<meta property="og:description" content="Juniper City is the best place to create your personal events." />
-
+		<meta charset="utf-8" />
 
 
 		<link rel="apple-touch-icon" sizes="180x180" href="/static/img/favicon/apple-touch-icon.png">
@@ -19,13 +19,9 @@
 		<title>
 			{{title()}} Juniper City
 		</title>
-		<link rel="stylesheet" href="/static/css/main.css" />
+		<link rel="stylesheet" href="{{cssPath}}" />
 
 		{%block css%}{%endblock%}
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css"
-			/>
 		<script src="{{jsBundlePath}}" async></script>
 	</head>
 	<body>
