@@ -135,6 +135,32 @@ footer {
 	}
 }
 
+.icon {
+	width: 1em;
+	height: 1em;
+	display: inline;
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 7%;
+	vertical-align: middle;
+	&.icon-calendar, &.icon-clipboard {
+		position:relative;
+		bottom: .100em;
+	}
+	&.icon-fill {
+		fill: currentcolor;
+
+	}
+	&.octicon {
+		fill: currentcolor;
+		stroke: none;
+	}
+
+}
+
+.font-bold .icon {
+	stroke-width:10%;
+}
 
 
 @import url("./md.css");

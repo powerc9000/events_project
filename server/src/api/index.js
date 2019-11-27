@@ -657,7 +657,9 @@ async function loginWithPhone(req, h) {
     code
   });
 
-  return h.redirect("/login/phone");
+  return {
+    type: "phone"
+  };
 }
 
 async function validateOTPLogin(req, h) {
@@ -697,14 +699,22 @@ async function loginWithEmail(req, h) {
   const { session_key, code } = await userService.generateOTP(user);
 
   h.state("session_key", session_key);
+  let code_type = "email";
+  let redirectType = "email";
+  if (user.phone) {
+    code_type = "sms";
+    redirectType = "phone";
+  }
 
   server.createTask("send-code", {
-    code_type: "email",
+    code_type,
     user,
     code
   });
 
-  return h.redirect("/login/email");
+  return {
+    type: redirectType
+  };
 }
 
 async function loginWithGoogle(req, h) {

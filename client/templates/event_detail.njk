@@ -1,4 +1,5 @@
 {%extends "layout.njk"%} 
+{% from "partials/icons.njk" import icon %}
 {%import "partials/form_messages.njk" as form_messages%} 
 {% from "partials/event_detail/topnav.njk" import event_nav%}
 {% from "partials/event_detail/invite_to_event.njk" import invite_form%}
@@ -19,8 +20,8 @@
 				{% call invite_form(invitePath, canInvite)%}
 				<div class="p-4">
 					<div class="my-2">
-						<a target="_blank" rel="noopener noreferer" class="btn btn-white text-xl w-full block text-center" href="mailto:events+{{event.email_hash_id}}@{{inboundEmailDomain}}?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">Bulk Invite Via Email</a>
-						<a href="/help/bulk-invite-via-email" class="text-sm text-blue-700 block mt-2 hover:underline">What is bulk invite?</a>
+						<a target="_blank" rel="noopener noreferer" class="btn btn-white text-xl w-full block text-center" href="mailto:events+{{event.email_hash_id}}@{{inboundEmailDomain}}?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">{{icon("mail", "mr-2")}}Bulk Invite Via Email</a>
+						<a href="/help/bulk-invite-via-email" class="text-sm text-blue-700 block mt-2 hover:underline">What is bulk invite? {{icon("info")}}</a>
 					</div>
 
 					<div class="hr-text">
@@ -38,7 +39,7 @@
 							<div class="w-full mr-2">
 								<input type="text" value="https://junipercity.com/events/{{event.slug}}?event_key={{event.secret_key}}" class="input w-full text-xs " data-target="copy-to-clipboard.input" readonly/>
 							</div>
-							<button data-action="copy-to-clipboard#copy" class="btn btn-green flex items-center"><i class="fas fa-clipboard mr-2"></i> Copy</button>
+							<button data-action="copy-to-clipboard#copy" class="btn btn-green flex items-center"><span class="mr-2 font-bold">{{icon("clipboard")}}</span>Copy</button>
 						</div>
 					</div>
 				{%endif%}
@@ -65,7 +66,7 @@
 							data-action="change->event-detail#rsvp reset->event-detail#toggleRSVP"
 							autocomplete="off"
 							>
-							<h4 class="text-lg font-bold">RSVP</h4>
+							<h4 class="text-lg font-bold">{{icon("mail-read", "mr-2")}}RSVP</h4>
 							<input type="hidden" name="eventId" value="{{event.id}}" />
 							<div>
 								<label class="font-bold"

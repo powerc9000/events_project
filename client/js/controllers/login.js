@@ -21,7 +21,8 @@ export default class extends ApplicationController {
       const req = await this.api.Post(`${url}/${type}`, payload);
 
       if (req.ok) {
-        this.page.visit(`/login/${type}`);
+        const data = await req.json();
+        this.page.visit(`/login/${data.type}`);
       } else {
         const err = await req.json();
         this.formControl.error(err.message, "login");

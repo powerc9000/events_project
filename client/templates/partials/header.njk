@@ -1,3 +1,5 @@
+{% from "./icons.njk" import icon %}
+
 <header class="border-b border-green-400 ">
 	<nav data-controller="menu-dropdown">
 
@@ -17,22 +19,22 @@
 				<li class="flex-1">
 					<a href="/" class="text-xs sm:text-sm hover:bg-green-400 block p-2 text-center ">
 
-						<span class="flex flex-col"><i class="fas fa-home text-xl sm:text-sm"></i>Home</span>
+						<span class="flex flex-col justify-center"><span class="text-xl sm:text-sm">{{icon('home')}}</span>Home</span>
 					</a>
 				</li>
 				<li class="flex-1">
 					<a href="/create" class="text-xs sm:text-sm hover:bg-green-400 block p-2 text-center ">
 
-						<span class="flex flex-col"><i class="fas fa-plus text-xl sm:text-sm"></i>Create Event</span>
+						<span class="flex flex-col"><span class="text-xl sm:text-sm">{{icon("plus")}}</span>Create Event</span>
 					</a>
 				</li>
 				<li class="flex-1">
 					<a href="/groups" class="text-xs sm:text-sm hover:bg-green-400 block p-2 border-green-400 text-center ">
-						<span class="p-0 flex flex-col"><i class="fas fa-users text-xl sm:text-sm"></i>My Groups</span></a>
+						<span class="p-0 flex flex-col justify-center"><span class="text-xl sm:text-sm">{{icon("group", "icon-fill")}}</span>My Groups</span></a>
 				</li>
 				<li class="flex-1">
 					<a href="/settings" class="text-xs sm:text-sm hover:bg-green-400 block p-2 text-center">
-						<span class="p-0 flex flex-col"><i class="fas fa-cog text-xl sm:text-sm"></i>My Settings</span></a>
+						<span class="p-0 flex flex-col"><span class="text-xl sm:text-sm">{{icon("settings", "icon-fill")}}</span>My Settings</span></a>
 				</li>
 				<li class="flex-1">
 					<button
@@ -40,7 +42,7 @@
 						data-action="logout#logout"
 						class="text-xs sm:text-sm hover:bg-green-400 block p-2 block w-full text-center"
 						>
-						<span class="p-0 flex flex-col"><i class="fas fa-sign-out-alt text-xl sm:text-sm"></i> Logout</span>
+						<span class="p-0 flex flex-col"><span class="text-xl sm:text-sm">{{icon("signout")}}</span>Logout</span>
 					</button>
 				</li>
 
