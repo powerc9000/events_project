@@ -23,7 +23,7 @@ export default class extends ApplicationController {
         dayTitle.classList.remove("hidden");
         dayTitle.classList.add(colors[nth % colors.length].trim());
         dayTitle.textContent = format(date, "PP");
-
+        event.classList.remove("border-t-2");
         event.parentNode.insertBefore(dayTitle, event);
         lastDay = day;
         nth++;
