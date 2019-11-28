@@ -642,10 +642,10 @@ async function getUpcomingEventsDigest() {
 		select json_agg(e) from (
 			select ev.*, i.invite_key, i.status from events ev 
 			inner join invites i on i.event_id = ev.id
-			where i.user_id = u.id and ev.date >= now() and ev.date - interval '1 day' <= now()
+			where (i.user_id = u.id or ev.creator = u.id or u.id in (select user_id from group_members gm where gm.group_id = ev.group_id)) and ev.date >= now() and ev.date - interval '1 day' <= now()
 		) e
 	) as events
-	from users u where u.user_id in (select ready_digests.user_id from ready_digests)
+	from users u where u.id in (select ready_digests.user_id from ready_digests)
 	`);
 }
 
