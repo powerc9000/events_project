@@ -23,7 +23,26 @@ export default class extends ApplicationController {
 
     e.stopPropagation();
   }
+  async removeMember(e) {
+    e.preventDefault();
+    const target = e.target;
+    const id = this.data.get("id");
+    const user = target.dataset.user;
+    this.formControl.hide("management");
+    if (user) {
+      const req = await this.api.Delete(`/api/groups/${id}/members/${user}`);
 
+      if (req.ok) {
+        this.formControl.success("User removed from group", "management");
+        this.page.reload();
+      } else {
+        const res = await req.json();
+        this.formControl.error(res.message, "management");
+
+        target.reset();
+      }
+    }
+  }
   async requestDelete() {
     const yes = confirm("Are you sure you want to delete this group?");
     const groupId = this.data.get("id");
