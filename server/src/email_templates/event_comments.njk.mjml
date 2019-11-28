@@ -14,7 +14,7 @@
 	{%for event in events%}
 		<mj-section padding-top="50px" padding-bottom="0">
 			<mj-column>
-				<mj-text><a  href="https://junipercity.com/events/{{event.slug}}">{{event.name}}</a></mj-text>
+				<mj-text><a  href="https://junipercity.com/events/{{event.slug}}?event_key={{event.secret_key}}">{{event.name}}</a></mj-text>
 			</mj-column>
 		</mj-section>
 		<mj-section padding="0">
