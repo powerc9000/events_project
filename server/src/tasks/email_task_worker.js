@@ -9,129 +9,153 @@ const fns = require("date-fns");
 const { sanitize, createIcsFileBuilder } = require("../utils");
 let server;
 module.exports = (hapiServer) => async (job) => {
-  server = hapiServer;
-  const type = job.data.type;
-  const data = job.data.taskData;
-  server.log(["taskWorker", "email_task_worker", "start"], {
-    status: "started"
-  });
-  if (type === "invite-user-to-event") {
-    try {
-      const user = data.user;
+  try {
+    server = hapiServer;
+    const type = job.data.type;
+    const data = job.data.taskData;
+    server.log(["taskWorker", "email_task_worker", "start"], {
+      status: "started"
+    });
+    if (type === "invite-user-to-event") {
+      try {
+        const user = data.user;
 
-      if (user.email) {
-        let creator;
-        if (!data.event.creator.id) {
-          creator = await server
-            .getService("user")
-            .findById(data.event.creator);
-        } else {
-          creator = data.event.creator;
+        if (user.email) {
+          let creator;
+          if (!data.event.creator.id) {
+            creator = await server
+              .getService("user")
+              .findById(data.event.creator);
+          } else {
+            creator = data.event.creator;
+          }
+
+          await sendInviteEmail("user_invite", {
+            to: user.email,
+            subject: `You were invited to an event: ${data.event.name} on Juniper City`,
+            data: {
+              ...data,
+              creator,
+              description: sanitize(data.event.description)
+            }
+          });
         }
+      } catch (e) {
+        console.log(e);
+      }
+    }
 
-        await sendInviteEmail("user_invite", {
+    if (type === "create-event-pingback") {
+      const user = data.user;
+      if (user.email) {
+        await sendEmail("event_created_by_email", {
           to: user.email,
-          subject: `You were invited to an event: ${data.event.name} on Juniper City`,
+          subject: "Event successfully created",
+          data
+        });
+      }
+    }
+
+    if (type === "send-code") {
+      if (data.code_type === "email") {
+        const user = data.user;
+        if (user.email) {
+          await sendEmail("login_code", {
+            to: user.email,
+            subject: "Your Juniper City login code",
+            data: {
+              code: data.code
+            }
+          });
+        }
+      }
+    }
+
+    if (type === "send-validation") {
+      if (data.validation.email) {
+        await sendEmail("email_validation", {
+          to: data.validation.email,
+          subject: "Validate your email on Juniper City",
           data: {
-            ...data,
-            creator,
+            link: data.link
+          }
+        });
+      }
+    }
+
+    if (type === "event-comments") {
+      try {
+        if (data.user.email) {
+          await sendEmail("event_comments.njk", {
+            to: data.user.email,
+            subject: "New comments on events you're invited to on Juniper City",
+            data: {
+              events: data.events,
+              sanitize,
+              link: `https://junipercity.com`
+            }
+          });
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    if (type === "user-did-rsvp") {
+      if (data.user.email) {
+        await sendEmail("user_did_rsvp.njk", {
+          to: data.creator.email,
+          subject: `Someone RSVP'd to your event ${data.event.name} on Juniper City`,
+          data: {
+            event: data.event,
+            user: data.user,
+            invite: data.invite
+          }
+        });
+      }
+    }
+
+    if (type === "notify-group-member-about-event") {
+      if (data.member.email) {
+        sendEmail("new_group_event.njk", {
+          to: data.member.email,
+          subject: `New event in your Juniper City group ${data.group.name}`,
+          data: {
+            event: data.event,
+            group: data.group,
+            date: new Date(data.event.date),
             description: sanitize(data.event.description)
           }
         });
       }
-    } catch (e) {
-      console.log(e);
     }
-  }
 
-  if (type === "create-event-pingback") {
-    const user = data.user;
-    if (user.email) {
-      await sendEmail("event_created_by_email", {
-        to: user.email,
-        subject: "Event successfully created",
-        data
-      });
-    }
-  }
-
-  if (type === "send-code") {
-    if (data.code_type === "email") {
-      const user = data.user;
-      if (user.email) {
-        await sendEmail("login_code", {
-          to: user.email,
-          subject: "Your Juniper City login code",
-          data: {
-            code: data.code
-          }
-        });
-      }
-    }
-  }
-
-  if (type === "send-validation") {
-    if (data.validation.email) {
-      await sendEmail("email_validation", {
-        to: data.validation.email,
-        subject: "Validate your email on Juniper City",
-        data: {
-          link: data.link
-        }
-      });
-    }
-  }
-
-  if (type === "event-comments") {
-    try {
+    if (type === "user-added-to-group") {
+      console.log("hello", data);
       if (data.user.email) {
-        await sendEmail("event_comments.njk", {
+        sendEmail("user_added_to_group.njk", {
           to: data.user.email,
-          subject: "New comments on events you're invited to on Juniper City",
+          subject: `You were added to the group: ${data.group.name} on Juniper City`,
           data: {
-            events: data.events,
-            sanitize,
-            link: `https://junipercity.com`
+            group: data.group,
+            user: data.user,
+            role: data.role,
+            member: data.member,
+            idOrPath: data.group.custom_path || data.group.id
           }
         });
       }
-    } catch (e) {
-      console.log(e);
     }
-  }
 
-  if (type === "user-did-rsvp") {
-    if (data.user.email) {
-      await sendEmail("user_did_rsvp.njk", {
-        to: data.creator.email,
-        subject: `Someone RSVP'd to your event ${data.event.name} on Juniper City`,
-        data: {
-          event: data.event,
-          user: data.user,
-          invite: data.invite
-        }
-      });
-    }
+    server.log(["taskWorker"], {
+      status: "complete"
+    });
+  } catch (e) {
+    server.log(["taskWorker", "taskWorkerError"], {
+      status: "fail",
+      error: e
+    });
   }
-
-  if (type === "notify-group-member-about-event") {
-    if (data.member.email) {
-      sendEmail("new_group_event.njk", {
-        to: data.member.email,
-        subject: `New event in your Juniper City group ${data.group.name}`,
-        data: {
-          event: data.event,
-          group: data.group,
-          date: new Date(data.event.date),
-          description: sanitize(data.event.description)
-        }
-      });
-    }
-  }
-
-  server.log(["taskWorker"], {
-    status: "complete"
-  });
 };
 
 async function sendEmail(templateName, payload) {

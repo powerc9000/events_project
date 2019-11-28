@@ -48,6 +48,21 @@ module.exports = {
 
       return this.redirect(this.request.path);
     });
+    server.decorate("toolkit", "consumeMemberKey", async function(key) {
+      if (!this.request.app.user) {
+        const user = await server
+          .getService("user")
+          .findUser({ member_key: key });
+        if (user) {
+          const token = await server
+            .getService("user")
+            .generateLoginToken(user.id);
+          this.state("user", token);
+        }
+      }
+
+      return this.redirect(this.request.path);
+    });
     server.decorate("toolkit", "loginUser", async function(user) {
       const token = await server.getService("user").generateLoginToken(user.id);
       this.state("user", token);

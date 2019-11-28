@@ -65,7 +65,7 @@ async function findUserByEmail(email) {
 
 async function findUser(options) {
   let where;
-
+  console.log(options);
   if (options.email) {
     return findUserByEmail(options.email);
   }
@@ -77,6 +77,15 @@ async function findUser(options) {
   if (options.invite_key) {
     return findUserByInviteKey(options.invite_key);
   }
+  if (options.member_key) {
+    return findUserByMemberKey(options.member_key);
+  }
+}
+
+async function findUserByMemberKey(key) {
+  const query = sql`select users.* from users where id in (select user_id from group_members where member_key=${key})`;
+  console.log(key, query);
+  return server.app.db.maybeOne(query);
 }
 
 async function findUserByInviteKey(key) {
@@ -319,12 +328,6 @@ async function findOrCreateUser(details) {
 
 async function markMessageAsViewed(userId, messageId) {
   const path = `{"viewed_messages"}`;
-  console.log(path, userId, messageId);
-  console.log(
-    sql`update users set settings = settings || jsonb_set(settings, ${path}, ${sql.json(
-      true
-    )}) where id=${userId}`
-  );
   const res = await server.app.db.query(
     sql`update users set settings = settings || jsonb_set(settings, ${path}, coalesce(settings->'viewed_messages', '{}'::jsonb) || ${sql.json(
       { [messageId]: true }

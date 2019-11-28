@@ -148,6 +148,14 @@ module.exports = {
             return h.view("500").code(500);
           }
         }
+        if (
+          !req.app.isStatic &&
+          req.response.statusCode >= 200 &&
+          req.response.statusCode < 300
+        ) {
+          req.response.header("Turbolinks-Location", req.state.turbo_redirect);
+          req.response.unstate("turbo_redirect");
+        }
         return h.continue;
       },
       { sandbox: "plugin" }
@@ -388,6 +396,12 @@ async function editGroup(req, h) {
     return Boom.notFound();
   }
 
+  const canEdit = await groupService.canUserEditGroup(userId, group.id);
+
+  if (!canEdit) {
+    return h.turboRedirect(`/groups/${group.custom_path || group.id}`);
+  }
+
   return h.view("create_group", { group });
 }
 async function commonGroupData(user, groupIdOrCustom) {
@@ -435,6 +449,9 @@ async function commonGroupData(user, groupIdOrCustom) {
   ];
 }
 async function groupDetail(req, h) {
+  if (req.query.member_key) {
+    return h.consumeMemberKey(req.query.member_key);
+  }
   const [err, data] = await commonGroupData(
     req.app.user,
     req.params.idOrCustom
