@@ -3,8 +3,8 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.0/trix.css"/>
 {%endblock%} 
 {%block content%}
-	<div class="content container mx-auto" data-controller="create-group">
-		<h1 class="text-2xl font-bold">Create a new group</h1>
+	<div class="content container mx-auto mt-4" data-controller="create-group">
+	<h1 class="text-2xl font-bold">{%if not group.id %}Create a new group{%else%}Edit {{group.name}}{%endif%}</h1>
 		<form data-target="create-group.form" data-action="create-group#submit">
 			<input type="hidden" name="group_id" value="{{group.id}}" />
 			<div class="mt-4">
@@ -84,6 +84,9 @@
 				<button class="btn btn-green" type="submit">
 					{{"Create" if not group.id else "Update"}} Group
 				</button>
+				{%if group.id%}
+					<a href="/groups/{{group.custom_path | default(group.id, true)}}" class="btn btn-white">Cancel</a>
+					{%endif%}
 			</div>
 		</form>
 	</div>

@@ -53,7 +53,9 @@
 													{{role | capitalize}}
 												</label>
 											</div>
-											{%endfor%}
+										{%endfor%}
+
+										<button class="btn btn-red mt-2 text-xs" data-action="group-detail#removeMember" data-user="{{member.id}}">Remove From Group</button>
 									</form>
 								{%else %}
 									<span class="italic">{{member.role}}</span>

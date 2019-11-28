@@ -189,7 +189,6 @@ async function canUserUpdateRole(userId, groupId, changedUser, role) {
   if (changedUser === userId) {
     return false;
   }
-  console.log(changedUser, groupId, userId, role);
   const changed = await server.app.db.maybeOne(
     sql`SELECT * from group_members where user_id=${changedUser} and group_id=${groupId}`
   );
@@ -199,14 +198,10 @@ async function canUserUpdateRole(userId, groupId, changedUser, role) {
   }
 
   const exists = await server.app.db.maybeOne(
-    sql`SELECT * from group_members where group_id=${groupId} and role >= 'admin' and user_id = ${userId} and role >= ${role}`
+    sql`SELECT * from group_members where group_id=${groupId} and role >= 'admin' and user_id = ${userId} and role >= ${changed.role}`
   );
 
   if (!exists) {
-    return false;
-  }
-
-  if (changed.role > exists.role) {
     return false;
   }
 
@@ -216,6 +211,39 @@ async function canUserUpdateRole(userId, groupId, changedUser, role) {
 async function updateUserRole(userId, groupId, role) {
   await server.app.db.query(
     sql`UPDATE group_members set role=${role} where user_id=${userId} and group_id=${groupId}`
+  );
+}
+
+async function canUserRemoveMember(userId, groupId, memberId) {
+  const membership = await server.app.db.maybeOne(
+    sql`select * from group_members where user_id=${memberId} and group_id=${groupId}`
+  );
+
+  if (memberId === userId) {
+    //Can't remove self
+    return false;
+  }
+
+  if (!membership) {
+    return false;
+  }
+  //must be higher rank
+  //
+  console.log(membership.role);
+  const userMembership = await server.app.db.maybeOne(
+    sql`select * from group_members where user_id=${userId} and group_id=${groupId} and role >= 'admin' and role >= ${membership.role}`
+  );
+
+  if (!userMembership) {
+    return false;
+  }
+
+  return true;
+}
+
+async function removeGroupMember(memberId, groupId) {
+  await server.app.db.query(
+    sql`delete from group_members where user_id=${memberId} and group_id=${groupId}`
   );
 }
 
@@ -290,5 +318,7 @@ module.exports = {
   addUserToGroup,
   canUserUpdateRole,
   canUserDeleteGroup,
-  deleteGroup
+  deleteGroup,
+  canUserRemoveMember,
+  removeGroupMember
 };

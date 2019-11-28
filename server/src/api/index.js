@@ -221,6 +221,12 @@ module.exports = {
     });
 
     server.route({
+      method: "DELETE",
+      path: "/groups/{id}/members/{memberId}",
+      handler: deleteGroupMember
+    });
+
+    server.route({
       method: "POST",
       path: "/invites/{id}/resend",
       handler: resendInvite
@@ -305,6 +311,31 @@ async function deleteGroup(req, h) {
   }
 
   await groupService.deleteGroup(groupId);
+
+  return h.response().code(204);
+}
+
+async function deleteGroupMember(req, h) {
+  const groupService = server.getService("groups");
+  const userId = req.userId();
+
+  const group = await groupService.getGroup(req.params.id);
+
+  if (!group) {
+    return Boom.notFound();
+  }
+
+  const canDelete = await groupService.canUserRemoveMember(
+    userId,
+    group.id,
+    req.params.memberId
+  );
+
+  if (!canDelete) {
+    return Boom.unauthorized("You don't have permission to remove that user");
+  }
+
+  await groupService.removeGroupMember(req.params.memberId, group.id);
 
   return h.response().code(204);
 }
