@@ -146,7 +146,7 @@ module.exports = (hapiServer) => async (job) => {
       }
     }
 
-    server.log(["taskWorker"], {
+    server.log(["taskWorker", "send-email-task-worker"], {
       status: "complete"
     });
   } catch (e) {

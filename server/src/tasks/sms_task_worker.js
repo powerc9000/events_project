@@ -1,5 +1,10 @@
 const fetch = require("node-fetch");
-module.exports = (server) => async (job) => {
+let server;
+module.exports = (hapiServer) => async (job) => {
+  server = hapiServer;
+  server.log(["taskWorker", "sms-task-worker", "start"], {
+    status: "started"
+  });
   try {
     const type = job.data.type;
     const data = job.data.taskData;
@@ -99,23 +104,38 @@ module.exports = (server) => async (job) => {
         );
       }
     }
+
+    server.log(["taskWorker", "sms-task-worker", "end"], {
+      status: "complete"
+    });
   } catch (e) {
-    console.log(e);
+    server.log(["taskWorker", "sms-task-worker", "end", "taskWorkerError"], {
+      status: "fail",
+      error: e
+    });
   }
 };
 
 async function sendText(phone, message) {
-  const req = await fetch("https://textbelt.com/text", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: `phone=${encodeURIComponent(phone)}&message=${encodeURIComponent(
-      message
-    )}&key=${process.env.TEXTBELT_API_KEY}`
-  });
+  try {
+    const req = await fetch("https://textbelt.com/text", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: `phone=${encodeURIComponent(phone)}&message=${encodeURIComponent(
+        message
+      )}&key=${process.env.TEXTBELT_API_KEY}`
+    });
 
-  const json = await req.json();
-  console.log(json);
-  return json;
+    const json = await req.json();
+    server.log(["taskWorker", "sms-task-worker", "info"], {
+      sendTextResponse: json
+    });
+    return json;
+  } catch (e) {
+    server.log(["taskWorker", "sms-task-worker", "error"], {
+      sendTextError: e
+    });
+  }
 }
