@@ -131,7 +131,6 @@ module.exports = (hapiServer) => async (job) => {
     }
 
     if (type === "user-added-to-group") {
-      console.log("hello", data);
       if (data.user.email) {
         sendEmail("user_added_to_group.njk", {
           to: data.user.email,
