@@ -1,9 +1,9 @@
 module.exports = (server) => async (job) => {
-  const type = job.data.type;
-  const data = job.data.taskData;
+  try {
+    const type = job.data.type;
+    const data = job.data.taskData;
 
-  if (job.data.type === "check-comments") {
-    try {
+    if (job.data.type === "check-comments") {
       const users = await server.getService("events").getEventsCommentDigest();
 
       users.forEach((user) => {
@@ -14,13 +14,9 @@ module.exports = (server) => async (job) => {
           });
         }
       });
-    } catch (e) {
-      console.log(e);
     }
-  }
 
-  if (type === "event-created") {
-    try {
+    if (type === "event-created") {
       if (data.event.group_id) {
         const groupService = server.getService("groups");
         const group = await groupService.getGroup(data.event.group_id);
@@ -33,8 +29,21 @@ module.exports = (server) => async (job) => {
           });
         });
       }
-    } catch (e) {
-      console.log(e);
     }
+
+    if (type === "upcoming-event-digest") {
+      const users = await server.getService("events").getUpcomingEventsDigest();
+
+      users.forEach((user) => {
+        if (user.events) {
+          server.createTask("upcoming-events", {
+            user,
+            events: user.events
+          });
+        }
+      });
+    }
+  } catch (e) {
+    console.log(e);
   }
 };

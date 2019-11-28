@@ -77,6 +77,30 @@ CREATE TABLE public.comments (
 
 
 --
+-- Name: digest_types; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.digest_types (
+    key text NOT NULL,
+    name text NOT NULL,
+    description text
+);
+
+
+--
+-- Name: digests; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.digests (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    user_id uuid,
+    last_sent timestamp with time zone,
+    send_time time with time zone NOT NULL,
+    digest_type text NOT NULL
+);
+
+
+--
 -- Name: events; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -228,6 +252,30 @@ CREATE TABLE public.validations (
 
 ALTER TABLE ONLY public.comments
     ADD CONSTRAINT comments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: digest_types digest_types_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.digest_types
+    ADD CONSTRAINT digest_types_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: digests digests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.digests
+    ADD CONSTRAINT digests_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: digests digests_user_id_digest_type_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.digests
+    ADD CONSTRAINT digests_user_id_digest_type_key UNIQUE (user_id, digest_type);
 
 
 --
@@ -396,6 +444,22 @@ ALTER TABLE ONLY public.comments
 
 ALTER TABLE ONLY public.comments
     ADD CONSTRAINT comments_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: digests digests_digest_type_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.digests
+    ADD CONSTRAINT digests_digest_type_fkey FOREIGN KEY (digest_type) REFERENCES public.digest_types(key);
+
+
+--
+-- Name: digests digests_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.digests
+    ADD CONSTRAINT digests_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --

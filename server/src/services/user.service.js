@@ -1,4 +1,5 @@
 let server;
+let db;
 const _ = require("lodash");
 const sql = require("slonik").sql;
 const crypto = require("crypto");
@@ -333,12 +334,11 @@ async function markMessageAsViewed(userId, messageId) {
       { [messageId]: true }
     )}) where id=${userId}`
   );
-
-  console.log(res);
 }
 
 function init(hapiServer) {
   server = hapiServer;
+  db = server.app.db;
 }
 
 module.exports = {

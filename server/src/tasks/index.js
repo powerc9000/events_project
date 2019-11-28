@@ -55,7 +55,19 @@ module.exports = {
       {
         jobId: "check-comments",
         repeat: {
-          every: 60 * 1000 * 5
+          every: 60 * 1000 * 5 // Five minutes
+        }
+      }
+    );
+
+    notificationsQueue.add(
+      {
+        type: "upcoming-event-digest"
+      },
+      {
+        jobId: "upcoming-event-digest",
+        repeact: {
+          every: 60 * 1000 * 60 //Hour
         }
       }
     );
