@@ -1,4 +1,5 @@
 let server;
+let db;
 const _ = require("lodash");
 const slugify = require("slugify");
 const crypto = require("crypto");
@@ -632,8 +633,25 @@ function getEventByEmailHash(hash) {
   );
 }
 
+async function getUpcomingEventsDigest() {
+  const users = await db.query(sql`
+	with ready_digests as (
+	update digests set last_sent = now() where coalesce(last_sent, to_timestamp(0)) < now() - interval '1 day' and greatest(send_time, current_time)::time - least(send_time, current_time)::time >= interval '1 hour' and digest_type = 'upcoming_events' returning *
+	)
+	select u.*, (
+		select json_agg(e) from (
+			select ev.*, i.invite_key, i.status from events ev 
+			inner join invites i on i.event_id = ev.id
+			where i.user_id = u.id and ev.date >= now() and ev.date - interval '1 day' <= now()
+		) e
+	) as events
+	from users u where u.user_id in (select ready_digests.user_id from ready_digests)
+	`);
+}
+
 function init(hapiServer) {
   server = hapiServer;
+  db = server.app.db;
   //set up database
   //
 }
@@ -662,5 +680,6 @@ module.exports = {
   getEventsCommentDigest,
   canUserDeleteEvent,
   deleteEvent,
-  getEventByEmailHash
+  getEventByEmailHash,
+  getUpcomingEventsDigest
 };
