@@ -1,5 +1,6 @@
 let server;
 
+const crypto = require("crypto");
 const _ = require("lodash");
 const sql = require("slonik").sql;
 
@@ -47,7 +48,6 @@ async function createGroup(options) {
 }
 
 async function canAddUserToGroup(userId, groupId, role) {
-  console.log(userId, groupId, role);
   const user = server.app.db.maybeOne(
     sql`SELECT gm.user_id from group_members gm
 		inner join groups g on g.id = gm.group_id
@@ -59,9 +59,17 @@ async function canAddUserToGroup(userId, groupId, role) {
 
 async function addUserToGroup(userId, groupId, role = "member") {
   try {
+    const member_key = crypto.randomBytes(16).toString("hex");
     const member = await server.app.db.maybeOne(
-      sql`INSERT INTO group_members (user_id, group_id, role) VALUES (${userId}, ${groupId}, ${role})`
+      sql`INSERT INTO group_members (user_id, group_id, role, member_key) VALUES (${userId}, ${groupId}, ${role}, ${member_key}) returning *`
     );
+
+    server.createTask("user-added-to-group", {
+      user: await server.getService("user").findById(userId),
+      group: await getGroup(groupId),
+      member,
+      role
+    });
 
     return [null, "success"];
   } catch (e) {
@@ -126,7 +134,7 @@ async function canUserViewGroup(userId, groupId) {
 }
 
 async function canUserEditGroup(userId, groupId) {
-  const member = await server.app.db.query(
+  const member = await server.app.db.maybeOne(
     sql`select * from group_members where group_id=${groupId} and user_id=${userId} and role > 'member'`
   );
 

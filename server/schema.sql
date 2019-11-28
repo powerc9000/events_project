@@ -108,7 +108,8 @@ CREATE TABLE public.group_members (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     user_id uuid,
     group_id uuid,
-    role public.group_role DEFAULT 'member'::public.group_role
+    role public.group_role DEFAULT 'member'::public.group_role,
+    member_key text
 );
 
 
@@ -251,6 +252,14 @@ ALTER TABLE ONLY public.events
 
 ALTER TABLE ONLY public.events
     ADD CONSTRAINT events_secret_key_key UNIQUE (secret_key);
+
+
+--
+-- Name: group_members group_members_member_key_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.group_members
+    ADD CONSTRAINT group_members_member_key_key UNIQUE (member_key);
 
 
 --
