@@ -7,3 +7,4 @@ services:
     command: node /var/www/events/server/src/index.js
     env_file:
             - server/prod.env
+            - client/static.prod.env
