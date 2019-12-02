@@ -19,10 +19,10 @@
 		<title>
 			{{title()}} Juniper City
 		</title>
-		<link rel="stylesheet" href="{{cssPath}}" />
+		<link rel="stylesheet" href="{{cssPath}}" data-turbolinks-track="reload"/>
 
 		{%block css%}{%endblock%}
-		<script src="{{jsBundlePath}}" async></script>
+		<script src="{{jsBundlePath}}" async data-turbolinks-track="reload"></script>
 	</head>
 	<body>
 		<div data-controller="user-events" data-user-events-user-id={{user.id}}></div>
