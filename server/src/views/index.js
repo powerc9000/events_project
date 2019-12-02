@@ -72,8 +72,9 @@ module.exports = {
         NODE_ENV: process.env.NODE_ENV,
         inboundEmailDomain: process.env.INBOUND_EMAIL_DOMAIN,
         date: fns,
-        jsBundlePath: "/static/js/index.js",
-        cssPath: "/static/css/main.css",
+        jsBundlePath: process.env.JS_BUNDLE_PATH,
+        cssPath: process.env.CSS_BUNDLE_PATH,
+        imgPath: process.env.IMG_BUNDLE_PATH,
         user: req.app.user,
         flags: server.app.featureFlags,
         __currentPath: () => {
