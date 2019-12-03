@@ -4,7 +4,7 @@
 	<div class="container mx-auto mt-4">
 		<div class="sm:mx-auto sm:w-1/2 bg-gray-200 border-gray-700 p-4">
 			<h1 class="text-2xl font-bold text-center">Settings</h1>
-
+			<a href="/calendars/{{user.ics_key}}.ics" class="text-blue-700 hover:underline">Subscribe to my calendar</a>
 			<form data-controller="user-settings" data-target="user-settings.form" data-action="user-settings#saveSettings" autocomplete="off">
 				<div class="mb-4">
 					{{messages.messages("user-settings")}}
