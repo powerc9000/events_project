@@ -227,7 +227,8 @@ CREATE TABLE public.users (
     name text NOT NULL,
     email text,
     phone text,
-    settings jsonb DEFAULT '{}'::jsonb
+    settings jsonb DEFAULT '{}'::jsonb,
+    ics_key uuid DEFAULT public.uuid_generate_v4() NOT NULL
 );
 
 

@@ -95,7 +95,6 @@ async function findEvents(constraints) {
           [
             sql`creator = ${constraints.user}`,
             sql`id in (select event_id from invites where user_id = ${constraints.user})`,
-            sql`is_private = false`,
             sql`${constraints.user} in (select gm.user_id from group_members gm where gm.group_id = e.group_id)`
           ],
           sql` OR `
@@ -119,11 +118,20 @@ async function findEvents(constraints) {
     }
   }
   const query = sql`SELECT *,
-		(
-			select json_agg(r) from (
-				select * from invites where event_id = e.id
+		coalesce((
+			select jsonb_agg(r) from (
+				select *, (
+					select row_to_json(u) from (
+						select * from users where id = user_id
+					) u
+				) "user" from invites where event_id = e.id
 			) r
-		) invites
+		), '[]'::jsonb ) invites,
+		(
+			select row_to_json(og) from (
+				select * from users where id=e.creator
+			) og
+		) creator
 		from events e where ${sql.join(where, sql` AND `)}  order by date`;
 
   const events = await server.app.db.query(query);

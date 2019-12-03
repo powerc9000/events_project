@@ -81,11 +81,20 @@ async function findUser(options) {
   if (options.member_key) {
     return findUserByMemberKey(options.member_key);
   }
+
+  if (options.ics_key) {
+    return findUserByICSKey(options.ics_key);
+  }
+}
+
+async function findUserByICSKey(key) {
+  const query = sql`select * from users where ics_key=${key}`;
+
+  return server.app.db.maybeOne(query);
 }
 
 async function findUserByMemberKey(key) {
   const query = sql`select users.* from users where id in (select user_id from group_members where member_key=${key})`;
-  console.log(key, query);
   return server.app.db.maybeOne(query);
 }
 

@@ -15,7 +15,7 @@ const markdown = require("markdown-it");
 const Nunjucks = require("nunjucks");
 const md = markdown({ html: true });
 const mdSafe = markdown();
-const { timezones, sanitize } = require("../utils");
+const { timezones, sanitize, eventsToICS } = require("../utils");
 const PhoneNumber = require("awesome-phonenumber");
 
 const events = require("./events");
@@ -283,6 +283,12 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/calendars/{id}.ics",
+      handler: userCalendar
+    });
+
+    server.route({
+      method: "GET",
       path: "/{param}",
       handler: () => {
         return Boom.notFound();
@@ -323,6 +329,26 @@ module.exports = {
     }
   }
 };
+
+async function userCalendar(req, h) {
+  const userService = await server.getService("user");
+
+  const user = await userService.findUser({ ics_key: req.params.id });
+  if (!user) {
+    return Boom.unauthorized();
+  }
+  const events = await server
+    .getService("events")
+    .findEvents({ user: user.id });
+
+  const ics = eventsToICS(
+    [...events.upcoming, ...events.past],
+    user.id,
+    `My Juniper City Calendar`
+  );
+
+  return h.response(ics).header("Content-Type", "text/calendar");
+}
 
 async function validateContact(req, h) {
   const validation = await server

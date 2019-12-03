@@ -2,7 +2,7 @@ let server;
 const _ = require("lodash");
 const joi = require("@hapi/joi");
 const Boom = require("@hapi/boom");
-const { sanitize, createIcsFileBuilder } = require("../../utils");
+const { sanitize, createIcsFileBuilder, eventsToICS } = require("../../utils");
 
 function init(hapiServer) {
   server = hapiServer;
@@ -140,46 +140,13 @@ async function eventDetail(req, h) {
       return err;
     }
     if (req.params.ext && req.params.ext === "ics") {
-      const statusToICS = {
-        going: "ATTENDING",
-        maybe: "TENNATIVE",
-        declined: "DECLINED",
-        invited: "NEEDS-ACTION"
-      };
-      const builder = createIcsFileBuilder();
-      const end = data.event.end_date
-        ? new Date(data.event.end_date)
-        : new Date(data.event.date + 1000 * 60 * 60);
-      builder.events.push({
-        start: new Date(data.event.date),
-        end,
-        summary: data.event.name,
-        stamp: data.event.created,
-        status: "CONFIRMED",
-        description: data.event.description,
-        organizer: {
-          name: data.event.creator.name || data.event.creator.email,
-          email: `invites+${req.userId()}@${process.env.INBOUND_EMAIL_DOMAIN}`
-        },
-        attendees: data.event.invites.map((invite) => {
-          const showInfo =
-            (data.canSeeInvites && invite.show_name) ||
-            invite.user.id === req.userId();
-          const defaultEmail = `protected+${invite.user.id}@${process.env.INBOUND_EMAIL_DOMAIN}`;
-          const email = invite.email || defaultEmail;
-          return {
-            email: showInfo ? email : defaultEmail,
-            name: showInfo
-              ? invite.user.name || "Anonymous User"
-              : "Anonymous User",
-            status: statusToICS[invite.status]
-          };
-        }),
-        uid: data.event.id,
-        url: `https://junipercity.com/events/${data.event.slug}`
-      });
       return h
-        .response(builder.toString())
+        .response(
+          eventsToICS(
+            [{ ...data.event, canSeeInvites: data.canSeeInvites }],
+            req.userId()
+          )
+        )
         .header("Content-Type", "text/calendar");
     }
     return h.view("event_detail.njk", data);
