@@ -102,7 +102,7 @@ module.exports = (hapiServer) => async (job) => {
     }
 
     if (type === "user-did-rsvp") {
-      if (data.user.email) {
+      if (data.creator.email) {
         await sendEmail("user_did_rsvp.njk", {
           to: data.creator.email,
           subject: `Someone RSVP'd to your event ${data.event.name} on Juniper City`,

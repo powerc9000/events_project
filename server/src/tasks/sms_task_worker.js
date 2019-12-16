@@ -58,6 +58,16 @@ module.exports = (hapiServer) => async (job) => {
       }
     }
 
+    if (type === "user-did-rsvp") {
+      if (data.creator.phone) {
+        const name = data.user.name || data.user.email || data.user.phone;
+        await sendText(
+          data.creator.phone,
+          `${name} RSVP'd to your event ${data.event.name}`
+        );
+      }
+    }
+
     if (type === "event-comments") {
       if (data.user.phone) {
         try {
