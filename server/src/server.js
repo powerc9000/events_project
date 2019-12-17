@@ -32,21 +32,6 @@ async function start() {
     }
   });
 
-  server.events.on("response", function(request) {
-    if (!request.response) {
-      return;
-    }
-    if (request.app.isStatic) {
-      return;
-    }
-
-    request.log("info", {
-      method: request.method.toUpperCase(),
-      path: request.url.pathname,
-      status: request.response.statusCode
-    });
-  });
-
   server.events.on("log", (event, tags) => {
     // if we ever need to log deep objects, see https://stackoverflow.com/questions/10729276/how-can-i-get-the-full-object-in-node-jss-console-log-rather-than-object
     const options = {
@@ -69,39 +54,6 @@ async function start() {
 						`
         })
       });
-    }
-
-    if (process.env["NODE_ENV"] !== "production") {
-      //Hard to see logs with worker counts in dev
-      if (!tags.TaskWorker) {
-        // if not tagged with TaskWorker, always log
-        console.dir(
-          {
-            event,
-            tags
-          },
-          options
-        );
-      } else if (!server.app.config.squelchTaskLogs) {
-        // if tagged with TaskWorker but not squelching, then log too
-        console.dir(
-          {
-            event,
-            tags
-          },
-          options
-        );
-      } else {
-        // if tagged with TaskWorker and squelching, then do nothing
-      }
-    } else {
-      console.dir(
-        {
-          event,
-          tags
-        },
-        options
-      );
     }
   });
 
@@ -178,6 +130,7 @@ async function start() {
   await server.register({
     plugin: require("hapi-pino"),
     options: {
+      ignorePaths: ["/static/*"],
       prettyPrint: process.env.NODE_ENV !== "production",
       // Redact Authorization headers, see https://getpino.io/#/docs/redaction
       redact: ["req.headers.authorization"]
