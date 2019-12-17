@@ -26,9 +26,13 @@ export default class extends ApplicationController {
     if (value === "email") {
       this.hideTarget("phoneField");
       this.showTarget("emailField");
+      this.enableButton("emailInput");
+      this.disableButton("phoneInput");
     } else {
       this.hideTarget("emailField");
       this.showTarget("phoneField");
+      this.enableButton("phoneInput");
+      this.disableButton("emailInput");
     }
   }
   selectMethod(e) {
@@ -65,7 +69,8 @@ export default class extends ApplicationController {
 
     if (method === "email") {
       payload.email = email;
-      if (!email) {
+      const isInvalid = !email || !email.includes("@");
+      if (isInvalid) {
         form.email.setCustomValidity("Email is required");
         this.formControl.error("Email is required", "invite", true);
         return;
@@ -86,6 +91,10 @@ export default class extends ApplicationController {
       form.name.value = "";
       form.email.value = "";
       form.phone.value = "";
+      form.reset();
+      setTimeout(() => {
+        this.toggleInviteForm();
+      }, 0);
     } else {
       try {
         const data = await res.json();

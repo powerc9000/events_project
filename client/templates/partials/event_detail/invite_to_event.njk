@@ -47,10 +47,12 @@
 			</label>
 			<input
 				id="email"
-				type="text"
+				type="email"
 				name="email"
 				class="input"
+				data-target="invite-to.emailInput"
 				placeholder="Email"
+				required
 				/>
 		</div>
 		<div class="mt-2 flex flex-col hidden" data-target="invite-to.phoneField">
@@ -59,9 +61,11 @@
 			</label>
 			<input
 				id="phone"
-				type="text"
+				type="tel"
+				data-target="invite-to.phoneInput"
 				name="phone"
 				class="input"
+				required
 				placeholder="Phone"
 				/>
 		</div>
