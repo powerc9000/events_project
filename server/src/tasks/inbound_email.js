@@ -25,6 +25,9 @@ module.exports = (hapiServer) => {
       if (juniperCityEmail.Email.indexOf("events") > -1) {
         bulkInvite(data);
       }
+      if (juniperCityEmail.Email.indexOf("invite_reply") > -1) {
+        replyToInvite(data);
+      }
     }
   };
 };
@@ -74,6 +77,26 @@ async function inviteResponse(data) {
       );
     }
   }
+}
+
+async function replyToInvite(data) {
+  const eventService = server.getService("events");
+  const userService = server.getService("user");
+  const event = await eventService.getEventByEmailHash(data.MailboxHash);
+  if (!event) {
+    return;
+  }
+  const user = await userService.findById(event.creator);
+  if (!user) {
+    return;
+  }
+
+  server.createTask("event-invite-email-was-replied-to", {
+    event,
+    user,
+    from: data.FromFull.Email,
+    content: data.HtmlBody || data.TextBody
+  });
 }
 
 async function bulkInvite(data) {
