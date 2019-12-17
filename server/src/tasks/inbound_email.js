@@ -73,7 +73,9 @@ async function inviteResponse(data) {
         eventId,
         userId,
         statusMap[status] || "maybe",
-        false
+        false,
+        null,
+        "email"
       );
     }
   }

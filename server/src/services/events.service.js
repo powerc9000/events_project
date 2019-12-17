@@ -440,7 +440,14 @@ async function updateInviteRSVP(inviteId, status) {
   })();
 }
 
-async function rsvpToEvent(eventId, userId, status, show_name, event_key) {
+async function rsvpToEvent(
+  eventId,
+  userId,
+  status,
+  show_name,
+  event_key,
+  source = "web"
+) {
   const event = await server.app.db.maybeOne(
     sql`select * from events where id=${eventId}`
   );
@@ -464,7 +471,7 @@ async function rsvpToEvent(eventId, userId, status, show_name, event_key) {
   //Create or update an invite
   const key = crypto.randomBytes(16).toString("hex");
   const res = await server.app.db.maybeOne(
-    sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name) values (${userId}, ${eventId}, ${key}, ${status}, ${show_name}) ON CONFLICT (user_id, event_id) DO UPDATE set status = ${status}, show_name = ${show_name} returning *`
+    sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name, response_source) values (${userId}, ${eventId}, ${key}, ${status}, ${show_name}, ${source}) ON CONFLICT (user_id, event_id) DO UPDATE set status = ${status}, show_name = ${show_name}, response_source = ${source} returning *`
   );
 
   server.createTask("user-did-rsvp", {
