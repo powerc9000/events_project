@@ -53,8 +53,6 @@ module.exports = (hapiServer) => async (job) => {
           data.validation.phone,
           `Validate your phone on Juniper City ${link}`
         );
-
-        console.log(res);
       }
     }
 

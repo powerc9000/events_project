@@ -130,6 +130,28 @@ module.exports = (hapiServer) => async (job) => {
       }
     }
 
+    if (type === "event-invite-email-was-replied-to") {
+      if (data.user.email) {
+        try {
+          const res = await client.sendEmail({
+            To: data.user.email,
+            From: `"Juniper Branch" <branch@junipercity.com>`,
+            ReplyTo: data.from,
+            Subject: `${data.from} replied to your invite to ${data.event.name} on Juniper City`,
+            HtmlBody: data.content
+          });
+
+          server.log(["taskWorker", "email-task-worker", "info"], {
+            sendEmailResponse: res
+          });
+        } catch (e) {
+          server.log(["taskWorker", "email-task-worker", "error"], {
+            sendEmailError: e
+          });
+        }
+      }
+    }
+
     if (type === "user-added-to-group") {
       if (data.user.email) {
         sendEmail("user_added_to_group.njk", {
@@ -238,6 +260,7 @@ async function sendInviteEmail(templateName, payload) {
     const res = await client.sendEmail({
       To: payload.to,
       From: `"Juniper Branch" <branch@junipercity.com>`,
+      ReplyTo: `invite_reply+${data.event.email_hash_id}@${process.env.INBOUND_EMAIL_DOMAIN}`,
       Subject: subject,
       HtmlBody: html,
       attachments: [
