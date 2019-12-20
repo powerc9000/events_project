@@ -24,6 +24,3 @@ services:
       dockerfile: postgres.dockerfile
   redis:
     image: redis
-
-
-

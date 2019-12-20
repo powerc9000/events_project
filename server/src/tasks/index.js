@@ -59,17 +59,23 @@ module.exports = {
         }
       }
     );
+    const repeatOpts = {
+      jobId: "upcoming-event-digest",
+      repeat: {
+        every: 60 * 1000 * 60 //Hour
+      }
+    };
+    if (process.env.NODE_ENV !== "production") {
+      notificationsQueue.removeRepeatable(repeatOpts);
+
+      repeatOpts.repeat.every = 1000 * 30;
+    }
 
     notificationsQueue.add(
       {
         type: "upcoming-event-digest"
       },
-      {
-        jobId: "upcoming-event-digest",
-        repeact: {
-          every: 60 * 1000 * 60 //Hour
-        }
-      }
+      repeatOpts
     );
 
     server.decorate("server", "createTask", function(type, data) {
