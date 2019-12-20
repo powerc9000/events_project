@@ -32,13 +32,11 @@ module.exports = (server) => async (job) => {
       }
     }
 
-    if (type === "upcoming-event-digest") {
+    if (type === "check-event-digest") {
       const users = await server.getService("events").getUpcomingEventsDigest();
-      console.log(users);
       users.forEach((user) => {
-        console.log(user);
         if (user.events) {
-          server.createTask("upcoming-events", {
+          server.createTask("upcoming-events-digest", {
             user,
             events: user.events
           });
