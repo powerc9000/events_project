@@ -2,6 +2,7 @@ module.exports = (server) => async (job) => {
   try {
     const type = job.data.type;
     const data = job.data.taskData;
+    console.log("notification queue");
 
     if (job.data.type === "check-comments") {
       const users = await server.getService("events").getEventsCommentDigest();
@@ -33,8 +34,9 @@ module.exports = (server) => async (job) => {
 
     if (type === "upcoming-event-digest") {
       const users = await server.getService("events").getUpcomingEventsDigest();
-
+      console.log(users);
       users.forEach((user) => {
+        console.log(user);
         if (user.events) {
           server.createTask("upcoming-events", {
             user,

@@ -649,24 +649,26 @@ function getEventByEmailHash(hash) {
 }
 
 async function getUpcomingEventsDigest() {
-  const users = await db.query(sql`
+  const users = await server.app.db.any(sql`
 	with ready_digests as (
-	update digests set last_sent = now() where coalesce(last_sent, to_timestamp(0)) < now() - interval '1 day' and greatest(send_time, current_time)::time - least(send_time, current_time)::time >= interval '1 hour' and digest_type = 'upcoming_events' returning *
+	update digests set last_sent = now() where coalesce(last_sent, to_timestamp(0)) < now() - interval '1 day' and greatest(send_time, current_time)::time - least(send_time, current_time)::time <= interval '1 hour' and digest_type = 'upcoming_events' returning *
 	)
+	select * from (
 	select u.*, (
 		select json_agg(e) from (
-			select ev.*, i.invite_key, i.status from events ev 
-			inner join invites i on i.event_id = ev.id
-			where (i.user_id = u.id or ev.creator = u.id or u.id in (select user_id from group_members gm where gm.group_id = ev.group_id)) and ev.date >= now() and ev.date - interval '1 day' <= now()
+			select ev.*, row_to_json(i) as invite from events ev 
+			left join invites i on i.event_id = ev.id
+			where (i.user_id = u.id or ev.creator = u.id or u.id in (select user_id from group_members gm where gm.group_id = ev.group_id)) and ev.date >= now() and ev.date - now() <= interval '1 day'
 		) e
 	) as events
-	from users u where u.id in (select ready_digests.user_id from ready_digests)
+	from users u where u.id in (select ready_digests.user_id from ready_digests) ) f  where f.events is not null
 	`);
+
+  return users;
 }
 
 function init(hapiServer) {
   server = hapiServer;
-  db = server.app.db;
   //set up database
   //
 }
