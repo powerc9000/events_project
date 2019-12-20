@@ -73,7 +73,7 @@ module.exports = {
 
     notificationsQueue.add(
       {
-        type: "upcoming-event-digest"
+        type: "check-event-digest"
       },
       repeatOpts
     );

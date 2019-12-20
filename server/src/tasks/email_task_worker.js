@@ -168,6 +168,19 @@ module.exports = (hapiServer) => async (job) => {
       }
     }
 
+    if (type === "upcoming-events-digest") {
+      if (data.user.email) {
+        sendEmail("upcoming_events_digest.njk", {
+          to: data.user.email,
+          subject: `Your upcoming events`,
+          data: {
+            user: data.user,
+            events: data.events
+          }
+        });
+      }
+    }
+
     server.log(["taskWorker", "send-email-task-worker"], {
       status: "complete"
     });
