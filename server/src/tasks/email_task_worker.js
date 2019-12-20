@@ -14,6 +14,7 @@ module.exports = (hapiServer) => async (job) => {
     const type = job.data.type;
     const data = job.data.taskData;
     server.log(["taskWorker", "email_task_worker", "start"], {
+      jobId: job.id,
       status: "started"
     });
     if (type === "invite-user-to-event") {
@@ -182,10 +183,12 @@ module.exports = (hapiServer) => async (job) => {
     }
 
     server.log(["taskWorker", "send-email-task-worker"], {
+      jobId: job.id,
       status: "complete"
     });
   } catch (e) {
     server.log(["taskWorker", "taskWorkerError"], {
+      jobId: job.id,
       status: "fail",
       error: e
     });

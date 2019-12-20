@@ -29,7 +29,6 @@ module.exports = {
     const smsQueue = new Queue("sms", {
       redis: redisConnection
     });
-
     const inboundEmailQueue = new Queue("inbound-email", {
       redis: redisConnection
     });
@@ -48,6 +47,12 @@ module.exports = {
     queues.push(inboundEmailQueue);
     queues.push(notificationsQueue);
 
+    if (process.env.NODE_ENV !== "production") {
+      const jobs = await notificationsQueue.getRepeatableJobs();
+      jobs.forEach((job) => {
+        notificationsQueue.removeRepeatableByKey(job.key);
+      });
+    }
     notificationsQueue.add(
       {
         type: "check-comments"
@@ -59,17 +64,14 @@ module.exports = {
         }
       }
     );
+    const repeat =
+      process.env.NODE_ENV !== "production" ? 1000 * 30 : 60 * 60 * 1000;
     const repeatOpts = {
       jobId: "upcoming-event-digest",
       repeat: {
-        every: 60 * 1000 * 60 //Hour
+        every: repeat //Hour
       }
     };
-    if (process.env.NODE_ENV !== "production") {
-      notificationsQueue.removeRepeatable(repeatOpts);
-
-      repeatOpts.repeat.every = 1000 * 30;
-    }
 
     notificationsQueue.add(
       {
