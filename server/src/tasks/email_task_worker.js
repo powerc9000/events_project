@@ -4,10 +4,22 @@ const mjml = require("mjml");
 const path = require("path");
 const postmark = require("postmark");
 const client = new postmark.Client(process.env.POSTMARK_API_KEY);
-const nunjucks = require("nunjucks");
+const nj = require("nunjucks");
+const nunjucks = new nj.Environment();
+
 const fns = require("date-fns");
+const fnsz = require("date-fns-tz");
 const { sanitize, createIcsFileBuilder } = require("../utils");
 let server;
+
+nunjucks.addFilter("date", (date, tz) => {
+  let zone = "Etc/GMT";
+  if (tz) {
+    zone = tz;
+  }
+  const zoned = fnsz.utcToZonedTime(fns.parseISO(date), tz);
+  return fnsz.format(zoned, "PPpp z", { timeZone: tz });
+});
 module.exports = (hapiServer) => async (job) => {
   try {
     server = hapiServer;

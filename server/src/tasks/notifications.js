@@ -2,8 +2,6 @@ module.exports = (server) => async (job) => {
   try {
     const type = job.data.type;
     const data = job.data.taskData;
-    console.log("notification queue", type);
-
     if (job.data.type === "check-comments") {
       const users = await server.getService("events").getEventsCommentDigest();
 
