@@ -37,7 +37,7 @@ async function start() {
     const options = {
       depth: null
     };
-
+    console.log(process.env.NODE_ENV);
     if (tags.serverError && process.env.NODE_ENV === "production") {
       fetch(`${process.env.BASECAMP_LOG_CHAT}.json`, {
         method: "POST",
