@@ -125,26 +125,28 @@ module.exports = {
           if (err.output.payload.statusCode === 404) {
             return h.view("404").code(404);
           } else {
-            const data = {
-              statusCode: req.response.output.statusCode,
-              message: req.response.message,
-              error: req.response
-            };
-            fetch(`${process.env.BASECAMP_LOG_CHAT}.json`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                content: `
+            if (process.env.NODE_ENV === "production") {
+              const data = {
+                statusCode: req.response.output.statusCode,
+                message: req.response.message,
+                error: req.response
+              };
+              fetch(`${process.env.BASECAMP_LOG_CHAT}.json`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                  content: `
 						<details><summary>500 Error 🚨</summary><pre>${JSON.stringify(
               data,
               null,
               2
             )}</pre></details>
 						`
-              })
-            });
+                })
+              });
+            }
 
             return h.view("500").code(500);
           }
@@ -309,7 +311,7 @@ module.exports = {
         method: "GET",
         path: "/500",
         handler: () => {
-          return Boom.internal();
+          return Boom.internal("Trigger default 500");
         }
       });
       server.route({
