@@ -1,38 +1,42 @@
 <mjml>
-   <mj-head>
-    <mj-attributes>
-      <mj-all font-family="monospace" />
-      <mj-section background-color="white" full-width="full-width"/>
-    </mj-attributes>
-  </mj-head>
-  <mj-body background-color="#F0F0F0">
-    <mj-section background-color="#F0F0F0">
-      <mj-column>
-        <mj-spacer height="20px"/>
-      </mj-column>
-    </mj-section>
-    
-    <mj-section full-width="full-width"  padding-top="50px">
-      <mj-column>
-        <mj-image src="https://junipercity.com/static/img/logo_small.png" alt="Juniper City" width="200px"></mj-image>
-      </mj-column>
-      
-    </mj-section>
-    <mj-section >
+<mj-head>
+	<mj-attributes>
+		<mj-all font-family="monospace" />
+			<mj-section background-color="white" full-width="full-width"/>
+	</mj-attributes>
+</mj-head>
+<mj-body background-color="#F0F0F0">
+	<mj-section background-color="#F0F0F0">
+		<mj-column>
+			<mj-spacer height="20px"/>
+		</mj-column>
+	</mj-section>
+
+	<mj-section full-width="full-width"  padding-top="50px">
+		<mj-column>
+			<mj-image src="https://junipercity.com/static/img/logo_small.png" alt="Juniper City" width="200px"></mj-image>
+		</mj-column>
+
+	</mj-section>
+	<mj-section >
+		<mj-column>
+			<mj-text>Your upcoming events.</mj-text>
+		</mj-column>
+	</mj-section>
+	{% for event in events %}
+		<mj-section {{'border-bottom="1px gray solid"' if not loop.last}}>
 			<mj-column>
-				<mj-text>Your upcoming events.</mj-text>
-      </mj-column>
-    </mj-section>
-    {% for event in events %}
-			<mj-section {{'border-bottom="1px gray solid"' if not loop.last}}>
-			<mj-column>
-        <mj-text font-size="16px" font-weight="bold">
-          
-          <a href="https://junipercity.com/events/{{event.slug}}{{"?invite_key=" if event.invite}}{{event.invite.invite_key if event.invite}}">{{event.name}}</a></mj-text>
-        <mj-text>{{event.date | date(user.settings.timezone)}}</mj-text>
-        <mj-text>{{event.description | safe}}</mj-text>
-      </mj-column>
-    </mj-section>
-    {%endfor%}
-  </mj-body>
+				<mj-text font-size="16px" font-weight="bold">
+					{%-set invite_key-%}
+					{%-if event.invite-%}
+						?invite_key={{event.invite.invite_key}}
+					{%-endif-%}
+					{%-endset-%}	
+					<a href="https://junipercity.com/events/{{event.slug}}{{invite_key}}">{{event.name}}</a></mj-text>
+				<mj-text>{{event.date | date(user.settings.timezone)}}</mj-text>
+				<mj-text>{{event.description | safe}}</mj-text>
+			</mj-column>
+		</mj-section>
+	{%endfor%}
+</mj-body>
 </mjml>
