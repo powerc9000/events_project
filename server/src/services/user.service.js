@@ -35,19 +35,16 @@ async function generateLoginToken(userId) {
     }
   };
 
-  //Check first login
-  const check = await server.app.db.maybeOne(
+  const count = await server.app.db.maybeOne(
     sql`select count(*) from logins where user_id = ${userId}`
   );
-
-  if (check.count === 1) {
-    const user = await server.app.db.maybeOne(
-      sql`select * from users where id=${userId}`
-    );
-    server.createTask("user-first-login", {
-      user
-    });
-  }
+  const user = await server.app.db.maybeOne(
+    sql`select * from users where id=${userId}`
+  );
+  server.createTask("user-did-login", {
+    user,
+    count: count.count
+  });
   return result;
 }
 

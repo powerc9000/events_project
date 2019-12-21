@@ -41,6 +41,14 @@ module.exports = (server) => async (job) => {
         }
       });
     }
+    if (type === "user-did-login") {
+      console.log(data, type);
+      if (data.count === 1) {
+        server.createTask("user-first-login", {
+          user: data.user
+        });
+      }
+    }
   } catch (e) {
     console.log(e);
   }

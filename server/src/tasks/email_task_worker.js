@@ -193,6 +193,18 @@ module.exports = (hapiServer) => async (job) => {
         });
       }
     }
+    if (type === "user-first-login") {
+      console.log("first login");
+      if (data.user.email) {
+        sendEmail("welcome_user.njk", {
+          to: data.user.email,
+          subject: "Welcome to Juniper City!",
+          data: {
+            user: data.user
+          }
+        });
+      }
+    }
 
     server.log(["taskWorker", "send-email-task-worker"], {
       jobId: job.id,
