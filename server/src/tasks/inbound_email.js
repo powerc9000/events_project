@@ -82,11 +82,15 @@ async function inviteResponse(data) {
 async function replyToInvite(data) {
   const eventService = server.getService("events");
   const userService = server.getService("user");
-  const event = await eventService.getEventByEmailHash(data.MailboxHash);
+  const invite = await eventService.getInvite(data.MailboxHash);
+  if (!invite) {
+    return;
+  }
+  const event = await eventService.getEventById(invite.event_id);
   if (!event) {
     return;
   }
-  const user = await userService.findById(event.creator);
+  const user = await userService.findById(invite.user_id);
   if (!user) {
     return;
   }

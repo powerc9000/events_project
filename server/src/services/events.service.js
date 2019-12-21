@@ -445,7 +445,7 @@ async function rsvpToEvent({
   userId,
   status,
   response,
-  show_name = false,
+  show_name,
   event_key = null,
   source = "web",
   quiet = false
@@ -472,9 +472,10 @@ async function rsvpToEvent({
   //Create or update an invite
   let res;
   if (!invite) {
+    const doShowName = !!show_name;
     const key = crypto.randomBytes(16).toString("hex");
     res = await server.app.db.maybeOne(
-      sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name, response_source, response) values (${userId}, ${eventId}, ${key}, ${status}, ${show_name}, ${source}, ${response}) returning *`
+      sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name, response_source, response) values (${userId}, ${eventId}, ${key}, ${status}, ${doShowName}, ${source}, ${response}) returning *`
     );
   } else {
     const validFields = {
@@ -489,6 +490,8 @@ async function rsvpToEvent({
         sets.push(sql`${sql.identifier([field])}=${value}`);
       }
     });
+    console.log(validFields);
+    console.log(sets);
     res = await server.app.db.maybeOne(
       sql`UPDATE invites set ${sql.join(sets, sql`, `)} where id=${
         invite.id
