@@ -1,14 +1,8 @@
-{%extends "layout.njk"%} 
+{%extends "event_detail_content.njk"%} 
 {% from "partials/icons.njk" import icon %}
 {%import "partials/form_messages.njk" as form_messages%} 
-{% from "partials/event_detail/topnav.njk" import event_nav%}
 {% from "partials/event_detail/invite_to_event.njk" import invite_form%}
-{%block content %}
-	<div class="container mx-auto content" data-controller="event-detail" data-event-detail-event-id="{{event.id}}">
-		{%set discussion = event.allow_comments and user%}
-		{%include "partials/event_detail/top_part.njk"%}
-
-		{{event_nav(path, comments.length, "base", allowDiscussion=discussion, canEdit=canEdit)}}
+{%block tabContent%}
 		{%if not user and canRSVP%}
 			<div class="bg-blue-100 p-1 border-l-4 border-blue-400 my-2 pl-4">
 				<p>You are not logged in. You can still RSVP but other features are limited.</p>
@@ -252,5 +246,4 @@
 				{%endfor%}
 			</div>
 		</div>
-	</div>
 {%endblock%}

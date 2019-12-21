@@ -2,7 +2,7 @@ let server;
 const _ = require("lodash");
 const joi = require("@hapi/joi");
 const Boom = require("@hapi/boom");
-const { sanitize, createIcsFileBuilder, eventsToICS } = require("../../utils");
+const { sanitize, createIcsFileBuilder, eventsToICS } = require("../utils");
 
 function init(hapiServer) {
   server = hapiServer;
@@ -46,6 +46,12 @@ function init(hapiServer) {
     method: "GET",
     path: "/events/{slug}/discussion",
     handler: eventDisussion
+  });
+
+  server.route({
+    method: "GET",
+    path: "/events/{slug}/responses",
+    handler: viewEventResponses
   });
 }
 
@@ -149,7 +155,7 @@ async function eventDetail(req, h) {
         )
         .header("Content-Type", "text/calendar");
     }
-    return h.view("event_detail.njk", data);
+    return h.view("event_detail.njk", { ...data, activeTab: "base" });
   } catch (e) {
     server.log(["error"], e);
 
@@ -246,6 +252,24 @@ async function manageEvent(req, h) {
   }
 
   return h.view("manage_event", data);
+}
+
+async function viewEventResponses(req, h) {
+  const [err, data] = await commonEventData(
+    req.userId(),
+    req.params.slug,
+    null
+  );
+
+  if (err) {
+    return err;
+  }
+  //Only creator can view responses
+  if (!data.isCreator) {
+    return Boom.notFound();
+  }
+
+  return h.view("event_responses", { ...data, activeTab: "responses" });
 }
 
 module.exports = {

@@ -7,7 +7,7 @@
 		{%set discussion = event.allow_comments and user%}
 		{%include "partials/event_detail/top_part.njk"%}
 		
-		{{event_nav(path, comments.length, "manage", allowDiscussion=discussion, canEdit=canEdit)}}
+		{{event_nav(path, comments.length, "manage", allowDiscussion=discussion, canEdit=canEdit, isCreator=isCreator)}}
 
 		<div class="mt-8">
 			<div class="mt-4">
