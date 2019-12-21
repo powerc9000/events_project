@@ -14,10 +14,10 @@ fi
 BASEDIR="."
 
 function add-version() {
-  psql $PSQL_OPTS -c "insert into migrations (version) values ('$1')" $DB_NAME
+  psql --set=sslmode=require $PSQL_OPTS -c "insert into migrations (version) values ('$1')" $DB_NAME
 }
 
-current_version=$(psql $PSQL_OPTS -XAtc "select version from migrations order by version DESC limit 1" $DB_NAME)
+current_version=$(psql --set=sslmode=require $PSQL_OPTS -XAtc "select version from migrations order by version DESC limit 1" $DB_NAME)
 
 
 for f in $(ls -1 $BASEDIR/migrations/*.sql | sort); do
