@@ -290,7 +290,7 @@ async function sendInviteEmail(templateName, payload) {
     const res = await client.sendEmail({
       To: payload.to,
       From: `"Juniper Branch" <branch@junipercity.com>`,
-      ReplyTo: `invite_reply+${data.event.email_hash_id}@${process.env.INBOUND_EMAIL_DOMAIN}`,
+      ReplyTo: `invite_reply+${data.invite.id}@${process.env.INBOUND_EMAIL_DOMAIN}`,
       Subject: subject,
       HtmlBody: html,
       attachments: [
