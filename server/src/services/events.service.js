@@ -440,14 +440,16 @@ async function updateInviteRSVP(inviteId, status) {
   })();
 }
 
-async function rsvpToEvent(
+async function rsvpToEvent({
   eventId,
   userId,
   status,
-  show_name,
-  event_key,
-  source = "web"
-) {
+  response,
+  show_name = false,
+  event_key = null,
+  source = "web",
+  quiet = false
+}) {
   const event = await server.app.db.maybeOne(
     sql`select * from events where id=${eventId}`
   );
@@ -467,19 +469,40 @@ async function rsvpToEvent(
   if (!invite && event.is_private && notCreator && wrongKey && notInGroup) {
     return;
   }
-
   //Create or update an invite
-  const key = crypto.randomBytes(16).toString("hex");
-  const res = await server.app.db.maybeOne(
-    sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name, response_source) values (${userId}, ${eventId}, ${key}, ${status}, ${show_name}, ${source}) ON CONFLICT (user_id, event_id) DO UPDATE set status = ${status}, show_name = ${show_name}, response_source = ${source} returning *`
-  );
-
-  server.createTask("user-did-rsvp", {
-    event,
-    creator: await server.getService("user").findById(event.creator),
-    user: await server.getService("user").findById(userId),
-    invite: res
-  });
+  let res;
+  if (!invite) {
+    const key = crypto.randomBytes(16).toString("hex");
+    res = await server.app.db.maybeOne(
+      sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name, response_source, response) values (${userId}, ${eventId}, ${key}, ${status}, ${show_name}, ${source}, ${response}) returning *`
+    );
+  } else {
+    const validFields = {
+      status: status,
+      show_name: show_name,
+      response_source: source,
+      response: response
+    };
+    const sets = [];
+    Object.entries(validFields).forEach(([field, value]) => {
+      if (!_.isUndefined(value)) {
+        sets.push(sql`${sql.identifier([field])}=${value}`);
+      }
+    });
+    res = await server.app.db.maybeOne(
+      sql`UPDATE invites set ${sql.join(sets, sql`, `)} where id=${
+        invite.id
+      } returning *`
+    );
+  }
+  if (!quiet) {
+    server.createTask("user-did-rsvp", {
+      event,
+      creator: await server.getService("user").findById(event.creator),
+      user: await server.getService("user").findById(userId),
+      invite: res
+    });
+  }
 }
 
 async function canUserEditEvent(user, event) {

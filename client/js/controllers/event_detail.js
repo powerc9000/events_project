@@ -44,6 +44,7 @@ export default class extends ApplicationController {
     const rsvp = form.rsvp.value;
     const hide_name = form.show_name.checked;
     const eventId = form.eventId.value;
+    const response_message = form.response.value;
 
     if (!rsvp) {
       return;
@@ -69,6 +70,10 @@ export default class extends ApplicationController {
       } else {
         payload.email_or_phone = emailOrPhoneEl.value;
       }
+    }
+
+    if (response_message) {
+      payload.response = response_message;
     }
 
     await this.api.Post(`/api/events/${eventId}/rsvp`, payload);

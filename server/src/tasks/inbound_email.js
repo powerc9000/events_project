@@ -69,14 +69,12 @@ async function inviteResponse(data) {
         return;
       }
 
-      await eventsService.rsvpToEvent(
-        eventId,
-        userId,
-        statusMap[status] || "maybe",
-        false,
-        null,
-        "email"
-      );
+      await eventsService.rsvpToEvent({
+        eventId: eventId,
+        userId: userId,
+        status: statusMap[status] || "maybe",
+        source: "email"
+      });
     }
   }
 }
@@ -92,7 +90,12 @@ async function replyToInvite(data) {
   if (!user) {
     return;
   }
-
+  eventService.rsvpToEvent({
+    eventId: event.id,
+    userId: user.id,
+    response: data.StrippedTextReply,
+    quiet: true
+  });
   server.createTask("event-invite-email-was-replied-to", {
     event,
     user,

@@ -63,7 +63,7 @@
 						<form
 							data-target="event-detail.rsvpForm"
 							class="mt-2 border border-gray-200 bg-gray-100 p-2 {{'hidden' if invite.status and invite.status !== 'invited'}}"
-							data-action="change->event-detail#rsvp reset->event-detail#toggleRSVP"
+							data-action="submit->event-detail#rsvp reset->event-detail#toggleRSVP"
 							autocomplete="off"
 							>
 							<h4 class="text-lg font-bold">{{icon("mail-read", "mr-2")}}RSVP</h4>
@@ -120,6 +120,14 @@
 										</label>
 								</fieldset>
 							</div>
+							<div class="mt-3">
+								<label for="rsvp-response-field">
+									Add Message to your RSVP <span class="text-xs">(optional)</span>
+								</label>
+								<div>
+									<textarea class="input w-full resize-none" placeholder="Message" name="response">{{invite.response if invite.response}}</textarea>
+								</div>
+							</div>
 							<div class="mt-1">
 								{%set responded = invite and invite.status !== 'invited'%}
 								<label class="cursor-pointer">
@@ -135,7 +143,8 @@
 								>
 								</p>
 							</div>
-							<div>
+							<div class="mt-2">
+								<button type="submit" class="btn btn-green">Save RSVP</button>
 								<button
 									type="reset"
 									class="btn btn-white {{'hidden' if not invite.status or invite.status === 'invited' }}"
