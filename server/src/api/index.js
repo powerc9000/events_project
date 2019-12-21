@@ -628,13 +628,14 @@ async function rsvpToEvent(req, h) {
     server.getService("user").setName(user.id, req.payload.name);
   }
 
-  await events.rsvpToEvent(
-    req.params.id,
-    user.id,
-    req.payload.status,
-    req.payload.show_name,
-    req.payload.event_key
-  );
+  await events.rsvpToEvent({
+    eventId: req.params.id,
+    userId: user.id,
+    status: req.payload.status,
+    response: req.payload.response,
+    show_name: req.payload.show_name,
+    event_key: req.payload.event_key
+  });
 
   return h.response().code(204);
 }

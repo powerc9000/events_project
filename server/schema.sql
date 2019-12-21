@@ -166,7 +166,9 @@ CREATE TABLE public.invites (
     show_name boolean DEFAULT false,
     created timestamp with time zone DEFAULT now(),
     updated timestamp with time zone DEFAULT now(),
-    response_source text
+    response_source text,
+    response text,
+    message text
 );
 
 

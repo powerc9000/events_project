@@ -145,23 +145,13 @@ module.exports = (hapiServer) => async (job) => {
 
     if (type === "event-invite-email-was-replied-to") {
       if (data.user.email) {
-        try {
-          const res = await client.sendEmail({
-            To: data.user.email,
-            From: `"Juniper Branch" <branch@junipercity.com>`,
-            ReplyTo: data.from,
-            Subject: `${data.from} replied to your invite to ${data.event.name} on Juniper City`,
-            HtmlBody: data.content
-          });
-
-          server.log(["taskWorker", "email-task-worker", "info"], {
-            sendEmailResponse: res
-          });
-        } catch (e) {
-          server.log(["taskWorker", "email-task-worker", "error"], {
-            sendEmailError: e
-          });
-        }
+        const res = await client.sendEmail({
+          To: data.user.email,
+          From: `"Juniper Branch" <branch@junipercity.com>`,
+          ReplyTo: data.from,
+          Subject: `${data.from} replied to your invite to ${data.event.name} on Juniper City`,
+          HtmlBody: data.content
+        });
       }
     }
 

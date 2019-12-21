@@ -29,7 +29,15 @@
         <mj-text font-style="italic">Email: {{user.email}}</mj-text>
         <mj-text font-style="italic">Phone: {{user.phone}}</mj-text>
       </mj-column>
+		</mj-section>
+		{% if invite.response %}
+    <mj-section>
+			<mj-column>
+				<mj-text font-size="16px">With the Message:</mj-text>
+				<mj-text>{{invite.response}}</mj-text>
+      </mj-column>
     </mj-section>
+			{%endif%}
     <mj-section>
       <mj-column>
         <mj-button padding="2px 2px" color="black" href="https://junipercity.com/events/{{event.slug}}" border-radius="4px" background-color="#9AE6B4" inner-padding="5px">
