@@ -106,9 +106,9 @@ async function findEvents(constraints) {
         sql`(e.group_id = ${
           constraints.group
         } AND (EXISTS (select * from groups where is_private = FALSE and id=${
-          contraints.group
+          constraints.group
         } OR ${constraints.user ||
-          ""} IN (select * from group_members where group_id = ${
+          ""} IN (select user_id from group_members where group_id = ${
           constraints.group
         }))))`
       );
