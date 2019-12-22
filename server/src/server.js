@@ -37,7 +37,6 @@ async function start() {
     const options = {
       depth: null
     };
-    console.log(process.env.NODE_ENV);
     if (tags.serverError && process.env.NODE_ENV === "production") {
       fetch(`${process.env.BASECAMP_LOG_CHAT}.json`, {
         method: "POST",
@@ -54,18 +53,6 @@ async function start() {
 						`
         })
       });
-    }
-  });
-
-  server.events.on("request", (event, tags) => {
-    // if we ever need to log deep objects, see https://stackoverflow.com/questions/10729276/how-can-i-get-the-full-object-in-node-jss-console-log-rather-than-object
-
-    if (tags.error) {
-      console.log(tags);
-    } else {
-      // For `request`, the `event` contains mostly information about the
-      // the request, which is not very interesting if we just `request.log` something.
-      console.log(tags);
     }
   });
 
@@ -131,7 +118,7 @@ async function start() {
     plugin: require("hapi-pino"),
     options: {
       ignorePaths: ["/static/*"],
-      prettyPrint: process.env.NODE_ENV !== "production",
+      prettyPrint: false,
       // Redact Authorization headers, see https://getpino.io/#/docs/redaction
       redact: ["req.headers.authorization"]
     }

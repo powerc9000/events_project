@@ -40,7 +40,11 @@ module.exports = {
         ejs,
         njk: {
           compile: (src, options) => {
-            const template = Nunjucks.compile(src, options.environment);
+            const template = Nunjucks.compile(
+              src,
+              options.environment,
+              options.filename
+            );
 
             return (context) => {
               return template.render(context);

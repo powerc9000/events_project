@@ -1,4 +1,9 @@
 module.exports = (server) => async (job) => {
+  server.log(["taskWorker", "notifications"], {
+    type: job.data.type,
+    status: "started",
+    jobId: job.id
+  });
   try {
     const type = job.data.type;
     const data = job.data.taskData;
@@ -49,7 +54,18 @@ module.exports = (server) => async (job) => {
         });
       }
     }
+    server.log(["taskWorker", "notifications"], {
+      type: job.data.type,
+      status: "complete",
+      jobId: job.id
+    });
   } catch (e) {
+    server.log(["taskWorker", "notifications", "error"], {
+      type: job.data.type,
+      status: "failed",
+      error: e,
+      jobId: job.id
+    });
     console.log(e);
   }
 };
