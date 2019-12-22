@@ -531,7 +531,14 @@ async function userGroups(req, h) {
   const groups = await server
     .getService("groups")
     .getGroupsForUser(req.app.user.id);
-  return h.view("groups.njk", { groups });
+  return h.view("groups.njk", {
+    groups: groups.map((group) => {
+      return {
+        ...group,
+        description: sanitize(group.description)
+      };
+    })
+  });
 }
 
 async function loginWithOTP(req, h) {
