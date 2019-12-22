@@ -1,13 +1,12 @@
 {% extends "layout.njk" %}
+{% from "./partials/icons.njk" import icon %}
 {%block content%}
 	<div class="container mx-auto content max-w-3xl">
 		<div class="sm:flex">
 			<div class="mt-4 sm:w-2/3">
-				<div class="items-center mb-4">
+				<div class="items-center mb-4 flex">
 					<h2 class="text-2xl font-bold">Upcoming events</h2>
-					{%if flags.manageEvents%}
-						<a href="/my-events" class="text-blue-700 hover:underline sm:text-xs ml-auto mr-4 text-xl"><i class="fas fa-sliders-h"></i> Manage Events</a>
-					{%endif%}
+					<a href="/events" class="text-blue-700 text-sm hover:underline ml-auto mr-4">{{icon("search", "mr-2")}}Find Events</a>
 				</div>
 				{{eventsList(events)}}
 			</div>

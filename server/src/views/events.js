@@ -38,6 +38,12 @@ function init(hapiServer) {
 
   server.route({
     method: "GET",
+    path: "/events",
+    handler: filterEvents
+  });
+
+  server.route({
+    method: "GET",
     path: "/events/{slug}/edit",
     handler: editEvent
   });
@@ -54,6 +60,8 @@ function init(hapiServer) {
     handler: viewEventResponses
   });
 }
+
+async function filterEvents(req, h) {}
 
 async function createEvent(req, h) {
   if (!req.loggedIn()) {
