@@ -118,7 +118,7 @@ async function start() {
     plugin: require("hapi-pino"),
     options: {
       ignorePaths: ["/static/*"],
-      prettyPrint: false,
+      prettyPrint: process.env.NODE_ENV !== "production",
       // Redact Authorization headers, see https://getpino.io/#/docs/redaction
       redact: ["req.headers.authorization"]
     }

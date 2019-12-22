@@ -63,15 +63,18 @@ function init(hapiServer) {
 
 async function filterEvents(req, h) {
   const filters = req.query;
-  const events = await server.getService("events").findEvents({
-    user: req.userId(),
-    maxAge: filters.maxage || "2 months",
-    maxUntil: filters.maxuntil || "2 months",
-    group: filters.group,
-    creator: filters.creator
-  });
-  console.log(events);
-  return h.view("events", { events: events.events });
+  try {
+    const events = await server.getService("events").findEvents({
+      user: req.userId(),
+      maxAge: filters.maxage || "2 months",
+      maxUntil: filters.maxuntil || "2 months",
+      group: filters.group,
+      creator: filters.creator
+    });
+    return h.view("events", { events: events.events });
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 async function createEvent(req, h) {
