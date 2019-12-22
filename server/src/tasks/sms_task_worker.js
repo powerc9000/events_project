@@ -32,9 +32,13 @@ module.exports = (hapiServer) => async (job) => {
             .create(data.link);
 
           const link = `https://junipercity.com/s/${shortlink.key}`;
+          let message = "";
+          if (data.invite.message) {
+            message = `\n\n${data.invite.message}`;
+          }
           const res = await sendText(
             user.phone,
-            `You have been invited to an event on Juniper City: ${link}`
+            `You have been invited to an event on Juniper City: ${link}${message}`
           );
           console.log(res);
         } catch (e) {

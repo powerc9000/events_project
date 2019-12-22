@@ -211,14 +211,15 @@ async function inviteUsersToEvent(eventId, users) {
     }
     for (const inviteData of users) {
       const phone = inviteData.phone ? normalizePhone(inviteData.phone) : null;
+      const email = inviteData.email || null;
       let user = await server.app.db.maybeOne(
-        sql`select * from users where email=${inviteData.email} or phone=${phone}`
+        sql`select * from users where email=${email} or phone=${phone}`
       );
 
       if (!user) {
         user = await server.app.db.maybeOne(
           sql`insert into users (name, email, phone) VALUES (${inviteData.name ||
-            ""}, ${inviteData.email}, ${phone}) returning *`
+            ""}, ${email}, ${phone}) returning *`
         );
       }
       const key = crypto.randomBytes(16).toString("hex");
