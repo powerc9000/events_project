@@ -100,10 +100,22 @@ async function findEvents(constraints) {
           sql` OR `
         )})`
       );
-    } else {
-      where.push(sql`is_private = false`);
     }
-
+    if (constraints.group) {
+      where.push(
+        sql`(e.group_id = ${
+          constraints.group
+        } AND (EXISTS (select * from groups where is_private = FALSE and id=${
+          contraints.group
+        } OR ${constraints.user ||
+          ""} IN (select * from group_members where group_id = ${
+          constraints.group
+        }))))`
+      );
+    }
+    if (constraints.creator && contraints.user) {
+      where.push(`e.creator = ${constraints.user}`);
+    }
     if (constraints.maxAge) {
       where.push(sql`date > now() - ${constraints.maxAge}::interval`);
     }
@@ -149,7 +161,7 @@ async function findEvents(constraints) {
     }
   });
 
-  return { upcoming, past };
+  return { upcoming, past, events: events.rows };
 }
 
 async function getGroupEventsForUser(groupId, userId) {

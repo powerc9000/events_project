@@ -1,0 +1,5 @@
+{%extends "./layout.njk"%}
+{%from "./homepage.njk" import eventsList %}
+{%block content %}
+	{{eventsList(events)}}
+{%endblock%}

@@ -61,7 +61,18 @@ function init(hapiServer) {
   });
 }
 
-async function filterEvents(req, h) {}
+async function filterEvents(req, h) {
+  const filters = req.query;
+  const events = await server.getService("events").findEvents({
+    user: req.userId(),
+    maxAge: filters.maxage || "2 months",
+    maxUntil: filters.maxuntil || "2 months",
+    group: filters.group,
+    creator: filters.creator
+  });
+  console.log(events);
+  return h.view("events", { events: events.events });
+}
 
 async function createEvent(req, h) {
   if (!req.loggedIn()) {
