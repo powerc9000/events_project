@@ -15,7 +15,7 @@
 								class="hover:underline text-blue-700"
 								href="/groups/{{group.custom_path if group.custom_path else group.id}}"
 								>{{group.name}}<a>
-								<p class="mt-1 ml-6">{{group.description}}</p>
+								<p class="mt-1 ml-6">{{group.description | safe}}</p>
 						</li>
 					{%endfor%}
 				</ul>
