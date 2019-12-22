@@ -113,8 +113,8 @@ async function findEvents(constraints) {
         }))))`
       );
     }
-    if (constraints.creator && contraints.user) {
-      where.push(`e.creator = ${constraints.user}`);
+    if (constraints.creator && constraints.user) {
+      where.push(sql`e.creator = ${constraints.user}`);
     }
     if (constraints.maxAge) {
       where.push(sql`date > now() - ${constraints.maxAge}::interval`);
@@ -129,6 +129,8 @@ async function findEvents(constraints) {
       where.push(sql`date > now()`);
     }
   }
+
+  console.log(where);
   const query = sql`SELECT *,
 		coalesce((
 			select jsonb_agg(r) from (
