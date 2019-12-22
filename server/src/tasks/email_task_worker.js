@@ -42,8 +42,7 @@ module.exports = (hapiServer) => async (job) => {
           } else {
             creator = data.event.creator;
           }
-
-          await sendInviteEmail("user_invite", {
+          await sendInviteEmail("user_invite.njk", {
             to: user.email,
             subject: `You were invited to an event: ${data.event.name} on Juniper City`,
             data: {

@@ -55,7 +55,8 @@ module.exports = {
                 .object({
                   name: joi.string().allow(null, ""),
                   email: joi.string(),
-                  phone: joi.string()
+                  phone: joi.string(),
+                  message: joi.string().allow(null, "")
                 })
                 .or("email", "phone")
             )
