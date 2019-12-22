@@ -81,6 +81,9 @@ module.exports = {
     );
 
     server.decorate("server", "createTask", function(type, data) {
+      server.log(["task-created", "info"], {
+        type
+      });
       queues.forEach((queue) => {
         queue.add({
           type: type,

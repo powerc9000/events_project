@@ -17,10 +17,10 @@ prod: login client-prod
 	docker push registry.gitlab.com/dropconfig/events
 
 deploy: prod
-	docker-compose -f docker-compose.live.yml -H "ssh://root@206.189.232.223" pull
-	docker-compose -f docker-compose.live.yml -H "ssh://root@206.189.232.223" up -d
+	docker-compose -f docker-compose.live.yml -H "ssh://root@142.93.9.100" pull
+	docker-compose -f docker-compose.live.yml -H "ssh://root@142.93.9.100" up -d
 
 api-logs-live: 
-	docker-compose -f docker-compose.live.yml -H "ssh://root@206.189.232.223" logs -f --tail=200 server
+	docker-compose -f docker-compose.live.yml -H "ssh://root@142.93.9.100" logs -f --tail=200 server
 	
 

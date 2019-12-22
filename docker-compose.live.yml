@@ -1,6 +1,10 @@
 version: "2.2"
 services:
   server:
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
     image: registry.gitlab.com/dropconfig/events:latest
     ports:
       - 8000:8000
