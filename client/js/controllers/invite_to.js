@@ -52,6 +52,7 @@ export default class extends ApplicationController {
     const email = form.email.value;
     const phone = form.phone.value;
     const method = form.method.value;
+    const message = form.message.value;
     const payload = {};
 
     if (name) {
@@ -75,6 +76,10 @@ export default class extends ApplicationController {
         this.formControl.error("Email is required", "invite", true);
         return;
       }
+    }
+
+    if (message) {
+      payload.message = message;
     }
 
     let final = payload;

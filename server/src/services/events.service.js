@@ -205,78 +205,33 @@ async function inviteUsersToEvent(eventId, users) {
     if (!eventQuery.rows) {
       return null;
     }
-
-    const userQuery = sql`SELECT * from users where email = ANY (${sql.array(
-      users
-        .map((user) => {
-          return user.email;
-        })
-        .filter((value) => !!value),
-      "text"
-    )}) or phone = ANY (${sql.array(
-      users
-        .map((user) => {
-          if (user.phone) {
-            return normalizePhone(user.phone);
-          }
-        })
-        .filter((value) => !!value),
-      "text"
-    )})`;
-
-    const existing = await server.app.db.query(userQuery);
-
-    //If we don't have a user entry for someone we need to create it...
-    const notFound = users.filter((user) => {
-      const found = existing.rows.find((queryUser) => {
-        const phone = normalizePhone(queryUser.phone);
-        const userPhone = normalizePhone(user.phone);
-        return phone === userPhone || queryUser.email === user.email;
-      });
-
-      return !found;
-    });
-
-    let newUsers = [];
-    if (notFound.length) {
-      const queried = notFound.map((user) => {
-        let phone = null;
-        if (user.phone) {
-          phone = normalizePhone(user.phone);
-        }
-        return [user.name || "", user.email, phone];
-      });
-
-      const otherUsers = await server.app.db.query(
-        sql`INSERT INTO users (name, email, phone) select * from ${sql.unnest(
-          queried,
-          ["text", "text", "text"]
-        )} returning *`
-      );
-      newUsers = otherUsers.rows;
+    console.log(Array.isArray(users));
+    for (const invite of users) {
+      console.log(invite);
     }
+    for (const inviteData of users) {
+      const phone = inviteData.phone ? normalizePhone(inviteData.phone) : null;
+      let user = await server.app.db.maybeOne(
+        sql`select * from users where email=${inviteData.email} or phone=${phone}`
+      );
 
-    const allUsers = [...existing.rows, ...newUsers];
-    const allUsersFragment = allUsers.map((user) => {
+      if (!user) {
+        user = await server.app.db.maybeOne(
+          sql`insert into users (name, email, phone) VALUES (${inviteData.name ||
+            ""}, ${inviteData.email}, ${phone}) returning *`
+        );
+      }
       const key = crypto.randomBytes(16).toString("hex");
-      const result = [user.id, eventId, key, "invited"];
-      return result;
-    });
-    const inviteesQuery = sql`INSERT INTO invites (user_id, event_id, invite_key, status) select * from ${sql.unnest(
-      allUsersFragment,
-      ["uuid", "uuid", "text", "text"]
-    )} ON CONFLICT DO NOTHING returning *`;
 
-    const invitees = await server.app.db.query(inviteesQuery);
-    console.log(allUsers);
-    allUsers.forEach((user) => {
-      const invite = invitees.rows.find((invite) => {
-        return invite.user_id === user.id;
-      });
+      const invite = await server.app.db.maybeOne(
+        sql`INSERT INTO invites (user_id, event_id, invite_key, status, message) VALUES (${
+          user.id
+        }, ${eventId}, ${key}, 'invited', ${inviteData.message ||
+          ""}) ON CONFLICT DO NOTHING returning *`
+      );
       if (!invite) {
-        //They were likely invited before
-        console.log("no invite");
-        return;
+        //likely invited before
+        continue;
       }
       server.createTask("invite-user-to-event", {
         event: eventQuery.rows[0],
@@ -284,7 +239,7 @@ async function inviteUsersToEvent(eventId, users) {
         link: `https://junipercity.com/events/${eventQuery.rows[0].slug}?invite_key=${invite.invite_key}`,
         user
       });
-    });
+    }
   } catch (e) {
     console.log(e);
   }
