@@ -292,6 +292,13 @@ module.exports = {
       path: "/calendars/{id}.ics",
       handler: userCalendar
     });
+    server.route({
+      method: "GET",
+      path: "/art",
+      handler: (req, h) => {
+        return h.view("art");
+      }
+    });
 
     server.route({
       method: "GET",

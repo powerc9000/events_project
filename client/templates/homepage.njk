@@ -2,15 +2,23 @@
 {% from "./partials/icons.njk" import icon %}
 {%block content%}
 	<div class="container mx-auto content max-w-3xl">
-		<div class="mt-4">
-			<div class="items-center mb-4 flex">
-				<h2 class="text-2xl font-bold">Upcoming events</h2>
-				<a href="/events" class="text-blue-700 text-sm hover:underline ml-auto mr-4">{{icon("search", "mr-2")}}Find Events</a>
+		<div class="mt-4 sm:flex">
+			<div class="sm:w-9/12 sm:mr-4">
+				<div class="items-center mb-4 flex">
+					<h2 class="sm:text-2xl text-xl font-bold">Upcoming events</h2>
+					<a href="/events" class="text-blue-700 text-sm hover:underline ml-auto mr-4">{{icon("search", "mr-2")}}Find Events</a>
+				</div>
+				{{eventsList(events, user=user)}}
+				{%if not events.length %}
+					<a href="/create" class="btn btn-blue text-xl mt-2 inline-block">Create One!</a>
+				{%endif%}
 			</div>
-			{{eventsList(events, user=user)}}
-			{%if not events.length %}
-				<a href="/create" class="btn btn-blue text-xl mt-2 inline-block">Create One!</a>
-			{%endif%}
+			<div class="sm:w-3/12 mt-4 sm:mt-0">
+				<div class="border-2 border-gray-400">
+					<img src="/static/img/junipercity.png" />
+					<p class="text-xs p-1 text-blue-700 underline"><a href="https://spacebabesart.com">Space Babes Art</a></p>
+				</div>
+			</div>
 		</div>
 	</div>
 {%endblock%}
