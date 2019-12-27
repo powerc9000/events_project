@@ -29,7 +29,7 @@ footer {
 .twitter-login {
 	color: white;
 	background: #1DA1F2;
-	
+
 	&:hover {
 		@apply underline;
 	}
@@ -49,40 +49,40 @@ footer {
 }
 
 .turbolinks-progress-bar {
-  height: 5px;
-  background-color: green;
+	height: 5px;
+	background-color: green;
 }
 
 .hr-text {
-    display: block;
-    text-align: center;
-    overflow: hidden;
-    white-space: nowrap; 
+	display: block;
+	text-align: center;
+	overflow: hidden;
+	white-space: nowrap; 
 }
 
 .hr-text > span {
-    position: relative;
-    display: inline-block;
+	position: relative;
+	display: inline-block;
 }
 
 .hr-text > span:before,
 .hr-text > span:after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    width: 9999px;
-    height: 1px;
-    @apply bg-gray-400;
+	content: "";
+	position: absolute;
+	top: 50%;
+	width: 9999px;
+	height: 1px;
+	@apply bg-gray-400;
 }
 
 .hr-text > span:before {
-    right: 100%;
-    margin-right: 15px;
+	right: 100%;
+	margin-right: 15px;
 }
 
 .hr-text > span:after {
-    left: 100%;
-    margin-left: 15px;
+	left: 100%;
+	margin-left: 15px;
 }
 
 .btn {
@@ -124,7 +124,7 @@ footer {
 .input {
 	@apply border-gray-700 border p-1;
 	&:focus {
-			outline: solid theme("colors.blue.700") 1px;
+		outline: solid theme("colors.blue.700") 1px;
 	}
 }
 
@@ -161,6 +161,37 @@ footer {
 .font-bold .icon {
 	stroke-width:10%;
 }
+
+
+
+@responsive {
+	.banner-text {
+		text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px 0px 0px white, -2px 0px 0px white, 0px 2px 0px white, 0px -2px 0px white;
+	}
+	.banner-text-none{
+		text-shadow:none;
+	}
+
+	.banner-green {
+		background-color: #75e3a7;
+	}
+
+	.bg-juniper-city {
+		background-image: url("/img/junipercity.png");
+		background-size:contain;
+		background-repeat: no-repeat;
+		background-position: 50% 50%;
+	}
+	.bg-juniper-city-repeat {
+		background-repeat:repeat;
+	}
+	.bg-juniper-city-none {
+		background: none;
+	}
+}
+
+
+
 
 
 @import url("./md.css");
