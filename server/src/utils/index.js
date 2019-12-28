@@ -22,6 +22,13 @@ const utils = (module.exports = {
       return null;
     }
   },
+  formatPhone(phone, format = "national") {
+    try {
+      return PhoneNumber(phone).getNumber("national");
+    } catch (e) {
+      return "";
+    }
+  },
   emailOrPhone(input) {
     const phoneCheck = utils.normalizePhone(input);
 
