@@ -89,6 +89,7 @@ export default class extends ApplicationController {
 
   async resend(e) {
     const target = e.target;
+    this.formControl.hide("resend");
 
     const invite = target.dataset.id;
 
