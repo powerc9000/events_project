@@ -15,7 +15,7 @@ const markdown = require("markdown-it");
 const Nunjucks = require("nunjucks");
 const md = markdown({ html: true });
 const mdSafe = markdown();
-const { timezones, sanitize, eventsToICS } = require("../utils");
+const { formatPhone, timezones, sanitize, eventsToICS } = require("../utils");
 const PhoneNumber = require("awesome-phonenumber");
 
 const events = require("./events");
@@ -60,6 +60,9 @@ module.exports = {
             });
             env.addFilter("tzOffset", (value, zone, format) => {
               return tz_fns.format(value, format, { timeZone: zone });
+            });
+            env.addFilter("formatPhone", (value, format = null) => {
+              return formatPhone(value, format);
             });
             env.addGlobal("date_tz", tz_fns);
             env.addGlobal("NODE_ENV", process.env.NODE_ENV);
