@@ -663,6 +663,40 @@ async function getUpcomingEventsDigest() {
   return users;
 }
 
+async function canUserDeleteComment(eventId, commentId, userId) {
+  const comment = await server.app.db.maybeOne(
+    sql`SELECT * FROM comments where id=${commentId}`
+  );
+
+  if (!comment) {
+    return false;
+  }
+
+  const event = await server.app.db.maybeOne(
+    sql`select * from events where id=${eventId}`
+  );
+
+  if (comment.user_id === userId) {
+    return true;
+  }
+
+  if (comment.entity_id === eventId && event.creator === userId) {
+    return true;
+  }
+
+  const isMod = await server.app.db.maybeOne(
+    sql`select * from group_members where role >= 'moderator' and id=${event.groupId} and user_id=${userId}`
+  );
+
+  if (isMod) {
+    return true;
+  }
+}
+
+async function deleteComment(eventId, commentId) {
+  return;
+}
+
 function init(hapiServer) {
   server = hapiServer;
   //set up database
@@ -671,6 +705,8 @@ function init(hapiServer) {
 
 module.exports = {
   name: "events",
+  canUserDeleteComment,
+  deleteComment,
   inviteUsersToEvent,
   updateInviteRSVP,
   canInviteToEvent,

@@ -250,6 +250,11 @@ module.exports = {
       }
     });
     server.route({
+      method: "DELETE",
+      path: "/events/{id}/comments/{comment_id}",
+      handler: deleteComment
+    });
+    server.route({
       method: "POST",
       path: "/inbound",
       handler: inboundEmail
@@ -274,6 +279,26 @@ module.exports = {
     });
   }
 };
+
+async function deleteComment(req, h) {
+  if (!req.loggedIn()) {
+    return Boom.unauthorized();
+  }
+
+  const can = await server
+    .getService("events")
+    .canUserDeleteComment(req.params.id, req.params.comment_id, req.userId());
+
+  if (!can) {
+    return Boom.unauthorized();
+  }
+
+  await server
+    .getService("events")
+    .deleteComment(req.params.id, req.params.comment_id);
+
+  return h.noContent();
+}
 
 async function userTzPing(req, h) {
   const user = req.app.user;
