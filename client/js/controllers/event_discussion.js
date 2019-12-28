@@ -23,6 +23,26 @@ export default class extends ApplicationController {
     this.toggleTarget("form");
     this.toggleTarget("commentFormToggle");
   }
+  async deleteComment(e) {
+    const button = e.currentTarget;
+    const id = button.dataset.commentId;
+    const event_id = this.data.get("eventId");
+
+    if (id) {
+      const req = await this.api.Delete(
+        `/api/events/${event_id}/comments/${id}`
+      );
+
+      if (req.ok) {
+        console.log("did it");
+        this.page.reload();
+      } else {
+        const error = await req.json();
+        console.log("error", error);
+        //Errror
+      }
+    }
+  }
   resetForm() {
     this.toggleTarget("form");
     this.toggleTarget("commentFormToggle");

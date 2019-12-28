@@ -297,6 +297,20 @@ async function isUserInGroup(userId, groupId) {
 
   return !!lookup;
 }
+async function canUserModerate(groupId, userId) {
+  if (!groupId) {
+    return false;
+  }
+  if (!userId) {
+    return false;
+  }
+
+  const mod = await server.app.db.maybeOne(
+    sql`selet * from group_members where user_id=${userId} and group_id=${groupId} and role >= 'moderator'`
+  );
+
+  return !!mod;
+}
 
 function init(hapiServer) {
   server = hapiServer;
@@ -305,6 +319,7 @@ function init(hapiServer) {
 module.exports = {
   name: "groups",
   canUserEditGroup,
+  canUserModerate,
   isUserInGroup,
   updateUserRole,
   updateGroup,

@@ -56,6 +56,10 @@ async function start() {
     }
   });
 
+  server.decorate("toolkit", "noContent", function() {
+    return this.response().code(204);
+  });
+
   await server.register(api, {
     routes: {
       prefix: "/api"

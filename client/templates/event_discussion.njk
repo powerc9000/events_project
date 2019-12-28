@@ -1,45 +1,48 @@
-{%extends "layout.njk" %} 
+{%extends "event_detail_content.njk" %}
+{% from "partials/icons.njk" import icon %}
 {%block title%}{{event.name}} Discussion{%endblock%}
-{% from "partials/event_detail/topnav.njk" import event_nav%}
 {%block css%}
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.0/trix.css"/>
 {%endblock%}
-{%block content %}
-
-	<div class="container mx-auto content" data-controller="event-discussion">
-		{%include "partials/event_detail/top_part.njk"%}
-		{{event_nav(path, comments.length, "discussion", allowDiscussion=event.allow_comments, canEdit=canEdit, isCreator=isCreator)}}
-		<div>
-			<form
-				class="hidden"
-				data-controller="trix"
-				data-target="event-discussion.form"
-				data-action="event-discussion#createComment reset->event-discussion#resetForm"
-				>
-				<input type="hidden" name="event_id" value="{{event.id}}" />
-				<input type="hidden" name="parent_comment" />
-				<input type="hidden" name="body" id="comment_body"/>
-				<div>
-					<trix-editor input="comment_body"></trix-editor>
-				</div>
-				<div class="mt-2">
-					<button class="btn btn-green" type="submit">Save Comment</button>
-					<button type="reset" class="btn btn-white">Cancel</button>
-				</div>
-			</form>
-			<button class="btn btn-green" data-target="event-discussion.commentFormToggle" data-action="event-discussion#toggleForm">Add Comment</button>
-			<ul class="mt-4">
-				{% for comment in comments %}
-					<li class="mb-2 border rounded border-gray-300">
-						<p class="text-gray-700 text-xs bg-gray-200 p-2">
+{%block tabContent%}
+	<div data-controller="event-discussion" data-event-discussion-event-id="{{event.id}}">
+		<form
+			class="hidden"
+			data-controller="trix"
+			data-target="event-discussion.form"
+			data-action="event-discussion#createComment reset->event-discussion#resetForm"
+			>
+			<input type="hidden" name="event_id" value="{{event.id}}" />
+			<input type="hidden" name="parent_comment" />
+			<input type="hidden" name="body" id="comment_body"/>
+			<div>
+				<trix-editor input="comment_body"></trix-editor>
+			</div>
+			<div class="mt-2">
+				<button class="btn btn-green" type="submit">Save Comment</button>
+				<button type="reset" class="btn btn-white">Cancel</button>
+			</div>
+		</form>
+		<button class="btn btn-green" data-target="event-discussion.commentFormToggle" data-action="event-discussion#toggleForm">Add Comment</button>
+		<ul class="mt-4">
+			{% for comment in comments %}
+				<li class="mb-2 border rounded border-gray-300">
+					<div class="flex bg-gray-200 items-center">
+						<p class="text-gray-700 text-xs p-2">
 						<span class="underline">{{comment.user.name | default(comment.user.email, true) | default(comment.user.phone, true) }}</span> - <span data-controller="format-date" data-target="format-date.date" data-format-date-epoch="{{comment.created}}">{{date.format(comment.created, "PPpp")}}</span>
 						</p>
-						<div class="text-md p-2 trix-c">{{comment.body | safe }}</div>
-					</li>
-				{%else%}
-					<li>No comments yet</li>
-				{%endfor%}
-			</ul>
-		</div>
+						{% if comment.user_id === user.id or isMod or isCreator %}
+						<div class="ml-auto mr-4">
+							<button class="text-red-500 hover:text-red-800" data-action="event-discussion#deleteComment" data-comment-id="{{comment.id}}">{{icon("trash")}}</button>
+						</div>
+						{%endif%}
+					</div>
+					<div class="text-md p-2 trix-c">{{comment.body | safe }}</div>
+				</li>
+			{%else%}
+				<li>No comments yet</li>
+			{%endfor%}
+		</ul>
+	</div>
 	</div>
 {%endblock%}

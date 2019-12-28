@@ -99,59 +99,68 @@ async function createEvent(req, h) {
 }
 
 async function commonEventData(userId, slug, event_key) {
-  const eventService = server.getService("events");
-  const event = await eventService.getEventBySlug(slug);
+  try {
+    const eventService = server.getService("events");
+    const event = await eventService.getEventBySlug(slug);
 
-  if (!event) {
-    return [Boom.notFound()];
+    if (!event) {
+      return [Boom.notFound()];
+    }
+    const viewData = {};
+
+    const canViewEvent = await eventService.canUserViewEvent(
+      userId,
+      event.id,
+      event_key
+    );
+
+    if (!canViewEvent) {
+      return [Boom.notFound()];
+    }
+    const statuses = { going: [], maybe: [], declined: [], invited: [] };
+
+    event.invites.reduce((carry, invite) => {
+      carry[invite.status].push(invite);
+
+      return carry;
+    }, statuses);
+
+    const isPublic = !event.is_private;
+    const isOwner = event.creator.id === userId;
+    const canInvite = await eventService.canInviteToEvent(event.id, userId);
+    const canSeeInvites = canInvite || event.show_participants;
+    const isMod = await server
+      .getService("groups")
+      .canUserModerate(event.group_id, userId);
+
+    const invite =
+      event.invites.find((invite) => {
+        return invite.user_id === userId;
+      }) || false;
+
+    const data = {
+      ...viewData,
+      event: { ...event, ...statuses },
+      path: `/events/${event.slug}`,
+      title: event.name,
+      canEdit: await eventService.canUserEditEvent(userId, event.id),
+      isMod,
+      invite,
+      canRSVP: await eventService.canRSVPToEvent(event.id, userId, event_key),
+      canInvite,
+      canSeeInvites,
+      canDelete: await eventService.canUserDeleteEvent(userId, event.id),
+      invitePath: `/api/events/${event.id}/invite`,
+      comments: await eventService.getComments(event.id),
+      isCreator: event.creator.id === userId,
+      mdDescription: sanitize(event.description)
+    };
+
+    return [null, data];
+  } catch (e) {
+    console.log(e);
+    return [Boom.badImplementation(e), null];
   }
-  const viewData = {};
-
-  const canViewEvent = await eventService.canUserViewEvent(
-    userId,
-    event.id,
-    event_key
-  );
-
-  if (!canViewEvent) {
-    return [Boom.notFound()];
-  }
-  const statuses = { going: [], maybe: [], declined: [], invited: [] };
-
-  event.invites.reduce((carry, invite) => {
-    carry[invite.status].push(invite);
-
-    return carry;
-  }, statuses);
-
-  const isPublic = !event.is_private;
-  const isOwner = event.creator.id === userId;
-  const canInvite = await eventService.canInviteToEvent(event.id, userId);
-  const canSeeInvites = canInvite || event.show_participants;
-
-  const invite =
-    event.invites.find((invite) => {
-      return invite.user_id === userId;
-    }) || false;
-
-  const data = {
-    ...viewData,
-    event: { ...event, ...statuses },
-    path: `/events/${event.slug}`,
-    title: event.name,
-    canEdit: await eventService.canUserEditEvent(userId, event.id),
-    invite,
-    canRSVP: await eventService.canRSVPToEvent(event.id, userId, event_key),
-    canInvite,
-    canSeeInvites,
-    canDelete: await eventService.canUserDeleteEvent(userId, event.id),
-    invitePath: `/api/events/${event.id}/invite`,
-    comments: await eventService.getComments(event.id),
-    isCreator: event.creator.id === userId,
-    mdDescription: sanitize(event.description)
-  };
-
-  return [null, data];
 }
 
 async function eventDetail(req, h) {
@@ -246,16 +255,16 @@ async function eventDisussion(req, h) {
   });
 
   const comments = [];
-  allComments.forEach((c) => {
-    c.body = sanitize(c.body);
-    if (c.parent_comment) {
-      const parent = map.get(c.parent_comment);
-      parent.children.push(c);
-    } else {
-      comments.push(c);
-    }
-  });
 
+  for (let comment of allComments) {
+    comment.body = sanitize(comment.body);
+    if (comment.parent_comment) {
+      const parent = map.get(comment.parent_comment);
+      parent.children.push(comment);
+    } else {
+      comments.push(comment);
+    }
+  }
   return h.view("event_discussion.njk", {
     ...data,
     title: `${data.event.name} Discussion`,
