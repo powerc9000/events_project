@@ -694,7 +694,9 @@ async function canUserDeleteComment(eventId, commentId, userId) {
 }
 
 async function deleteComment(eventId, commentId) {
-  return;
+  await server.app.db.query(
+    sql`delete from comments where entity_id=${eventId} and id=${commentId}`
+  );
 }
 
 function init(hapiServer) {
