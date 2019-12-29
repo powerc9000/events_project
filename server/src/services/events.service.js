@@ -685,7 +685,7 @@ async function canUserDeleteComment(eventId, commentId, userId) {
   }
 
   const isMod = await server.app.db.maybeOne(
-    sql`select * from group_members where role >= 'moderator' and id=${event.groupId} and user_id=${userId}`
+    sql`select * from group_members where role >= 'moderator' and group_id=${event.group_id} and user_id=${userId}`
   );
 
   if (isMod) {
