@@ -127,7 +127,7 @@ module.exports = {
     server.ext(
       "onPreResponse",
       (req, h) => {
-        if (req.response.isBoom) {
+        if (req.response.isBoom && !req.response) {
           const err = req.response;
           if (err.output.payload.statusCode === 404) {
             return h.view("404").code(404);
@@ -274,6 +274,12 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/settings/notifications",
+      handler: notificationSettings
+    });
+
+    server.route({
+      method: "GET",
       path: "/settings/validate/{code}",
       handler: validateContact
     });
@@ -345,6 +351,10 @@ module.exports = {
     }
   }
 };
+
+async function notificationSettings(req, h) {
+  return h.view("notification_settings");
+}
 
 async function userCalendar(req, h) {
   const userService = await server.getService("user");

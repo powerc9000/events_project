@@ -647,7 +647,10 @@ function getEventByEmailHash(hash) {
 async function getUpcomingEventsDigest() {
   const users = await server.app.db.any(sql`
 	with ready_digests as (
-	update digests set last_sent = now() where coalesce(last_sent, to_timestamp(0)) < now() - interval '1 day' and greatest(send_time, current_time)::time - least(send_time, current_time)::time <= interval '1 hour' and digest_type = 'upcoming_events' returning *
+	update digests set last_sent = now() where coalesce(last_sent, to_timestamp(0)) < now() - interval '1 day' and digest_type = 'upcoming_events' returning *
+	),
+	no_digests as (
+		insert into digests (last_sent, user_id, send_time, digest_type) select now(), id, now(),	'upcoming_events' from users where not exists (select * from digests where digests.user_id = users.id) returning *
 	)
 	select * from (
 	select u.*, (
@@ -657,7 +660,7 @@ async function getUpcomingEventsDigest() {
 			where (i.user_id = u.id or ev.creator = u.id or u.id in (select user_id from group_members gm where gm.group_id = ev.group_id)) and ev.date >= now() and ev.date - now() <= interval '1 day'
 		) e
 	) as events
-	from users u where u.id in (select ready_digests.user_id from ready_digests) ) f  where f.events is not null
+	from users u where u.id in (select ready_digests.user_id from ready_digests) or u.id in (select no_digests.user_id from no_digests)) f  where f.events is not null
 	`);
 
   return users;
