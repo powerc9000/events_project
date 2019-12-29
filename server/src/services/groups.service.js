@@ -306,7 +306,7 @@ async function canUserModerate(groupId, userId) {
   }
 
   const mod = await server.app.db.maybeOne(
-    sql`selet * from group_members where user_id=${userId} and group_id=${groupId} and role >= 'moderator'`
+    sql`select * from group_members where user_id=${userId} and group_id=${groupId} and role >= 'moderator'`
   );
 
   return !!mod;

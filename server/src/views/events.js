@@ -267,6 +267,7 @@ async function eventDisussion(req, h) {
   }
   return h.view("event_discussion.njk", {
     ...data,
+    activeTab: "discussion",
     title: `${data.event.name} Discussion`,
     comments
   });
