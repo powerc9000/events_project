@@ -1,3 +1,5 @@
+const sql = require("slonik").sql;
+
 module.exports = (server) => async (job) => {
   server.log(["taskWorker", "notifications"], {
     type: job.data.type,
@@ -47,13 +49,31 @@ module.exports = (server) => async (job) => {
       });
     }
     if (type === "user-did-login") {
-      console.log(data, type);
       if (data.count === 1) {
         server.createTask("user-first-login", {
           user: data.user
         });
       }
     }
+
+    if (type === "event-date-changed" || type === "event-location-changed") {
+      const users = await server.app.db.any(
+        sql`SELECT users.*, invites.invite_key from users inner join invites on invites.user_id = users.id where invites.event_id = ${data.event.id}`
+      );
+
+      let taskType = `notify-user-${type}`;
+
+      users.forEach((user) => {
+        server.createTask(taskType, {
+          event: data.event,
+          invite: {
+            invite_key: user.invite_key
+          },
+          user
+        });
+      });
+    }
+
     server.log(["taskWorker", "notifications"], {
       type: job.data.type,
       status: "complete",

@@ -182,6 +182,12 @@ function mergeUsers(toUser, fromUser) {
         await con.query(
           sql`delete from group_members where user_id=${fromUser}`
         );
+        //Delete old digests
+        await con.query(sql`delete from digests where user_id=${fromUser}`);
+        //Change creator of Group
+        await con.query(
+          sql`update groups set creator=${toUser} where creator=${fromUser}`
+        );
         //Merge comments
         await con.query(
           sql`update comments set user_id=${toUser} where user_id=${fromUser}`
