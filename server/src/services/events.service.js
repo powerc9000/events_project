@@ -547,8 +547,10 @@ async function editEvent(eventId, payload) {
       event: changes
     });
   }
-
-  if (_.has(payload, "date") && payload.date !== old.date) {
+  if (
+    _.has(payload, "date") &&
+    new Date(payload.date).getTime() !== new Date(old.date).getTime()
+  ) {
     server.createTask("event-date-changed", {
       event: changes
     });
