@@ -319,7 +319,6 @@ async function createEvent(user, event) {
     const key = field.name || field;
     if (_.has(event, key)) {
       const format = field.format || ((val) => val);
-      console.log(key, format(event[key]));
       fields.push(sql.identifier([key]));
       values.push(format(event[key]));
     }
@@ -444,9 +443,9 @@ async function rsvpToEvent({
   if (!invite) {
     const doShowName = !!show_name;
     const key = crypto.randomBytes(16).toString("hex");
-    res = await server.app.db.maybeOne(
-      sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name, response_source, response) values (${userId}, ${eventId}, ${key}, ${status}, ${doShowName}, ${source}, ${response}) returning *`
-    );
+    const query = sql`INSERT INTO invites (user_id, event_id, invite_key, status, show_name, response_source, response) values (${userId}, ${eventId}, ${key}, ${status}, ${doShowName}, ${source}, ${response ||
+      ""}) returning *`;
+    res = await server.app.db.maybeOne(query);
   } else {
     const validFields = {
       status: status,
@@ -460,8 +459,6 @@ async function rsvpToEvent({
         sets.push(sql`${sql.identifier([field])}=${value}`);
       }
     });
-    console.log(validFields);
-    console.log(sets);
     res = await server.app.db.maybeOne(
       sql`UPDATE invites set ${sql.join(sets, sql`, `)} where id=${
         invite.id
@@ -532,13 +529,32 @@ async function editEvent(eventId, payload) {
       sets.push(sql`${sql.identifier([key])}=${format(payload[key])}`);
     }
   });
-
-  return server.app.db.maybeOne(
+  const old = await server.app.db.maybeOne(
+    sql`select * from events where id=${eventId}`
+  );
+  if (!old) {
+    return null;
+  }
+  const changes = await server.app.db.maybeOne(
     sql`Update events set ${sql.join(
       sets,
       sql` , `
     )} where id=${eventId} returning *`
   );
+
+  if (_.has(payload, "location") && payload.location !== old.location) {
+    server.createTask("event-location-changed", {
+      event: changes
+    });
+  }
+
+  if (_.has(payload, "date") && payload.date !== old.date) {
+    server.createTask("event-date-changed", {
+      event: changes
+    });
+  }
+
+  return changes;
 }
 
 async function getInvite(inviteId) {

@@ -17,7 +17,13 @@ nunjucks.addFilter("date", (date, tz) => {
   if (tz) {
     zone = tz;
   }
-  const zoned = fnsz.utcToZonedTime(fns.parseISO(date), tz);
+  let parsedDate;
+  if (typeof date === "number") {
+    parsedDate = fns.toDate(date);
+  } else {
+    parsedDate = fns.parseISO(date);
+  }
+  const zoned = fnsz.utcToZonedTime(parsedDate, tz);
   return fnsz.format(zoned, "PPpp z", { timeZone: tz });
 });
 module.exports = (hapiServer) => async (job) => {
@@ -183,13 +189,36 @@ module.exports = (hapiServer) => async (job) => {
       }
     }
     if (type === "user-first-login") {
-      console.log("first login");
       if (data.user.email) {
         sendEmail("welcome_user.njk", {
           to: data.user.email,
           subject: "Welcome to Juniper City!",
           data: {
             user: data.user
+          }
+        });
+      }
+    }
+
+    if (
+      type === "notify-user-event-location-changed" ||
+      type === "notify-user-event-date-changed"
+    ) {
+      if (data.user.email) {
+        let template = "event_date_changed";
+        let subject = "Date for an event you are invited to changed";
+
+        if (type === "notify-user-event-location-changed") {
+          template = "event_location_changed";
+          subject = "Location for an event you are invited to changed";
+        }
+        sendEmail(`${template}.njk`, {
+          to: data.user.email,
+          subject: subject,
+          data: {
+            event: data.event,
+            user: data.user,
+            link: `https://junipercity.com/events/${data.event.slug}?invite_key=${data.invite.invite_key}`
           }
         });
       }
@@ -203,7 +232,7 @@ module.exports = (hapiServer) => async (job) => {
     server.log(["taskWorker", "taskWorkerError"], {
       jobId: job.id,
       status: "fail",
-      error: e
+      error: e.stack
     });
   }
 };
@@ -232,7 +261,7 @@ async function sendEmail(templateName, payload) {
     });
   } catch (e) {
     server.log(["taskWorker", "email-task-worker", "error"], {
-      sendEmailError: e
+      sendEmailError: e.stack
     });
   }
 }
