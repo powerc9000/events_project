@@ -223,6 +223,17 @@ CREATE TABLE public.shortlinks (
 
 
 --
+-- Name: user_roles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_roles (
+    key text NOT NULL,
+    name text NOT NULL,
+    description text NOT NULL
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -233,7 +244,8 @@ CREATE TABLE public.users (
     email text,
     phone text,
     settings jsonb DEFAULT '{}'::jsonb,
-    ics_key uuid DEFAULT public.uuid_generate_v4() NOT NULL
+    ics_key uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    role text DEFAULT 'user'::text
 );
 
 
@@ -405,6 +417,14 @@ ALTER TABLE ONLY public.shortlinks
 
 
 --
+-- Name: user_roles user_roles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_roles
+    ADD CONSTRAINT user_roles_pkey PRIMARY KEY (key);
+
+
+--
 -- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -538,6 +558,14 @@ ALTER TABLE ONLY public.login_codes
 
 ALTER TABLE ONLY public.logins
     ADD CONSTRAINT logins_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: users users_role_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_role_fkey FOREIGN KEY (role) REFERENCES public.user_roles(key);
 
 
 --
