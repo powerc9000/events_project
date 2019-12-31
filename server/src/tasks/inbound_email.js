@@ -142,7 +142,7 @@ async function bulkInvite(data) {
       return;
     }
     console.log(allToAddr);
-    await eventService.inviteUsersToEvent(event.id, allToAddr);
+    await eventService.inviteUsersToEvent(event.id, allToAddr, user.id);
     console.log("complete");
   } catch (e) {
     console.log(e);

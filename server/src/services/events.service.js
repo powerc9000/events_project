@@ -211,7 +211,7 @@ async function canInviteToEvent(eventId, user) {
   }
 }
 
-async function inviteUsersToEvent(eventId, users) {
+async function inviteUsersToEvent(eventId, users, invited_by) {
   try {
     const eventQuery = await server.app.db.query(
       sql`SELECT e.*, row_to_json((select d from (select * from users where id = e.creator) d)) as creator from events e where id = ${eventId}`
@@ -219,15 +219,12 @@ async function inviteUsersToEvent(eventId, users) {
     if (!eventQuery.rows) {
       return null;
     }
-    console.log(Array.isArray(users));
-    for (const invite of users) {
-      console.log(invite);
-    }
     for (const inviteData of users) {
       const phone = inviteData.phone ? normalizePhone(inviteData.phone) : null;
       const email = inviteData.email || null;
+      const user_id = inviteData.user_id || null;
       let user = await server.app.db.maybeOne(
-        sql`select * from users where email=${email} or phone=${phone}`
+        sql`select * from users where email=${email} or phone=${phone} or id = ${user_id}`
       );
 
       if (!user) {
@@ -239,10 +236,10 @@ async function inviteUsersToEvent(eventId, users) {
       const key = crypto.randomBytes(16).toString("hex");
 
       const invite = await server.app.db.maybeOne(
-        sql`INSERT INTO invites (user_id, event_id, invite_key, status, message) VALUES (${
+        sql`INSERT INTO invites (user_id, event_id, invite_key, status, message, invited_by) VALUES (${
           user.id
         }, ${eventId}, ${key}, 'invited', ${inviteData.message ||
-          ""}) ON CONFLICT DO NOTHING returning *`
+          ""}, ${invited_by}) ON CONFLICT DO NOTHING returning *`
       );
       if (!invite) {
         //likely invited before

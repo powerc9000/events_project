@@ -187,7 +187,22 @@ async function eventDetail(req, h) {
         )
         .header("Content-Type", "text/calendar");
     }
-    return h.view("event_detail.njk", { ...data, activeTab: "base" });
+
+    const previousInvites = await server
+      .getService("user")
+      .getPreviousInvites(req.userId());
+    return h.view("event_detail.njk", {
+      ...data,
+      activeTab: "base",
+      previousInvites: previousInvites.map((user) => {
+        return {
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          id: user.id
+        };
+      })
+    });
   } catch (e) {
     server.log(["error"], e);
 

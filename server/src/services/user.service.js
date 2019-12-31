@@ -361,6 +361,14 @@ async function markMessageAsViewed(userId, messageId) {
   );
 }
 
+async function getPreviousInvites(userId) {
+  const previous = await server.app.db.any(
+    sql`select users.* from users inner join invites on invites.user_id = users.id where invites.invited_by=${userId} group by users.id`
+  );
+
+  return previous;
+}
+
 function init(hapiServer) {
   server = hapiServer;
   db = server.app.db;
@@ -368,6 +376,7 @@ function init(hapiServer) {
 
 module.exports = {
   name: "user",
+  getPreviousInvites,
   findOrCreateUser,
   findUser,
   findUserByEmail,

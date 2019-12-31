@@ -168,7 +168,8 @@ CREATE TABLE public.invites (
     updated timestamp with time zone DEFAULT now(),
     response_source text,
     response text,
-    message text
+    message text,
+    invited_by uuid
 );
 
 
