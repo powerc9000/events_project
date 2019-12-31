@@ -54,11 +54,12 @@ module.exports = {
               joi
                 .object({
                   name: joi.string().allow(null, ""),
+                  user_id: joi.string().allow(null, ""),
                   email: joi.string(),
                   phone: joi.string(),
                   message: joi.string().allow(null, "")
                 })
-                .or("email", "phone")
+                .or("email", "phone", "user_id")
             )
           })
         }
@@ -823,7 +824,7 @@ async function inviteToEvent(req, h) {
       return Boom.unauthorized();
     }
 
-    events.inviteUsersToEvent(req.params.id, req.payload.invites);
+    events.inviteUsersToEvent(req.params.id, req.payload.invites, req.userId());
 
     return h.response().code(204);
   } catch (e) {
