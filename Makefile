@@ -22,5 +22,6 @@ deploy: prod
 
 api-logs-live: 
 	docker-compose -f docker-compose.live.yml -H "ssh://root@142.93.9.100" logs -f --tail=200 server
-	
 
+test:
+	cd tests/capybara && ./run.sh
