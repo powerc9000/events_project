@@ -7,17 +7,16 @@ export default class extends ApplicationController {
       this.people = JSON.parse(this.data.get("completions"));
       this.template = this.targets.find("liTemplate").cloneNode();
       if (!this.people) {
-        this.invactive = true;
+        this.inactive = true;
       }
     } catch (e) {
-      console.log(e);
       this.inactive = true;
     }
   }
   focus() {
     const input = this.targets.find("input");
 
-    if (input.value) {
+    if (input.value && !this.inactive) {
       this.showTarget("results");
     }
   }
