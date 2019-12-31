@@ -1,5 +1,6 @@
 import { ApplicationController } from "../helpers/application_controller";
 import { format, addHours, formatISO } from "date-fns";
+import { zonedTimeToUtc, utcToZonedTime } from "date-fns-tz";
 
 function getGMTOffset() {
   const tz = new Date().getTimezoneOffset();
@@ -17,6 +18,11 @@ export default class extends ApplicationController {
     const form = this.targets.find("form");
     const eventTime = this.data.get("eventDate");
     const endTime = this.data.get("endDate");
+    const timezone = this.data.get("tz");
+
+    if (!timezone) {
+      form.tz.value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    }
 
     if (eventTime) {
       const { day, time } = this.splitDateAndTime(eventTime);
@@ -31,7 +37,7 @@ export default class extends ApplicationController {
     }
   }
   splitDateAndTime(value) {
-    const date = new Date(parseInt(value, 10));
+    const date = utcToZonedTime(new Date(parseInt(value, 10)), this.timezone);
 
     const day = formatISO(date, { representation: "date" });
     const time = formatISO(date, { representation: "time" });
@@ -54,9 +60,12 @@ export default class extends ApplicationController {
       !form.end_time.value &&
       !this.editing
     ) {
-      const updated = addHours(
-        new Date(`${form.date.value}T${form.time.value}${getGMTOffset()}`),
-        1
+      const updated = zonedTimeToUtc(
+        addHours(
+          new Date(`${form.date.value}T${form.time.value}${getGMTOffset()}`),
+          1
+        ),
+        this.timezone
       );
 
       form.end_date.value = formatISO(updated, { representation: "date" });
@@ -96,7 +105,6 @@ export default class extends ApplicationController {
       const time = form.time.value;
 
       const dateString = `${date}T${time}${getGMTOffset()}`;
-      console.log(dateString, new Date(dateString));
       payload.date = new Date(dateString).getTime();
     }
 
@@ -126,6 +134,19 @@ export default class extends ApplicationController {
       extra = `/${form.edited_event.value}`;
     }
 
+    payload.date = zonedTimeToUtc(
+      new Date(payload.date),
+      this.timezone
+    ).getTime();
+    if (payload.end_date) {
+      payload.end_date = zonedTimeToUtc(
+        new Date(payload.end_date),
+        this.timezone
+      ).getTime();
+    }
+
+    payload.tz = this.timezone;
+
     const base = "/api/events";
     const res = await this.api.Post(`${base}${extra}`, payload);
 
@@ -146,7 +167,10 @@ export default class extends ApplicationController {
   }
 
   get editing() {
-    console.log(this.data.get("editing"));
     return this.data.get("editing") === "true";
+  }
+
+  get timezone() {
+    return this.targets.find("form").tz.value;
   }
 }

@@ -120,7 +120,8 @@ CREATE TABLE public.events (
     source text DEFAULT 'web'::text,
     email_hash_id uuid DEFAULT public.uuid_generate_v4(),
     secret_key uuid DEFAULT public.uuid_generate_v4(),
-    end_date timestamp with time zone
+    end_date timestamp with time zone,
+    tz text
 );
 
 

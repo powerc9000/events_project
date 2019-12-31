@@ -33,6 +33,7 @@ module.exports = {
             show_participants: joi.boolean(),
             allow_comments: joi.boolean(),
             can_invite: joi.boolean(),
+            tz: joi.string(),
             location: joi.string().allow(null, ""),
             group_id: joi
               .string()
@@ -120,6 +121,7 @@ module.exports = {
               .timestamp()
               .required(),
             end_date: joi.date().timestamp(),
+            tz: joi.string(),
             description: joi.string().required(),
             is_private: joi.boolean(),
             show_participants: joi.boolean(),

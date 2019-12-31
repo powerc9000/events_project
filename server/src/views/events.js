@@ -2,7 +2,12 @@ let server;
 const _ = require("lodash");
 const joi = require("@hapi/joi");
 const Boom = require("@hapi/boom");
-const { sanitize, createIcsFileBuilder, eventsToICS } = require("../utils");
+const {
+  timezones,
+  sanitize,
+  createIcsFileBuilder,
+  eventsToICS
+} = require("../utils");
 
 function init(hapiServer) {
   server = hapiServer;
@@ -82,6 +87,7 @@ async function createEvent(req, h) {
   if (!req.loggedIn()) {
     return h.toLogin();
   }
+  const user = req.app.user;
   const groups = await server
     .getService("groups")
     .getGroupsForUser(req.app.user.id);
@@ -93,6 +99,8 @@ async function createEvent(req, h) {
   }
   return h.view("create_event.njk", {
     event: {},
+    timezones,
+    tz: user.settings.timezone || "",
     forGroup,
     groups
   });
@@ -212,6 +220,7 @@ async function eventDetail(req, h) {
 
 async function editEvent(req, h) {
   const eventService = server.getService("events");
+  const user = req.app.user;
   const event = await eventService.getEventBySlug(req.params.slug);
   if (!event) {
     return Boom.notFound();
@@ -239,6 +248,8 @@ async function editEvent(req, h) {
   }
   return h.view("create_event.njk", {
     event,
+    timezones,
+    tz: event.tz || user.settings.timezone,
     groups,
     forGroup
   });
