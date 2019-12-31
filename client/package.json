@@ -21,6 +21,7 @@
     "@hapi/vision": "^5.5.4",
     "autoprefixer": "^9.6.1",
     "date-fns": "^2.8.1",
+    "date-fns-tz": "^1.0.9",
     "date-input-polyfill": "^2.14.0",
     "flatpickr": "^4.6.3",
     "lodash": "^4.17.15",

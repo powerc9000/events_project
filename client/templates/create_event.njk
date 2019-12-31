@@ -12,6 +12,7 @@
 		</div>
 		<form
 			data-controller="create"
+			data-create-tz="{{tz}}"
 			data-create-editing="{{"true" if event.id else "false"}}"
 			data-action="create#createEvent input->create#formInput"
 			data-target="create.form"
@@ -98,6 +99,16 @@
 										/>
 								</div>
 							</div>
+						</div>
+
+						<div class="mt-2 p-2 border border-gray-300">
+							<label class="timezone" for="timezone">Timezone</label>
+							<select name="tz" class="input" id="timezone" data-target="create.tz">
+								<option value="">Select Timezone</option>
+								{%for zone in timezones %}
+									<option value="{{zone}}" {{"selected" if tz === zone}}>{{zone | replace("_", " ")}} {{now() | tzOffset(zone, "OOO")}}</option>
+								{%endfor%}
+							</select>
 						</div>
 					</div>
 				</fieldset>

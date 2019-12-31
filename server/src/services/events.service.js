@@ -302,7 +302,7 @@ async function createEvent(user, event) {
         return sql`to_timestamp(${new Date(date).getTime() / 1000})`;
       }
     },
-
+    "tz",
     "is_private",
     "allow_comments",
     "show_participants",
@@ -501,6 +501,7 @@ async function editEvent(eventId, payload) {
     "can_invite",
     "is_private",
     "description",
+    "tz",
     {
       name: "date",
       format: (date) => {
