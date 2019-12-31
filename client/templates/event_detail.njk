@@ -4,7 +4,7 @@
 {% from "partials/event_detail/invite_to_event.njk" import invite_form%}
 {%block tabContent%}
 	{%if not user and canRSVP%}
-		<div class="bg-blue-100 p-1 border-l-4 border-blue-400 my-2 pl-4">
+		<div class="bg-blue-100 p-1 border-l-4 border-blue-400 my-2 pl-4" id="event-detail-not-logged-in-message">
 			<p>You are not logged in. You can still RSVP but other features are limited.</p>
 			<a href="/login?redirect_to={{__currentPath() | urlencode}}" class="text-blue-700 hover:underline">Login</a> to enable all features.
 		</div>
@@ -31,7 +31,7 @@
 					</div>
 					<div class="flex items-center">
 						<div class="w-full mr-2">
-							<input type="text" value="https://junipercity.com/events/{{event.slug}}?event_key={{event.secret_key}}" class="input w-full text-xs " data-target="copy-to-clipboard.input" readonly/>
+							<input type="text" value="https://junipercity.com/events/{{event.slug}}?event_key={{event.secret_key}}" class="input w-full text-xs " data-target="copy-to-clipboard.input" readonly id="event-detail-shareable-link"/>
 						</div>
 						<button data-action="copy-to-clipboard#copy" class="btn btn-green flex items-center"><span class="mr-2 font-bold">{{icon("clipboard")}}</span>Copy</button>
 					</div>
