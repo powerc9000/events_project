@@ -18,6 +18,9 @@ export default class extends ApplicationController {
   toggleInviteForm() {
     this.toggleTarget("hideContainer");
     this.toggleTarget("canInviteButton");
+
+    this.showTarget("sendVia");
+    this.enableButton("emailInput");
   }
   toggleMethodTarget(value) {
     const form = this.targets.find("inviteForm");
@@ -32,6 +35,15 @@ export default class extends ApplicationController {
       this.hideTarget("emailField");
       this.showTarget("phoneField");
       this.enableButton("phoneInput");
+      this.disableButton("emailInput");
+    }
+  }
+  setById(e) {
+    const value = e.currentTarget.value;
+
+    if (value) {
+      this.hideTarget("sendVia");
+      this.disableButton("phoneInput");
       this.disableButton("emailInput");
     }
   }
@@ -53,29 +65,33 @@ export default class extends ApplicationController {
     const phone = form.phone.value;
     const method = form.method.value;
     const message = form.message.value;
+    const user_id = form.user_id.value;
     const payload = {};
 
     if (name) {
       payload.name = name;
     }
-
-    if (method === "phone") {
-      payload.phone = phone;
-      if (!phone) {
-        form.phone.setCustomValidity("Phone number is required");
-        this.formControl.error("Phone number is required", "invite", true);
-        return;
+    if (!user_id) {
+      if (method === "phone") {
+        payload.phone = phone;
+        if (!phone) {
+          form.phone.setCustomValidity("Phone number is required");
+          this.formControl.error("Phone number is required", "invite", true);
+          return;
+        }
       }
-    }
 
-    if (method === "email") {
-      payload.email = email;
-      const isInvalid = !email || !email.includes("@");
-      if (isInvalid) {
-        form.email.setCustomValidity("Email is required");
-        this.formControl.error("Email is required", "invite", true);
-        return;
+      if (method === "email") {
+        payload.email = email;
+        const isInvalid = !email || !email.includes("@");
+        if (isInvalid) {
+          form.email.setCustomValidity("Email is required");
+          this.formControl.error("Email is required", "invite", true);
+          return;
+        }
       }
+    } else {
+      payload.user_id = user_id;
     }
 
     if (message) {
@@ -107,7 +123,6 @@ export default class extends ApplicationController {
           this.formControl.error(data.message, "invite");
         }
       } catch (e) {
-        console.log(e);
         this.formControl.error("Something went wrong try again", "invite");
       }
     }

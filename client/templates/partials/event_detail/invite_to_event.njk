@@ -1,5 +1,5 @@
 {%import "partials/form_messages.njk" as messages %}
-{%macro invite_form(path, canInvite, multiple=true, success_message="Invite Sent!")%}
+{%macro invite_form(path, canInvite, multiple=true, success_message="Invite Sent!", list=null)%}
 <div data-controller="invite-to" data-invite-to-path="{{path}}" data-invite-to-multiple="{{multiple}}" data-invite-to-success-message="{{success_message}}">
 
 	{%if(canInvite)%}
@@ -17,74 +17,79 @@
 		{%if caller %}
 			{{caller()}}
 		{%endif%}
-	<form
-		class="p-4"
-		data-target="invite-to.inviteForm"
-		data-action="invite-to#sendInvite reset->invite-to#toggleInviteForm input->invite-to#inviteChange"
-		>
-		<div class="mb-2">
-			{{messages.messages("invite", 4000)}}
-		</div>
-		<p class="text-xl font-bold mb-2">Send an invite by email or phone</p>
-		<div class="flex flex-col">
-			<label class="font-bold" for="name">
-				Name of person to invite
-				<span class="font-normal text-xs">(Optional)</span>
-			</label>
-			<input id="name" type="text" name="name" class="input" placeholder="Name" />
-		</div>
-		<fieldset class="mt-2">
-			<legend class="required-text font-bold">Send invite using</legend>
-			<label for="invite-using-email-radio" class="cursor-pointer">Email</label>
-			<input type="radio" name="method" value="email" id="invite-using-email-radio" data-action="invite-to#selectMethod" checked/>
-			<label for="invite-using-sms-radio" class="cursor-pointer">Text Message</label>
-			<input type="radio" name="method" value="phone" id="invite-using-sms-radio" data-action="invite-to#selectMethod"/>
-		</fieldset>
-
-		<div class="mt-2 flex flex-col" data-target="invite-to.emailField">
-			<label class="font-bold sr-only" for="email">
-				Email
-			</label>
-			<input
-				id="email"
-				type="email"
-				name="email"
-				class="input"
-				data-target="invite-to.emailInput"
-				placeholder="Email"
-				required
-				/>
-		</div>
-		<div class="mt-2 flex flex-col hidden" data-target="invite-to.phoneField">
-			<label class="font-bold sr-only" for="phone">
-				Phone
-			</label>
-			<input
-				id="phone"
-				type="tel"
-				minlength="7"
-				data-target="invite-to.phoneInput"
-				name="phone"
-				class="input"
-				required
-				placeholder="Phone"
-				/>
-		</div>
-		<div class="mt-2">
-			<label for="invite-message" class="font-bold">Add optional message to invite</label>
-			<div>
-				<textarea name="message" class="input w-full resize-none" id="invite-message" placeholder="Message"></textarea>
+		<form
+			class="p-4"
+			data-target="invite-to.inviteForm"
+			data-action="invite-to#sendInvite reset->invite-to#toggleInviteForm input->invite-to#inviteChange"
+			>
+			<div class="mb-2">
+				{{messages.messages("invite", 4000)}}
 			</div>
-		</div>
-		<div class="mt-4">
-			<button class="btn btn-green" type="submit">
-				Send Invite
-			</button>
-			<button class="btn btn-white" type="reset">
-				Cancel
-			</button>
-		</div>
-	</form>
+			<p class="text-xl font-bold mb-2">Send an invite by email or phone</p>
+			<div class="flex flex-col">
+				<label class="font-bold" for="name">
+					Name of person to invite
+					<span class="font-normal text-xs">(Optional)</span>
+				</label>
+				<div data-controller="autocomplete" data-autocomplete-completions="{{list | dump}}" class="relative" data-target="autocomplete.parent" data-action="mousedown@document->autocomplete#checkOffClick click@document->autocomplete#offClick">
+					<input id="name" type="text" name="name" class="input w-full" placeholder="Name" data-target="autocomplete.input" data-action="focus->autocomplete#focus input->autocomplete#input blur->autocomplete#blur" autocomplete="{{"off" if list and list.length else "on"}}"/>
+					<input type="hidden" name="user_id" data-target="autocomplete.value" data-action="change->invite-to#setById"/>
+					<ul data-target="autocomplete.results" class="hidden shadow-md absolute bg-white w-full border border-gray-300"><li class="p-2 cursor-pointer hover:bg-blue-300 border-b border-gray-300" data-action="click->autocomplete#selectUser" data-target="autocomplete.liTemplate"></li></ul>
+				</div>
+			</div>
+			<div data-target="invite-to.sendVia">
+				<fieldset class="mt-2" >
+					<legend class="required-text font-bold">Send invite using</legend>
+					<label for="invite-using-email-radio" class="cursor-pointer">Email</label>
+					<input type="radio" name="method" value="email" id="invite-using-email-radio" data-action="invite-to#selectMethod" checked/>
+					<label for="invite-using-sms-radio" class="cursor-pointer">Text Message</label>
+					<input type="radio" name="method" value="phone" id="invite-using-sms-radio" data-action="invite-to#selectMethod"/>
+				</fieldset>
+				<div class="mt-2 flex flex-col" data-target="invite-to.emailField">
+					<label class="font-bold sr-only" for="email">
+						Email
+					</label>
+					<input
+						id="email"
+						type="email"
+						name="email"
+						class="input"
+						data-target="invite-to.emailInput"
+						placeholder="Email"
+						required
+						/>
+				</div>
+				<div class="mt-2 flex flex-col hidden" data-target="invite-to.phoneField">
+					<label class="font-bold sr-only" for="phone">
+						Phone
+					</label>
+					<input
+						id="phone"
+						type="tel"
+						minlength="7"
+						data-target="invite-to.phoneInput"
+						name="phone"
+						class="input"
+						required
+						placeholder="Phone"
+						/>
+				</div>
+			</div>
+			<div class="mt-2">
+				<label for="invite-message" class="font-bold">Add optional message to invite</label>
+				<div>
+					<textarea name="message" class="input w-full resize-none" id="invite-message" placeholder="Message"></textarea>
+				</div>
+			</div>
+			<div class="mt-4">
+				<button class="btn btn-green" type="submit">
+					Send Invite
+				</button>
+				<button class="btn btn-white" type="reset">
+					Cancel
+				</button>
+			</div>
+		</form>
 	</div>
 </div>
 {%endmacro%}

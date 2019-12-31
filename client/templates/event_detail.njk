@@ -11,7 +11,7 @@
 	{%endif%}
 	<div class="sm:flex">
 		<div class="flex-1">
-			{% call invite_form(invitePath, canInvite)%}
+			{% call invite_form(invitePath, canInvite, list=previousInvites)%}
 			<div class="p-4">
 				<div class="my-2">
 					<a target="_blank" rel="noopener noreferer" class="btn btn-white text-xl w-full block text-center" href="mailto:events+{{event.email_hash_id}}@{{inboundEmailDomain}}?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">{{icon("mail", "mr-2")}}Bulk Invite Via Email</a>
