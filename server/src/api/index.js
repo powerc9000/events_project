@@ -653,7 +653,7 @@ async function rsvpToEvent(req, h) {
     return Boom.unauthorized();
   }
 
-  if (req.payload.name) {
+  if (req.payload.name && !user.name) {
     server.getService("user").setName(user.id, req.payload.name);
   }
 

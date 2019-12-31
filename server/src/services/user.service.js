@@ -362,6 +362,9 @@ async function markMessageAsViewed(userId, messageId) {
 }
 
 async function getPreviousInvites(userId) {
+  if (!userId) {
+    return [];
+  }
   const previous = await server.app.db.any(
     sql`select users.* from users inner join invites on invites.user_id = users.id where invites.invited_by=${userId} group by users.id`
   );
