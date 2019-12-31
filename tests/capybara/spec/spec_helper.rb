@@ -22,6 +22,10 @@ module Helpers
       Capybara.current_session.driver.browser.manage.add_cookie :name => "user", :value => strVar.strip
       # here is where you can put the steps to fill out the log in form
     end
+    def remove_cookie()
+      Capybara.current_session.driver.browser.manage.delete_all_cookies
+    end
+
   end
 end
 
@@ -29,9 +33,6 @@ RSpec.configure do |config|
   config.before(:each) do
     config.include Capybara::DSL
     config.include Helpers::Authentication
-  end
-  config.after(:each) do
-    Capybara.current_session.instance_variable_set(:@touched, false)
   end
 end
 
