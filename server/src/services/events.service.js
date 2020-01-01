@@ -671,7 +671,7 @@ async function getUpcomingEventsDigest() {
 	select * from (
 	select u.*, (
 		select json_agg(e) from (
-			select ev.*, row_to_json(i) as invite from events ev 
+			select distinct on(ev.id) ev.*, row_to_json(i) as invite from events ev 
 			left join invites i on i.event_id = ev.id
 			where (i.user_id = u.id or ev.creator = u.id or u.id in (select user_id from group_members gm where gm.group_id = ev.group_id)) and ev.date >= now() and ev.date - now() <= interval '1 day'
 		) e
