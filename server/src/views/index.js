@@ -127,7 +127,7 @@ module.exports = {
     server.ext(
       "onPreResponse",
       (req, h) => {
-        if (req.response.isBoom && !req.response) {
+        if (req.response.isBoom && req.response) {
           const err = req.response;
           if (err.output.payload.statusCode === 404) {
             return h.view("404").code(404);
@@ -311,7 +311,7 @@ module.exports = {
 
     server.route({
       method: "GET",
-      path: "/{param}",
+      path: "/{param*}",
       handler: () => {
         return Boom.notFound();
       }
