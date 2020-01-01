@@ -101,6 +101,19 @@ CREATE TABLE public.digests (
 
 
 --
+-- Name: event_flags; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.event_flags (
+    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    event_id uuid NOT NULL,
+    resolved boolean DEFAULT false,
+    flag_message text,
+    created timestamp with time zone DEFAULT now()
+);
+
+
+--
 -- Name: events; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -297,6 +310,14 @@ ALTER TABLE ONLY public.digests
 
 
 --
+-- Name: event_flags event_flags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_flags
+    ADD CONSTRAINT event_flags_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: events events_email_hash_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -486,6 +507,14 @@ ALTER TABLE ONLY public.digests
 
 ALTER TABLE ONLY public.digests
     ADD CONSTRAINT digests_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: event_flags event_flags_event_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.event_flags
+    ADD CONSTRAINT event_flags_event_id_fkey FOREIGN KEY (event_id) REFERENCES public.events(id) ON DELETE CASCADE;
 
 
 --

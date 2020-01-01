@@ -9,41 +9,47 @@
 		</span>
 		</p>
 	{%endif%}
-
-	<div class="flex items-center">
-		<h1 class="font-bold text-3xl">{{event.name}}</h1>
-	</div>
-	{%if event.location %}
-		<h2 class="text-lg" aria-label="Location" title="Location">
-			{{icon("location")}}
-			<span>{{event.location}}</span>
-		</h2>
-	{%endif%}
-	<div class="">
-		<div class="text-lg" aria-label="Time">
-			{{icon("calendar")}}
-			<span
-				data-controller="format-date"
-				data-format-date-epoch="{{event.date}}"
-				data-format-date-format-string="PP"
-				data-target="format-date.date">{{date.format(date.fromUnixTime(event.date/1000), "PP")}}</span>
-			<div>
-				{{icon("clock")}}
-				<span
-					data-controller="format-date"
-					data-format-date-epoch="{{event.date}}"
-					data-format-date-format-string="p"
-					data-target="format-date.date">{{date.format(date.fromUnixTime(event.date/1000), "p OOOO")}}</span>
-				{%if event.end_date%}
-					<span> - </span>
-					<span data-controller="format-date"
-								data-format-date-epoch="{{event.end_date}}"
-								data-format-date-format-type="time-if-same-day"
-								data-format-date-compare="{{event.date}}"
-								data-target="format-date.date">{{date.format(date.fromUnixTime(event.date/1000), "PPpp OOOO")}}</span>
-				{%endif%}
+	<div class="flex">
+		<div >
+			<div class="flex items-center">
+				<h1 class="font-bold text-3xl">{{event.name}}</h1>
 			</div>
+			{%if event.location %}
+				<h2 class="text-lg" aria-label="Location" title="Location">
+					{{icon("location")}}
+					<span>{{event.location}}</span>
+				</h2>
+			{%endif%}
+			<div class="">
+				<div class="text-lg" aria-label="Time">
+					{{icon("calendar")}}
+					<span
+						data-controller="format-date"
+						data-format-date-epoch="{{event.date}}"
+						data-format-date-format-string="PP"
+						data-target="format-date.date">{{date.format(date.fromUnixTime(event.date/1000), "PP")}}</span>
+					<div>
+						{{icon("clock")}}
+						<span
+							data-controller="format-date"
+							data-format-date-epoch="{{event.date}}"
+							data-format-date-format-string="p"
+							data-target="format-date.date">{{date.format(date.fromUnixTime(event.date/1000), "p OOOO")}}</span>
+						{%if event.end_date%}
+							<span> - </span>
+							<span data-controller="format-date"
+										data-format-date-epoch="{{event.end_date}}"
+										data-format-date-format-type="time-if-same-day"
+										data-format-date-compare="{{event.date}}"
+										data-target="format-date.date">{{date.format(date.fromUnixTime(event.date/1000), "PPpp OOOO")}}</span>
+						{%endif%}
+					</div>
+				</div>
+			</div>
+			<a href="/events/{{event.slug}}.ics" class="text-blue-700 hover:underline text-sm">{{icon("calendar-plus", "mr-2 text-xl")}}Add to Calendar</a>
+		</div>
+		<div class="ml-auto text-xs">
+			<a href="report">{{icon("report")}}	Report event</a>
 		</div>
 	</div>
-	<a href="/events/{{event.slug}}.ics" class="text-blue-700 hover:underline text-sm">{{icon("calendar-plus", "mr-2 text-xl")}}Add to Calendar</a>
 </div>
