@@ -502,19 +502,24 @@ async function commonGroupData(user, groupIdOrCustom) {
   ];
 }
 async function groupDetail(req, h) {
-  if (req.query.member_key) {
-    return h.consumeMemberKey(req.query.member_key);
-  }
-  const [err, data] = await commonGroupData(
-    req.app.user,
-    req.params.idOrCustom
-  );
+  try {
+    if (req.query.member_key) {
+      return h.consumeMemberKey(req.query.member_key);
+    }
+    const [err, data] = await commonGroupData(
+      req.app.user,
+      req.params.idOrCustom
+    );
 
-  if (err) {
-    return err;
-  }
+    if (err) {
+      return err;
+    }
 
-  return h.view("group_detail.njk", data);
+    return h.view("group_detail.njk", data);
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
 }
 
 async function groupEvents(req, h) {

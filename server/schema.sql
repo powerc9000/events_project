@@ -258,7 +258,7 @@ CREATE TABLE public.users (
     phone text,
     settings jsonb DEFAULT '{}'::jsonb,
     ics_key uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    role text DEFAULT 'user'::text
+    user_role text DEFAULT 'user'::text
 );
 
 
@@ -594,7 +594,7 @@ ALTER TABLE ONLY public.logins
 --
 
 ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_role_fkey FOREIGN KEY (role) REFERENCES public.user_roles(key);
+    ADD CONSTRAINT users_role_fkey FOREIGN KEY (user_role) REFERENCES public.user_roles(key);
 
 
 --
