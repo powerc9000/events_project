@@ -96,7 +96,7 @@ async function getGroup(idOrCustom) {
 
 async function getGroupMembers(groupId) {
   const members = await server.app.db.any(
-    sql`select users.*, role from users 
+    sql`select users.*, gm.role from users 
 		inner join group_members gm on gm.group_id = ${groupId}
 		where users.id = gm.user_id
 		`
@@ -229,7 +229,6 @@ async function canUserRemoveMember(userId, groupId, memberId) {
   }
   //must be higher rank
   //
-  console.log(membership.role);
   const userMembership = await server.app.db.maybeOne(
     sql`select * from group_members where user_id=${userId} and group_id=${groupId} and role >= 'admin' and role >= ${membership.role}`
   );
