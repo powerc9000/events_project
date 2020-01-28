@@ -194,9 +194,9 @@
 			<h3 class="text-lg mt-2">Invites</h3>
 			{% for status in ["going", "invited", "maybe", "declined"]%}
 				<div class="border-b border-gray-300 pb-4 mt-2">
-					<h4 class="italic">
+					<p class="italic">
 						{{status | capitalize}}
-					</h4>
+					</p>
 					{%if canSeeInvites %}
 						{%if event[status].length %}
 
