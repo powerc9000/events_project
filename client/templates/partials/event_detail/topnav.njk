@@ -1,20 +1,20 @@
 {%macro event_nav(path, commentCount, active, allowDiscussion = false, canEdit=false, isCreator=false)%}
 {% from "../icons.njk" import icon %}
-{%set inactiveClass = "bg-white inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold"%}
-{%set activeClass = "bg-white inline-block py-2 px-4 text-blue-700  font-semibold font-semibold  border-l border-t border-r rounded-t border-gray-800" %}
+{%set inactiveClass = "bg-white inline-block py-2 px-4 text-blue-700 hover:text-blue-800 font-semibold"%}
+{%set activeClass = "bg-white inline-block py-2 px-4 text-blue-800 font-semibold font-semibold  border-l border-t border-r rounded-t border-gray-600" %}
 
-<ul class="flex border-b border-gray-800 text-md my-4 sm:text-sm text-xs">
+<ul class="flex border-b border-gray-800 text-sm my-4 sm:text-lg text-xs">
 	<li class="{{"-mb-px" if active === "base"}} mr-1 pl-2 text-center">
 		<a
-			class="{{activeClass if active === "base" else inactiveClass}}"
+			class="{{activeClass if active === "base" else inactiveClass}} flex items-center"
 			href="{{path}}"
-			>{{icon("book", "mr-2")}}Details</a>
+			>{{icon("info", "mr-2")}}Info</a>
 	</li>
 	{%if isCreator %}
 		<li class="{{"-mb-px" if active === "responses"}} mr-1 text-center relative">
-			<a class="{{activeClass if active === "responses" else inactiveClass}}"
+			<a class="{{activeClass if active === "responses" else inactiveClass}} flex items-center"
 				 href="{{path}}/responses">
-				{{icon("note", "mr-2")}}Responses
+				{{icon("mail-in", "mr-2")}}Responses
 			</a>
 		</li>
 	{%endif%}
