@@ -310,7 +310,7 @@ async function manageEvent(req, h) {
     return err;
   }
 
-  return h.view("manage_event", data);
+  return h.view("manage_event", { ...data, activeTab: "manage" });
 }
 
 async function viewEventResponses(req, h) {

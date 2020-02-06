@@ -1,9 +1,9 @@
 {% from "./icons.njk" import icon %}
 
 <header class="border-b border-green-400 ">
-	<nav data-controller="menu-dropdown">
+	<nav data-controller="menu-dropdown" class="sm:flex container mx-auto">
 
-		<div class="whitespace-no-wrap flex items-center mx-auto py-2 container mx-auto">
+		<div class="whitespace-no-wrap flex items-center py-2 {{"flex-1" if not loggedIn}}">
 			<a href="/" class="underline font-bold text-md  text-lg block" aria-label="Juniper City" style="max-height:50px" id="logo" data-turbolinks-permanent>
 				<img src="{{imgPath}}/logo_small.png" alt="Juniper City Logo" class="object-contain block" width="150" height="28"/>
 			</a>
@@ -13,36 +13,33 @@
 				{%endif%}
 		</div>
 		{%if loggedIn %}
-			<div class="bg-green-100 border-t border-green-400">
-				<ul class="items-center flex container p-0 mx-auto" data-target="menu-dropdown.menu">
-
-				<li class="flex-1">
-					<a href="/" class="text-xs sm:text-sm hover:bg-green-400 block p-2 text-center ">
-
-						<span class="flex flex-col justify-center"><span class="text-xl sm:text-sm">{{icon('home')}}</span>Home</span>
+			<div class="ml-auto items-center mt-4 sm:mt-0">
+				<ul class="items-center flex h-full" data-target="menu-dropdown.menu">
+				<li class="mr-4">
+					<a href="/" class="text-xs sm:text-sm text-green-800 flex items-center font-medium border-b-2 hover:border-green-800 border-transparent">
+						{{icon('home', "mr-1")}}Home
 					</a>
 				</li>
-				<li class="flex-1">
-					<a href="/create" class="text-xs sm:text-sm hover:bg-green-400 block p-2 text-center ">
-
-						<span class="flex flex-col"><span class="text-xl sm:text-sm">{{icon("plus")}}</span>Create Event</span>
+				<li class="mr-4">
+					<a href="/create" class="text-xs sm:text-sm flex items-center text-green-800 font-medium border-b-2 hover:border-green-800 border-transparent">
+						{{icon("plus", "mr-1")}}Create
 					</a>
 				</li>
-				<li class="flex-1">
-					<a href="/groups" class="text-xs sm:text-sm hover:bg-green-400 block p-2 border-green-400 text-center ">
-						<span class="p-0 flex flex-col justify-center"><span class="text-xl sm:text-sm">{{icon("group", "icon-fill")}}</span>My Groups</span></a>
+				<li class="mr-4">
+					<a href="/groups" class="text-xs sm:text-sm flex items-center text-green-800 font-medium border-b-2 hover:border-green-800 border-transparent">
+						{{icon("group", "icon-fill mr-1")}}Groups</a>
 				</li>
-				<li class="flex-1">
-					<a href="/settings" class="text-xs sm:text-sm hover:bg-green-400 block p-2 text-center">
-						<span class="p-0 flex flex-col"><span class="text-xl sm:text-sm">{{icon("settings", "icon-fill")}}</span>My Settings</span></a>
+				<li class="mr-4">
+					<a href="/settings" class="text-xs sm:text-sm flex items-center text-green-800 font-medium border-b-2 hover:border-green-800 border-transparent">
+						{{icon("settings", "icon-fill mr-1")}}Settings</a>
 				</li>
-				<li class="flex-1">
+				<li class="">
 					<button
 						data-controller="logout"
 						data-action="logout#logout"
-						class="text-xs sm:text-sm hover:bg-green-400 block p-2 block w-full text-center"
+						class="text-xs sm:text-sm flex items-center text-green-800 font-medium border-b-2 hover:border-green-800 border-transparent"
 						>
-						<span class="p-0 flex flex-col"><span class="text-xl sm:text-sm">{{icon("signout")}}</span>Logout</span>
+						{{icon("signout", "mr-1")}}Logout
 					</button>
 				</li>
 

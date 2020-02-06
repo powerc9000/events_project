@@ -12,9 +12,6 @@
 				<span class="p-1 text-sm text-white bg-green-800 rounded align-middle">{{members.length}} {{"members" if members.length > 1 else "member"}}
 				</span>
 			</span>
-			{%if canEdit %}
-				<a class="ml-2 btn btn-blue text-xs" href="/groups/{{group.custom_path if group.custom_path else group.id}}/edit">Edit</a>
-			{%endif%}
 		</h1>
 		{{group_nav(path, role=role)}}
 		<div class="flex flex-col flex-1">

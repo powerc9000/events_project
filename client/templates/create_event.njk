@@ -11,6 +11,7 @@
 			{{messages("create")}}
 		</div>
 		<form
+			class="mt-4"
 			data-controller="create"
 			data-create-tz="{{tz}}"
 			data-create-editing="{{"true" if event.id else "false"}}"
@@ -21,7 +22,9 @@
 			autocomplete="off"
 			>
 			<input type="hidden" name="edited_event" value="{{event.id}}" />
-			<div>
+			<div class="sm:flex">
+				<div class="sm:w-1/4"></div>
+				<div class="flex-1">
 				<label class="font-bold cursor-pointer required-text" for="event-name">Event Name</label>
 				<input
 					id="event-name"
@@ -32,14 +35,20 @@
 					required
 					value="{{event.name}}"
 					/>
+				</div>
 			</div>
 
-			<div class="mt-2">
+			<div class="my-6 sm:flex">
+				<div class="sm:w-1/4 mb-4">
+					<p class="font-medium">Event Dates</p>
+					<p class="text-xs text-gray-700 pr-4">Start and end date and times. Only the start date and time are required</p>
+				</div>
+				<div class="flex-1 ">
 				<fieldset>
-					<legend class="font-bold">Event Date</legend>
-					<div class="ml-2">
-						<div class="p-2 border border-gray-300">
-							<div class="w-2/12 required-text">Start</div>
+					<legend class="font-bold sr-only">Event Date</legend>
+					<div class="">
+						<div class="py-2">
+							<div class="w-2/12 required-text font-semibold">Start</div>
 							<div class="flex items-center">
 								<div class="">
 									<label class="sr-only font-bold cursor-pointer" for="event-start-date">
@@ -69,8 +78,8 @@
 								</div>
 							</div>
 						</div>
-						<div class="p-2 border border-gray-300 mt-1">
-							<div class="w-2/12">End</div>
+						<div class="py-2 mt-1">
+							<div class="w-2/12 font-bold">End</div>
 							<div class="flex items-center">
 								<div class="">
 									<label class="sr-only font-bold cursor-pointer" id="event-end-date">
@@ -101,8 +110,8 @@
 							</div>
 						</div>
 
-						<div class="mt-2 p-2 border border-gray-300">
-							<label class="timezone" for="timezone">Timezone</label>
+						<div class="mt-2 py-2 ">
+							<label class="timezone mr-2 font-bold" for="timezone">Timezone</label>
 							<select name="tz" class="input" id="timezone" data-target="create.tz">
 								<option value="">Select Timezone</option>
 								{%for zone in timezones %}
@@ -112,8 +121,14 @@
 						</div>
 					</div>
 				</fieldset>
+				</div>
 			</div>
-			<div class="mt-2">
+			<div class="mt-2 sm:flex">
+				<div class="sm:w-1/4 mb-4">
+					<p class="font-medium">Extra Details</p>
+					<p class="text-xs text-gray-700 pr-4">You don't have to specify a location, but it is recommended.</p>
+				</div>
+				<div class="flex-1">
 				<label class="font-bold cursor-pointer" for="event-location">Event Location</label>
 				<input
 					id="event-location"
@@ -123,17 +138,29 @@
 					placeholder="Event Location"
 					value="{{event.location}}"
 					/>
+				</div>
 			</div>
-			<div class="mt-2" data-controller="trix">
+			<div class="mt-2 sm:flex" data-controller="trix">
+				<div class="sm:w-1/4 mb-2 mt-4 pr-4">
+					<p class="text-xs text-gray-700 pr-4">Provide a fun description</p>
+				</div>
+				<div class="flex-1">
 				<input type="hidden" id="description" value="{{event.description}}" name="description" />
 				<label class="font-bold cursor-pointer required-text" for="editor">Event Description</label>
 				<trix-editor input="description" id="editor"></trix-editor>
+				</div>
 			</div>
 			{%if groups.length %}
-				<div class="mt-2">
-					<label class="font-bold cursor-pointer">
+				<div class="mt-8 sm:flex">
+					<div class="sm:w-1/4 mb-4">
+					<label class="cursor-pointer font-medium" for="group_select">
 						Create event in group
-						<select name="group_id" class="input">
+
+					</label>
+					<p class="text-xs text-gray-700 pr-4">Create this event in a group. Anyone in the group will be able to see this event.</p>
+					</div>
+					<div class="flex-1">
+						<select name="group_id" class="input" id="group_select">
 							<option value="">No Group</option>
 							{%for group in groups%} 
 								{%set selected = group.id === forGroup or event.group_id === group.id%}
@@ -142,30 +169,50 @@
 								</option>
 							{%endfor%}
 						</select>
-					</label>
+					</div>
 				</div>
 			{%endif%}
-			<div class="mt-2 font-bold">
-				<label class="cursor-pointer">
-					Private: <input type="checkbox" name="is_private" {{'checked' if not event.id or event.is_private}} class="cursor-pointer"/>
-				</label>
+			<div class="mt-8 flex">
+				<div class="sm:w-1/4 w-3/4">
+					<label for="private_check" class="font-medium cursor-pointer">Make event private</label>
+					<p class="text-xs">Private events can only be seen by people invited or who you share a special link with</p>
+				</div>
+				<div>
+										<input type="checkbox" name="is_private" {{'checked' if not event.id or event.is_private}} class="cursor-pointer" id="private_check"/>
+				</div>
 			</div>
-			<div class="font-bold">
-				<label class="cursor-pointer">
-					Show Participants: <input type="checkbox" name="show_participants"
+			<div class="flex mt-4">
+				<div class="sm:w-1/4 w-3/4">
+					<label for="show_participants_check" class="font-medium cursor-pointer">Show Participants</label>
+					<p class="text-xs">When this option is checked anyone invited to the event can see who has been invited. When unchecked only you can see the invited</p>
+				</div>
+				<div>
+				 <input type="checkbox" name="show_participants" id="show_participants_check"
 																										class="cursor-pointer" {{'checked' if event.show_participants}} />
 				</label>
+				</div>
 			</div>
-			<div class="font-bold">
-				<label class="cursor-pointer">
-					Allow Comments: <input type="checkbox" name="allow_comments" {{'checked'
-																								 if event.allow_comments}} class="cursor-pointer" />
+			<div class="flex mt-4">
+				<div class="sm:w-1/4 w-3/4">
+					<label for="allow_comments_check" class="font-medium cursor-pointer">Allow comments</label>
+					<p class="text-xs">When this option is check invitees to the event can comment and discuss the event.</p>
+				</div>
+				<div>
+				 <input type="checkbox" name="allow_comments" id="allow_comments_check" {{'checked'
+																												if event.allow_comments}} class="cursor-pointer" />
+				</div>
 				</label>
 			</div>
-			<div class="font-bold">
-				<label class="cursor-pointer">
-					Allow Participants to invite others: <input type="checkbox" {{'checked'
-																											if event.can_invite}} name="can_invite" class="cursor-pointer" />
+			<div class="flex mt-4 mb-8">
+				<div class="sm:w-1/4 w-3/4">
+				<label class="cursor-pointer font-medium">
+					Allow Participants to invite others</label>
+				<p class="text-xs">When this is checked anyone who has been invited to this event can invite others.</p>
+				</div>
+				<div>
+				<input type="checkbox" {{'checked'
+							 if event.can_invite}} name="can_invite" class="cursor-pointer" />
+				</div>
 				</label>
 			</div>
 
