@@ -200,6 +200,10 @@ footer {
 	stroke-width:10%;
 }
 
+.welcome-section-bg-purple {
+ background: rgb(128,90,213);
+background: linear-gradient(151deg, rgba(128,90,213,1) 51%, #9f7aea 90%); 
+}
 
 
 @responsive {
@@ -211,7 +215,7 @@ footer {
 	}
 
 	.banner-green {
-		background-color: #75e3a7;
+		background-color: #80E7B0;
 	}
 
 	.bg-juniper-city {
