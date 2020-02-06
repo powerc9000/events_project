@@ -3,14 +3,8 @@
 {%import "partials/form_messages.njk" as form_messages%} 
 {% from "partials/event_detail/invite_to_event.njk" import invite_form%}
 {%block tabContent%}
-	{%if not user and canRSVP%}
-		<div class="bg-blue-100 p-1 border-l-4 border-blue-400 my-2 pl-4" id="event-detail-not-logged-in-message">
-			<p>You are not logged in. You can still RSVP but other features are limited.</p>
-			<a href="/login?redirect_to={{__currentPath() | urlencode}}" class="text-blue-700 hover:underline">Login</a> to enable all features.
-		</div>
-	{%endif%}
 	<div class="sm:flex">
-		<div class="flex-1">
+		<div class="flex-1 mt-4">
 			{% call invite_form(invitePath, canInvite, list=previousInvites)%}
 			<div class="p-4">
 				<div class="my-2">
@@ -188,10 +182,10 @@
 				<hr class="sm:hidden" />
 		</div>
 		<div
-			class="sm:w-1/4 sm:ml-5 p-2 sm:border-l border-gray-300 sm:pl-5 mt-5 sm:mt-0"
+			class="sm:w-1/4 sm:ml-5 p-2 sm:border-l border-gray-300 sm:pl-5 mt-5 sm:mt-0 bg-purple-800 text-purple-100"
 			>
 			{{form_messages.messages("resend")}}
-			<h3 class="text-lg mt-2">Invites</h3>
+			<h3 class="text-lg mt-2 text-purple-100">Invites</h3>
 			{% for status in ["going", "invited", "maybe", "declined"]%}
 				<div class="border-b border-gray-300 pb-4 mt-2">
 					<p class="italic">
@@ -209,8 +203,8 @@
 									invite.user.id === user.id) %}
 									<li>
 										<details class="border border-gray-300 mb-2">
-											<summary class="cursor-pointer open:bg-gray-100 open:border-b border-gray-300 px-2">{{name}}</summary>
-											<div class="p-2">
+											<summary class="cursor-pointer open:bg-purple-100 open:border-b open:text-purple-700 border-gray-300 px-2">{{name}}</summary>
+											<div class="p-2 bg-white text-purple-700">
 												{%if canInvite %}
 													<button
 														class="text-blue-700 hover:underline"

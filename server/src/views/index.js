@@ -348,6 +348,14 @@ module.exports = {
           return h.view("validation_error", { validation: { phone: "123" } });
         }
       });
+
+      server.route({
+        method: "GET",
+        path: "/design-system",
+        handler: (req, h) => {
+          return h.view("design_system");
+        }
+      });
     }
   }
 };

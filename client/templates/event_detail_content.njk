@@ -7,6 +7,12 @@
 	<div class="container mx-auto content" data-controller="event-detail" data-event-detail-event-id="{{event.id}}">
 		{%set discussion = event.allow_comments and user%}
 		{%include "partials/event_detail/top_part.njk"%}
+		{%if not user and canRSVP%}
+		<div class="bg-purple-100 p-1 border-l-4 border-purple-400 my-2 pl-4" id="event-detail-not-logged-in-message">
+			<p>You are not logged in. You can still RSVP but other features are limited.</p>
+			<a href="/login?redirect_to={{__currentPath() | urlencode}}" class="text-blue-700 hover:underline">Login</a> to enable all features.
+		</div>
+		{%endif%}
 		{{event_nav(path, comments.length, activeTab, allowDiscussion=discussion, canEdit=canEdit, isCreator=isCreator)}}
 		{%block tabContent %}
 		{%endblock%}

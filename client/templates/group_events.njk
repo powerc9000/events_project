@@ -7,7 +7,7 @@
 
 
 		<h1 class="text-2xl flex items-center justify-center"><span>{{group.name}}</span> <span class="ml-2 align-middle"><span class="p-1 text-sm text-white bg-green-800 rounded align-middle">{{members.length}} {{"members" if members.length > 1 else "member"}}</span></span>
-			<a class="ml-2 btn btn-blue text-xs" href="/groups/{{group.custom_path if group.custom_path else group.id}}/edit">Edit</a></h1>
+		</h1>
 		{{group_nav(path, active="events", role=role)}}
 
 		<div class="">
