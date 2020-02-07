@@ -24,7 +24,7 @@
 {%endblock%}
 {%macro tzLi(date, colors, index)%}
 {%set idx = index % colors.length %}
-<li class="{{"hidden" if not date}} {{colors[idx]}} text-xl font-bold list-none border-l-4 pl-4 mt-2 border mb-2"
+<li class="{{"hidden" if not date}} {{colors[idx]}} text-xl font-bold list-none border-l-4 pl-4 mt-4 border mb-2"
 		{%if not date %}
 			data-target="event-list.titleTemplate" data-new-target="event-list.dayTitle"
 																					 {%else%}
@@ -49,11 +49,11 @@
 				{%set newGroup = true %}
 			{%endif%}
 		{%endif%}
-		<li class="flex {{"pl-8" if not showDate}} {{"border-t-2 border-gray-300" if showDate and not newGroup}}" data-target="event-list.event" data-date="{{event.date}}">
+		<li class="flex {{"pl-8" if not showDate}} {{"border-t border-purple-700" if showDate and not newGroup}} pt-2 pb-2" data-target="event-list.event" data-date="{{event.date}}">
 
 			{%- if showDate %}
 
-			<div class="flex items-center px-2 border-r-2 border-gray-200 bg-gray-100 w-3/12 justify-end">
+			<div class="flex items-center px-2 border-r-2  border-purple-700 w-3/12 justify-end text-purple-900">
 				<span
 					data-controller="format-date"
 					data-format-date-epoch="{{event.date}}"
@@ -66,24 +66,21 @@
 		<div class="flex-1 {{"pl-2" if showDate}}">
 			<a
 				href="/events/{{event.slug}}"
-				class="text-blue-700 hover:underline"
+				class="btn-link btn-green"
 				>
 
-				<h3 class="text-lg">
+				<p class="text-lg font-medium">
 					<span>
 						{{event.name}}
 					</span>
-				</h3>
+				</p>
 			</a>
 			</h3>
+			<div class="text-xs text-gray-700">
 			{%if showDescription%}
-				<details>
-					<summary class="cursor-pointer bg-gray-100 px-2">Details</summary>
-					<div>
-						<div class="trix-c">{{event.description | safe}}</div>
-					</div>
-				</details>
-			{%endif%}
+					{{event.description | striptags | truncate(50)}}
+				{%endif%}
+			</div>
 		</div>
 		</li>
 	{%else%}
