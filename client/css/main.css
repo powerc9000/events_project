@@ -133,6 +133,12 @@ footer {
 			@apply bg-red-700 text-white;
 		}
 	}
+	&.btn-pink {
+		@apply bg-pink-500 text-white;
+		&:hover {
+			@apply bg-pink-400;
+		}
+	}
 }
 
 .btn-link {
@@ -198,29 +204,32 @@ footer {
 
 .font-bold .icon {
 	stroke-width:10%;
-}
 
+}
+.top-welcome-image {
+	right: -5%;
+	top: -10%;
+}
 .welcome-section-bg-purple {
 	background: rgb(128,90,213);
 	background: linear-gradient(151deg, rgba(128,90,213,1) 32%, rgba(214,188,250,1) 95%); 
 }
 .welcome-section-bg-white {
+
 	background: rgb(255,255,255);
 	background: linear-gradient(151deg, rgba(255,255,255,1) 32%, rgba(247,250,252,1) 67%); 
 }
-
+.welcome-section-bg-pink {
+	background: rgb(246,135,179);
+	background: linear-gradient(151deg, rgba(246,135,179,1) 44%, rgba(251,182,206,1) 76%);
+}
 
 @responsive {
-	.banner-text {
-		text-shadow: 2px 2px 0px white, -2px -2px 0px white, 2px 0px 0px white, -2px 0px 0px white, 0px 2px 0px white, 0px -2px 0px white;
-	}
-	.banner-text-none{
-		text-shadow:none;
-	}
 
 	.banner-green {
  background: rgb(168,226,195);
-background: linear-gradient(151deg, rgba(168,226,195,1) 17%, rgba(128,231,176,1) 40%); 
+background-color: #9ae6b4;
+background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23276749' fill-opacity='0.16' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E"), linear-gradient(151deg, rgba(168,226,195,1) 17%, rgba(128,231,176,1) 40%);
 	}
 
 	.bg-juniper-city {
@@ -228,12 +237,14 @@ background: linear-gradient(151deg, rgba(168,226,195,1) 17%, rgba(128,231,176,1)
 		background-size:contain;
 		background-repeat: no-repeat;
 		background-position: 50% 50%;
+		text-shadow: 2px 2px 0px white, -2px -2px 0px white;
 	}
 	.bg-juniper-city-repeat {
 		background-repeat:repeat;
 	}
 	.bg-juniper-city-none {
 		background: none;
+		text-shadow:none;
 	}
 }
 
