@@ -1,9 +1,5 @@
 let server;
 const Queue = require("bull");
-const email = require("./email_task_worker");
-const sms = require("./sms_task_worker");
-const inboundEmail = require("./inbound_email");
-const notifications = require("./notifications");
 module.exports = {
   name: "tasks",
   register: async function(hapiServer) {
@@ -23,62 +19,21 @@ module.exports = {
         : {})
     };
 
-    const emailQueue = new Queue("email", {
-      redis: redisConnection
-    });
-    const smsQueue = new Queue("sms", {
-      redis: redisConnection
-    });
-    const inboundEmailQueue = new Queue("inbound-email", {
-      redis: redisConnection
-    });
+    const normalizedPath = require("path").join(__dirname, "/handlers");
+    require("fs")
+      .readdirSync(normalizedPath)
+      .forEach((file) => {
+        const handler = require(`./handlers/${file}`);
 
-    const notificationsQueue = new Queue("notifications", {
-      redis: redisConnection
-    });
+        const queue = new Queue(handler.name, {
+          redis: redisConnection
+        });
 
-    emailQueue.process(email(server));
-    smsQueue.process(sms(server));
-    inboundEmailQueue.process(inboundEmail(server));
-    notificationsQueue.process(notifications(server));
+        queue.process(handler.func(server));
+        queues.push(queue);
 
-    queues.push(emailQueue);
-    queues.push(smsQueue);
-    queues.push(inboundEmailQueue);
-    queues.push(notificationsQueue);
-
-    if (process.env.NODE_ENV !== "production") {
-      const jobs = await notificationsQueue.getRepeatableJobs();
-      jobs.forEach((job) => {
-        notificationsQueue.removeRepeatableByKey(job.key);
+        handler.onCreate(queue);
       });
-    }
-    notificationsQueue.add(
-      {
-        type: "check-comments"
-      },
-      {
-        jobId: "check-comments",
-        repeat: {
-          every: 60 * 1000 * 5 // Five minutes
-        }
-      }
-    );
-    const repeat =
-      process.env.NODE_ENV !== "production" ? 1000 * 30 : 60 * 60 * 1000;
-    const repeatOpts = {
-      jobId: "upcoming-event-digest",
-      repeat: {
-        every: repeat //Hour
-      }
-    };
-
-    notificationsQueue.add(
-      {
-        type: "check-event-digest"
-      },
-      repeatOpts
-    );
 
     server.decorate("server", "createTask", function(type, data) {
       server.log(["task-created", "info"], {

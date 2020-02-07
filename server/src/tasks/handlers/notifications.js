@@ -1,6 +1,6 @@
 const sql = require("slonik").sql;
-
-module.exports = (server) => async (job) => {
+const name = "notifications";
+const func = (server) => async (job) => {
   server.log(["taskWorker", "notifications"], {
     type: job.data.type,
     status: "started",
@@ -88,4 +88,45 @@ module.exports = (server) => async (job) => {
     });
     console.log(e);
   }
+};
+
+const onCreate = async (queue) => {
+  if (process.env.NODE_ENV !== "production") {
+    const jobs = await queue.getRepeatableJobs();
+    jobs.forEach((job) => {
+      queue.removeRepeatableByKey(job.key);
+    });
+  }
+  queue.add(
+    {
+      type: "check-comments"
+    },
+    {
+      jobId: "check-comments",
+      repeat: {
+        every: 60 * 1000 * 5 // Five minutes
+      }
+    }
+  );
+  const repeat =
+    process.env.NODE_ENV !== "production" ? 1000 * 30 : 60 * 60 * 1000;
+  const repeatOpts = {
+    jobId: "upcoming-event-digest",
+    repeat: {
+      every: repeat //Hour
+    }
+  };
+
+  queue.add(
+    {
+      type: "check-event-digest"
+    },
+    repeatOpts
+  );
+};
+
+module.exports = {
+  func,
+  name,
+  onCreate
 };
