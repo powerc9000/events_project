@@ -1,6 +1,7 @@
 const fetch = require("node-fetch");
 let server;
-module.exports = (hapiServer) => async (job) => {
+const name = "sms";
+const func = (hapiServer) => async (job) => {
   server = hapiServer;
   server.log(["taskWorker", "sms-task-worker", "start"], {
     status: "started"
@@ -151,3 +152,11 @@ async function sendText(phone, message) {
     });
   }
 }
+
+const onCreate = () => {};
+
+module.exports = {
+  func,
+  name,
+  onCreate
+};

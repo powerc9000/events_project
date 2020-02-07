@@ -9,7 +9,7 @@ const nunjucks = new nj.Environment();
 
 const fns = require("date-fns");
 const fnsz = require("date-fns-tz");
-const { sanitize, createIcsFileBuilder } = require("../utils");
+const { sanitize, createIcsFileBuilder } = require("../../utils");
 let server;
 
 nunjucks.addFilter("date", (date, tz) => {
@@ -26,7 +26,8 @@ nunjucks.addFilter("date", (date, tz) => {
   const zoned = fnsz.utcToZonedTime(parsedDate, tz);
   return fnsz.format(zoned, "PPpp z", { timeZone: tz });
 });
-module.exports = (hapiServer) => async (job) => {
+const name = "email";
+const func = (hapiServer) => async (job) => {
   try {
     server = hapiServer;
     const type = job.data.type;
@@ -353,3 +354,11 @@ function getTemplate(name) {
     );
   });
 }
+
+const onCreate = () => {};
+
+module.exports = {
+  func,
+  name,
+  onCreate
+};

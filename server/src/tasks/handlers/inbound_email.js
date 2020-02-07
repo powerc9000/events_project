@@ -1,6 +1,7 @@
 let server;
 const ics = require("ical.js");
-module.exports = (hapiServer) => {
+const name = "inbound-email";
+const func = (hapiServer) => {
   server = hapiServer;
 
   return async (job) => {
@@ -148,3 +149,11 @@ async function bulkInvite(data) {
     console.log(e);
   }
 }
+
+const onCreate = () => {};
+
+module.exports = {
+  func,
+  name,
+  onCreate
+};
