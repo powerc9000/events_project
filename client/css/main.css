@@ -94,7 +94,7 @@ footer {
 }
 
 .btn {
-	@apply rounded-lg p-1 px-5;
+	@apply rounded-lg p-1 px-5 shadow;
 	&.btn-green {
 		@apply bg-green-700 border border-green-600 text-white;
 		&:hover {
@@ -201,8 +201,12 @@ footer {
 }
 
 .welcome-section-bg-purple {
- background: rgb(128,90,213);
-background: linear-gradient(151deg, rgba(128,90,213,1) 51%, #9f7aea 90%); 
+	background: rgb(128,90,213);
+	background: linear-gradient(151deg, rgba(128,90,213,1) 32%, rgba(214,188,250,1) 95%); 
+}
+.welcome-section-bg-white {
+	background: rgb(255,255,255);
+	background: linear-gradient(151deg, rgba(255,255,255,1) 32%, rgba(247,250,252,1) 67%); 
 }
 
 
@@ -215,7 +219,8 @@ background: linear-gradient(151deg, rgba(128,90,213,1) 51%, #9f7aea 90%);
 	}
 
 	.banner-green {
-		background-color: #80E7B0;
+ background: rgb(168,226,195);
+background: linear-gradient(151deg, rgba(168,226,195,1) 17%, rgba(128,231,176,1) 40%); 
 	}
 
 	.bg-juniper-city {

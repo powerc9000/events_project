@@ -3,14 +3,15 @@
 {%block content %}
 	<div class="container mx-auto mt-4">
 		<div data-controller="filter-events">
-			<form class="controls sm:flex items-center" data-target="filter-events.controls" data-action="change->filter-events#updateFilters" autocomplete="off">
-				<div class="mr-2 p-2 border-gray-300 border w-full">
-					<label for="my-events-checkbox" class="cursor-pointer font-bold">Only my events</label>
+				<h1 class="mb-4 text-xl">Filter events</h1>
+			<form class="controls sm:flex items-end bg-purple-800 text-white" data-target="filter-events.controls" data-action="change->filter-events#updateFilters" autocomplete="off">
+				<div class="mr-2 p-2 w-full">
+					<label for="my-events-checkbox" class="cursor-pointer font-bold cursor-pointer">Only events I created</label>
 					<input type="checkbox" id="my-events-checkbox" name="creator_only" {{"checked" if query.creator}}/>
 				</div>
-				<div class="mr-2 p-2 border-gray-300 border mt-2 sm:mt-0 w-full">
-					<label for="max-age-input" class="cursor-pointer font-bold">Max Age</label>
-					<select name="max_age" class="input w-full" id="max-age-input">
+				<div class="mr-2 p-2 mt-2 sm:mt-0 w-full">
+					<label for="max-age-input" class="cursor-pointer font-bold">Past events from:</label>
+					<select name="max_age" class="input w-full text-black" id="max-age-input">
 						<option value="10 years">All Past events</option>
 						<option value="1 year" {{"selected" if query.maxAge === "1 year"}}>1 year ago</option>
 						<option value="6 months" {{"selected" if query.maxAge === "6 months"}}>6 months ago</option>
@@ -19,9 +20,9 @@
 						<option value="0 days" {{"selected" if query.maxAge === "0 days"}}>Only current And Future Events</option>
 					</select>
 				</div>
-				<div class="p-2 border-gray-300 border mt-2 sm:mt-0 w-full">
-					<label for="max-until-input" class="cursor-pointer font-bold">Future events</label>
-					<select name="max_until" class="input w-full" id="max-until-input">
+				<div class="p-2 mt-2 sm:mt-0 w-full">
+					<label for="max-until-input" class="cursor-pointer font-bold">Future events until:</label>
+					<select name="max_until" class="input w-full text-black" id="max-until-input">
 						<option value="0 days" {{"selected" if query.maxUntil === "0 days"}}>Only Past Events</option>
 						<option value="1 month" {{"selected" if query.maxUntil === "1 month"}}>1 month from now</option>
 						<option value="2 months" {{"selected" if query.maxUntil === "2 months"}}>2 months from now</option>
@@ -31,7 +32,7 @@
 					</select>
 				</div>
 			</form>
-			<div class="mt-4">
+			<div class="mt-4 mb-16">
 				{{eventsList(events, user=user)}}
 			</div>
 		</div>
