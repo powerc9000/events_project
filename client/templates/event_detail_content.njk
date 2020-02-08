@@ -13,7 +13,7 @@
 			<a href="/login?redirect_to={{__currentPath() | urlencode}}" class="text-blue-700 hover:underline">Login</a> to enable all features.
 		</div>
 		{%endif%}
-		{{event_nav(path, comments.length, activeTab, allowDiscussion=discussion, canEdit=canEdit, isCreator=isCreator)}}
+		{{event_nav(path, comments.length, activeTab, allowDiscussion=discussion, canEdit=canEdit, isCreator=isCreator, canInvite=canInvite)}}
 		{%block tabContent %}
 		{%endblock%}
 	</div>

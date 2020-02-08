@@ -5,32 +5,9 @@
 {%block tabContent%}
 	<div class="sm:flex">
 		<div class="flex-1 mt-4">
-			{% call invite_form(invitePath, canInvite, list=previousInvites)%}
-			<div class="p-4">
-				<div class="my-2">
-					<a target="_blank" rel="noopener noreferer" class="btn btn-white text-xl w-full block text-center" href="mailto:events+{{event.email_hash_id}}@{{inboundEmailDomain}}?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">{{icon("mail", "mr-2")}}Bulk Invite Via Email</a>
-					<a href="/help/bulk-invite-via-email" class="text-sm text-blue-700 block mt-2 hover:underline">What is bulk invite? {{icon("info")}}</a>
-				</div>
-
-				<div class="hr-text">
-					<span class="text-xl font-bold">OR</span>
-				</div>
+			<div>
+				<a href="{{path}}/share" class="btn btn-pink btn-large text-xl sm:w-auto flex-inline items-center">{{icon("person", "mr-2")}}Invite people to event</a>
 			</div>
-			{%endcall%}
-			{%if isCreator %}
-				<div data-target="event.detail.shareableLink" data-controller="copy-to-clipboard" class="mt-2 lg:w-2/3 border-gray-200 border p-2">
-					<p class="font-bold">Shareable link</p>
-					<div class="mb-2">
-						{{form_messages.messages("copy")}}
-					</div>
-					<div class="flex items-center">
-						<div class="w-full mr-2">
-							<input type="text" value="https://junipercity.com/events/{{event.slug}}?event_key={{event.secret_key}}" class="input w-full text-xs " data-target="copy-to-clipboard.input" readonly id="event-detail-shareable-link"/>
-						</div>
-						<button data-action="copy-to-clipboard#copy" class="btn btn-green flex items-center"><span class="mr-2 font-bold">{{icon("clipboard")}}</span>Copy</button>
-					</div>
-				</div>
-			{%endif%}
 			{%if canRSVP%}
 
 				<div class="my-2" id="rsvp-message" data-turbolinks-permanent>
