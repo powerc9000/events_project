@@ -64,6 +64,40 @@ function init(hapiServer) {
     path: "/events/{slug}/responses",
     handler: viewEventResponses
   });
+  server.route({
+    method: "GET",
+    path: "/events/{slug}/share",
+    handler: shareEvent
+  });
+}
+
+async function shareEvent(req, h) {
+  const [err, data] = await commonEventData(
+    req.userId(),
+    req.params.slug,
+    req.query.event_key
+  );
+
+  if (err) {
+    return err;
+  }
+  const previousInvites = await server
+    .getService("user")
+    .getPreviousInvites(req.userId());
+
+  return h.view("share_event.njk", {
+    ...data,
+    previousInvites: previousInvites.map((user) => {
+      return {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        id: user.id
+      };
+    }),
+
+    activeTab: "share"
+  });
 }
 
 async function filterEvents(req, h) {

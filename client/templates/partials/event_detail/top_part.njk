@@ -1,8 +1,8 @@
 {% from "../icons.njk" import icon %}
 <div class="mt-4">
 	{%if isCreator %}
-		<p class="mt-1 mb-1 p-1 bg-yellow-400 sm:bg-transparent">
-		<span class="bg-yellow-400 sm:p-1 text-xs text-yellow-900 font-bold">
+		<p class="mt-1 mb-1 p-1 bg-pink-300 sm:bg-transparent">
+		<span class="bg-pink-300 sm:p-1 text-xs text-pink-900 font-medium">
 			{%if event.is_private %}{{icon("eye-slash")}} This event is private. Only you and the
 			people you invite can see it. {%else%} {{icon("eye")}} This event is public. Anyone
 			can see it. It can appear on the homepage. {%endif%}

@@ -1,23 +1,21 @@
-{%import "partials/form_messages.njk" as messages %}
+{%extends "event_detail_content.njk"%} 
 {% from "partials/icons.njk" import icon %}
-{%macro invite_form(path, canInvite, multiple=true, success_message="Invite Sent!", list=null, show_button=true)%}
-<div data-controller="invite-to" data-invite-to-path="{{path}}" data-invite-to-multiple="{{multiple}}" data-invite-to-success-message="{{success_message}}">
+{%import "partials/form_messages.njk" as messages%} 
+{% from "partials/event_detail/invite_to_event.njk" import invite_form%}
+{%block tabContent%}
+	
+	<div data-controller="invite-to" data-target="invite-to.hideContainer" class="mt-4">
+		<div class="p-4">
+			<div class="my-2">
+				<a target="_blank" rel="noopener noreferer" class="btn btn-white text-xl w-full block text-center" href="mailto:events+{{event.email_hash_id}}@{{inboundEmailDomain}}?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">{{icon("mail", "mr-2")}}Bulk Invite Via Email</a>
+				<a href="/help/bulk-invite-via-email" class="text-sm text-blue-700 block mt-2 hover:underline">What is bulk invite? {{icon("info")}}</a>
+			</div>
 
-	{%if(canInvite)%}
-		<div class="my-4" data-target="invite-to.canInviteButton">
-			<button
-				class="btn btn-pink btn-large text-xl w-full sm:w-auto flex items-center {{"hidden" if not show_button}}"
-				data-action="invite-to#toggleInviteForm"
-				>
-					{{icon("person", "mr-2")}}Invite People
-			</button>
+			<div class="hr-text">
+				<span class="text-xl font-bold">OR</span>
+			</div>
 		</div>
 
-	{%endif%}
-	<div data-target="invite-to.hideContainer" class="{{"hidden" if show_button }}mt-4 border-2 border-pink-500 ">
-		{%if caller %}
-			{{caller()}}
-		{%endif%}
 		<form
 			class="p-4"
 			data-target="invite-to.inviteForm"
@@ -32,8 +30,8 @@
 					Name of person to invite
 					<span class="font-normal text-xs">(Optional)</span>
 				</label>
-				<div data-controller="autocomplete" data-autocomplete-completions="{{list | dump}}" class="relative" data-target="autocomplete.parent" data-action="mousedown@document->autocomplete#checkOffClick click@document->autocomplete#offClick">
-					<input id="name" type="text" name="name" class="input w-full" placeholder="Name" data-target="autocomplete.input" data-action="focus->autocomplete#focus input->autocomplete#input blur->autocomplete#blur" autocomplete="{{"off" if list and list.length else "on"}}"/>
+				<div data-controller="autocomplete" data-autocomplete-completions="{{previousInvites | dump}}" class="relative" data-target="autocomplete.parent" data-action="mousedown@document->autocomplete#checkOffClick click@document->autocomplete#offClick">
+					<input id="name" type="text" name="name" class="input w-full" placeholder="Name" data-target="autocomplete.input" data-action="focus->autocomplete#focus input->autocomplete#input blur->autocomplete#blur" autocomplete="{{"off" if previousInvites and previousInvites.length else "on"}}"/>
 					<input type="hidden" name="user_id" data-target="autocomplete.value" data-action="change->invite-to#setById"/>
 					<ul data-target="autocomplete.results" class="hidden shadow-md absolute bg-white w-full border border-gray-300"><li class="p-2 cursor-pointer hover:bg-blue-300 border-b border-gray-300" data-action="click->autocomplete#selectUser" data-target="autocomplete.liTemplate"></li></ul>
 				</div>
@@ -92,5 +90,20 @@
 			</div>
 		</form>
 	</div>
-</div>
-{%endmacro%}
+
+	<details class="">
+		<summary class="block btn-link btn-green cursor-pointer">{{icon("share", "mr-2")}}Share event</summary>
+		{%if isCreator%}
+			<div data-target="event.detail.shareableLink" data-controller="copy-to-clipboard" class="mt-2 lg:w-2/3 p-2 my-6 pl-4">
+				<p class="font-medium">Shareable link</p>
+				{{messages.messages("copy", classes="mb-2")}}
+				<div class="flex items-center">
+					<div class="w-full mr-2">
+						<input type="text" value="https://junipercity.com/events/{{event.slug}}?event_key={{event.secret_key}}" class="input w-full text-xs " data-target="copy-to-clipboard.input" readonly id="event-detail-shareable-link"/>
+					</div>
+					<button data-action="copy-to-clipboard#copy" class="px-2 py-1 rounded-lg border border-green-800 text-green-800 flex items-center hover:bg-green-800 hover:text-white"><span class="mr-2 font-bold">{{icon("clipboard")}}</span>Copy</button>
+				</div>
+			</div>
+		{%endif%}
+	</details>
+{%endblock%}

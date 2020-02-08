@@ -1,36 +1,26 @@
-{%macro event_nav(path, commentCount, active, allowDiscussion = false, canEdit=false, isCreator=false)%}
+{%macro event_nav(path, commentCount, active, allowDiscussion = false, canEdit=false, isCreator=false, canInvite=false)%}
 {% from "../icons.njk" import icon %}
-{%set inactiveClass = "text-purple-700 px-5 py-2 hover:bg-purple-500 hover:text-white"%}
-{%set activeClass = "bg-purple-800 text-white px-5 py-2" %}
+{%set inactiveClass = "text-purple-700 hover:bg-purple-500 hover:text-white"%}
+{%set activeClass = "bg-purple-800 text-white " %}
+{%set tabs = [
+{name: "Info", icon: "info", active: "base", path:"", show:true},
+{name: "Share", icon: "share", active: "share", path:"/share", show: canInvite},
+{name: "Responses", icon: "mail-in", active: "responses", path:"/responses", show: isCreator},
+{name: "Discussion", icon: "comments", active: "discussion", path:"/discussion", show: allowDiscussion},
+{name: "Settings", icon: "tools", active: "manage", path:"/settings", show: canEdit}
+]%}
 
-<ul class="flex border-b-4 border-purple-800 text-sm mt-4 sm:text-lg text-xs mt-8">
-	<li class="mr-1 pl-2 text-center">
-		<a
-			class="{{activeClass if active === "base" else inactiveClass}} flex items-center"
-			href="{{path}}"
-			>{{icon("info", "mr-2")}}Info</a>
-	</li>
-	{%if isCreator %}
-		<li class="mr-1 text-center relative">
-			<a class="{{activeClass if active === "responses" else inactiveClass}} flex items-center"
-				 href="{{path}}/responses">
-				{{icon("mail-in", "mr-2")}}Responses
-			</a>
-		</li>
-	{%endif%}
-	{%if allowDiscussion%}
-		<li class="mr-1 text-center relative">
-			<a
-				class="{{activeClass if active === "discussion" else inactiveClass}} flex items-center"
-				href="{{path}}/discussion"
-				>{{icon("comments", "mr-2")}}Discussion</a>
-		</li>
-	{%endif%}
-	{%if canEdit %}
-		<li class="">
-			<a class="{{activeClass if active === "manage" else inactiveClass}} flex items-center"
-				 href="{{path}}/settings">{{icon("tools", "mr-2")}}Settings</a>
-		</li>
-	{%endif%}
+<ul class="flex border-b-4 border-purple-800 text-sm mt-4 text-lg mt-8">
+	{%for tab in tabs %}
+		{% if tab.show %}
+			<li class="text-center flex-1 md:flex-none">
+				<a
+					class="{{activeClass if active === tab.active else inactiveClass}} flex items-center sm:flex-row flex-col md:px-5 py-1 px-2"
+					href="{{path}}{{tab.path}}"
+					>{{icon(tab.icon, "sm:mr-2")}}<span class="sm:text-lg text-xs mt-1 sm:mt-0 sm:inline">{{tab.name}}</span></a>
+			</li>
+		{%endif%}
+	{%endfor%}
+	
 </ul>
 {%endmacro%}

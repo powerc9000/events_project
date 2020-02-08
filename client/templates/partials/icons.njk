@@ -426,6 +426,8 @@
 	<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em"  viewBox="0 0 24 24" class="icon icon-mailbox octicon {{classes}}"><path d="M8 4a5 5 0 0 0-5 5v9H1v2h20a2 2 0 0 0 2-2V9a5 5 0 0 0-5-5H8m0 2a3 3 0 0 1 3 3v9H5V9a3 3 0 0 1 3-3m5 7V7h4v2h-2v4h-2z" /></svg>
 	{%-elif name === "mail-in"-%}
 	<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="icon icon-mail-in octicon {{classes}}" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24"><path d="M22 20h-4v3l-5-4.5l5-4.5v3h4v3M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7.35a5.8 5.8 0 0 1-.35-2a6 6 0 0 1 11-3.31V6a2 2 0 0 0-2-2m0 4l-8 5l-8-5V6l8 5l8-5z"/></svg>
+	{%- elif name === "share" -%}
+	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-share {{classes}}"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
 {%- else -%}
 {#- To make the error as meaningful as possible, this
  #  causes an actual lookup error in a dict of all icon names.

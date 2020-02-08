@@ -1,4 +1,4 @@
-{%macro messages(id, autoHide)%}
+{%macro messages(id, autoHide, classes="")%}
 <div
   data-controller="form-messages"
   data-form-messages-form-id="{{id}}"
@@ -7,15 +7,15 @@
 >
   <div
     data-target="form-messages.success"
-    class="p-1 bg-green-300 border-l-4 border-green-500 hidden"
+		class="p-1 bg-green-300 border-l-4 border-green-500 hidden {{classes}}"
 		></div>
   <div
     data-target="form-messages.info"
-    class="p-1 bg-blue-300 border-l-4 border-blue-500 hidden"
+		class="p-1 pl-4  bg-purple-600 border-l-4 border-pink-600 hidden  rounded-tr rounded-br text-white {{classes}}"
   ></div>
   <div
     data-target="form-messages.error"
-    class="p-1 bg-red-300 border-l-4 border-red-500 hidden"
+		class="p-1 bg-red-300 border-l-4 border-red-500 hidden {{classes}}"
   ></div>
 </div>
 {%endmacro%}
