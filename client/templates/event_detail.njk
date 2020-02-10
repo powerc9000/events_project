@@ -5,8 +5,8 @@
 {%block tabContent%}
 	<div class="sm:flex">
 		<div class="flex-1 mt-4">
-			<div>
-				<a href="{{path}}/share" class="btn btn-pink btn-large text-xl sm:w-auto flex-inline items-center">{{icon("person", "mr-2")}}Invite people to event</a>
+			<div class="my-6">
+				<a href="{{path}}/share" class="btn btn-pink btn-large sm:text-xl sm:w-auto w-full flex-inline items-center">{{icon("person", "mr-2")}}Invite people to event</a>
 			</div>
 			{%if canRSVP%}
 
@@ -19,7 +19,7 @@
 					>
 					You RSVP'd as {{invite.status}} -
 					<button
-						class="hover:underline text-blue-700"
+						class="btn-link btn-green"
 						data-action="event-detail#changeRSVP"
 						>
 						Change
@@ -119,17 +119,7 @@
 						</div>
 					</form>
 				{%endif%}
-				<div class="mt-2">
-					{%if user and user.id === event.creator.id%}
-						You created this event
-					{%else%}
-						Created by: {{event.creator.name}}
-					{%endif%}
-				</div>
 				<div>
-					<p>
-					{{"Private" if event.is_private else "Public" | capitalize}} event
-					</p>
 					{%if not event.is_private%}
 						<div class="my-1" id="twitter-section" data-turbolinks-permanent>
 							<a

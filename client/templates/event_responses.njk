@@ -1,25 +1,27 @@
 {%extends "event_detail_content.njk"%}
 {%block tabContent %}
-	<h3>RSVP responses to your event</h3>
-	<ul class="mt-4">
-		{%for invite in event.invites%}
-			{%if(invite.status !== "invited") %}
-				{%set color%}
-				{%-if invite.status === "going"-%}
-				green
-				{%-elif invite.status === "maybe"-%}
-				yellow
-				{%-else-%}
-				red
-				{%-endif-%}
-				{%endset%}
-				<li class="mb-2 border border-gray-300">
-					<div class="p-2 bg-{{-color-}}-200">{{invite.user.name}} - {{invite.status | capitalize}}</div>
-					<div class="ml-4 p-2">
-						{{invite.response}}
-					</div>
-					<li>
-					{%endif%}
-				{%endfor%}
-	</ul>
+	<div class="mt-4">
+		<h3>RSVP responses to your event</h3>
+		<ul class="mt-4">
+			{%for invite in event.invites%}
+				{%if(invite.status !== "invited") %}
+					{%set color%}
+					{%-if invite.status === "going"-%}
+					green
+					{%-elif invite.status === "maybe"-%}
+					yellow
+					{%-else-%}
+					red
+					{%-endif-%}
+					{%endset%}
+					<li class="mb-2 border border-gray-300">
+						<div class="p-2 bg-{{-color-}}-200">{{invite.user.name}} - {{invite.status | capitalize}}</div>
+						<div class="ml-4 p-2">
+							{{invite.response}}
+						</div>
+						<li>
+						{%endif%}
+					{%endfor%}
+		</ul>
+	</div>
 {%endblock%}
