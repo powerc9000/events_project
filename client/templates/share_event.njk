@@ -3,107 +3,107 @@
 {%import "partials/form_messages.njk" as messages%} 
 {% from "partials/event_detail/invite_to_event.njk" import invite_form%}
 {%block tabContent%}
-	
-	<div data-controller="invite-to" data-target="invite-to.hideContainer" class="mt-4">
-		<div class="p-4">
-			<div class="my-2">
-				<a target="_blank" rel="noopener noreferer" class="btn btn-white text-xl w-full block text-center" href="mailto:events+{{event.email_hash_id}}@{{inboundEmailDomain}}?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">{{icon("mail", "mr-2")}}Bulk Invite Via Email</a>
-				<a href="/help/bulk-invite-via-email" class="text-sm text-blue-700 block mt-2 hover:underline">What is bulk invite? {{icon("info")}}</a>
-			</div>
 
-			<div class="hr-text">
-				<span class="text-xl font-bold">OR</span>
+	<div data-controller="invite-to" data-target="invite-to.hideContainer" >
+		<div class="sm:flex">
+
+			<div class="sm:w-2/3">
+				<form
+					class="p-4"
+					data-target="invite-to.inviteForm"
+					data-action="invite-to#sendInvite reset->invite-to#toggleInviteForm input->invite-to#inviteChange"
+					>
+					<div class="mb-2">
+						{{messages.messages("invite", 4000)}}
+					</div>
+					<p class="text-xl font-bold mb-2">Send an invite by email or phone</p>
+					<div class="flex flex-col">
+						<label class="font-bold" for="name">
+							Name of person to invite
+							<span class="font-normal text-xs">(Optional)</span>
+						</label>
+						<div data-controller="autocomplete" data-autocomplete-completions="{{previousInvites | dump}}" class="relative" data-target="autocomplete.parent" data-action="mousedown@document->autocomplete#checkOffClick click@document->autocomplete#offClick">
+							<input id="name" type="text" name="name" class="input w-full" placeholder="Name" data-target="autocomplete.input" data-action="focus->autocomplete#focus input->autocomplete#input blur->autocomplete#blur" autocomplete="{{"off" if previousInvites and previousInvites.length else "on"}}"/>
+							<input type="hidden" name="user_id" data-target="autocomplete.value" data-action="change->invite-to#setById"/>
+							<ul data-target="autocomplete.results" class="hidden shadow-md absolute bg-white w-full border border-gray-300"><li class="p-2 cursor-pointer hover:bg-blue-300 border-b border-gray-300" data-action="click->autocomplete#selectUser" data-target="autocomplete.liTemplate"></li></ul>
+						</div>
+					</div>
+					<div data-target="invite-to.sendVia">
+						<fieldset class="mt-2" >
+							<legend class="required-text font-bold">Send invite using</legend>
+							<label for="invite-using-email-radio" class="cursor-pointer">Email</label>
+							<input type="radio" name="method" value="email" id="invite-using-email-radio" data-action="invite-to#selectMethod" checked/>
+							<label for="invite-using-sms-radio" class="cursor-pointer">Text Message</label>
+							<input type="radio" name="method" value="phone" id="invite-using-sms-radio" data-action="invite-to#selectMethod"/>
+						</fieldset>
+						<div class="mt-2 flex flex-col" data-target="invite-to.emailField">
+							<label class="font-bold sr-only" for="email">
+								Email
+							</label>
+							<input
+								id="email"
+								type="email"
+								name="email"
+								class="input"
+								data-target="invite-to.emailInput"
+								placeholder="Email"
+								required
+								/>
+						</div>
+						<div class="mt-2 flex flex-col hidden" data-target="invite-to.phoneField">
+							<label class="font-bold sr-only" for="phone">
+								Phone
+							</label>
+							<input
+								id="phone"
+								type="tel"
+								minlength="7"
+								data-target="invite-to.phoneInput"
+								name="phone"
+								class="input"
+								required
+								placeholder="Phone"
+								/>
+						</div>
+					</div>
+					<div class="mt-2">
+						<label for="invite-message" class="font-bold">Add optional message to invite</label>
+						<div>
+							<textarea name="message" class="input w-full resize-none" id="invite-message" placeholder="Message"></textarea>
+						</div>
+					</div>
+					<div class="mt-4">
+						<button class="btn btn-pink" type="submit">
+							Send Invite
+						</button>
+					</div>
+				</form>
+			</div>
+			<div class="sm:w-1/3 bg-purple-800">
+				{%if isCreator%}
+					<div>
+						<div data-target="event.detail.shareableLink" data-controller="copy-to-clipboard" class="mt-2 p-4">
+							<p class="font-medium text-white">Shareable link</p>
+							{{messages.messages("copy", classes="mb-2")}}
+							<div class="flex items-center">
+								<div class="w-full mr-2">
+									<input type="text" value="https://junipercity.com/events/{{event.slug}}?event_key={{event.secret_key}}" class="input w-full text-xs " data-target="copy-to-clipboard.input" readonly id="event-detail-shareable-link"/>
+								</div>
+								<button data-action="copy-to-clipboard#copy" class="px-2 py-1 rounded-lg border border-white text-white flex items-center hover:bg-white hover:text-purple-800"><span class="mr-2 font-bold">{{icon("clipboard")}}</span>Copy</button>
+							</div>
+						</div>
+					</div>
+
+				{%endif%}
+				<div class="p-4">
+					<div class="">
+						<a target="_blank" rel="noopener noreferer" class="btn btn-white text-xl w-full block text-center" href="mailto:events+{{event.email_hash_id}}@{{inboundEmailDomain}}?subject={{event.name | urlencode}}&body={{event.description | striptags| urlencode}}">{{icon("mail", "mr-2")}}Bulk Invite Via Email</a>
+						<a href="/help/bulk-invite-via-email" class="text-sm text-yellow-300 block mt-2 hover:underline">What is bulk invite? {{icon("info")}}</a>
+					</div>
+
+				</div>
+
 			</div>
 		</div>
 
-		<form
-			class="p-4"
-			data-target="invite-to.inviteForm"
-			data-action="invite-to#sendInvite reset->invite-to#toggleInviteForm input->invite-to#inviteChange"
-			>
-			<div class="mb-2">
-				{{messages.messages("invite", 4000)}}
-			</div>
-			<p class="text-xl font-bold mb-2">Send an invite by email or phone</p>
-			<div class="flex flex-col">
-				<label class="font-bold" for="name">
-					Name of person to invite
-					<span class="font-normal text-xs">(Optional)</span>
-				</label>
-				<div data-controller="autocomplete" data-autocomplete-completions="{{previousInvites | dump}}" class="relative" data-target="autocomplete.parent" data-action="mousedown@document->autocomplete#checkOffClick click@document->autocomplete#offClick">
-					<input id="name" type="text" name="name" class="input w-full" placeholder="Name" data-target="autocomplete.input" data-action="focus->autocomplete#focus input->autocomplete#input blur->autocomplete#blur" autocomplete="{{"off" if previousInvites and previousInvites.length else "on"}}"/>
-					<input type="hidden" name="user_id" data-target="autocomplete.value" data-action="change->invite-to#setById"/>
-					<ul data-target="autocomplete.results" class="hidden shadow-md absolute bg-white w-full border border-gray-300"><li class="p-2 cursor-pointer hover:bg-blue-300 border-b border-gray-300" data-action="click->autocomplete#selectUser" data-target="autocomplete.liTemplate"></li></ul>
-				</div>
-			</div>
-			<div data-target="invite-to.sendVia">
-				<fieldset class="mt-2" >
-					<legend class="required-text font-bold">Send invite using</legend>
-					<label for="invite-using-email-radio" class="cursor-pointer">Email</label>
-					<input type="radio" name="method" value="email" id="invite-using-email-radio" data-action="invite-to#selectMethod" checked/>
-					<label for="invite-using-sms-radio" class="cursor-pointer">Text Message</label>
-					<input type="radio" name="method" value="phone" id="invite-using-sms-radio" data-action="invite-to#selectMethod"/>
-				</fieldset>
-				<div class="mt-2 flex flex-col" data-target="invite-to.emailField">
-					<label class="font-bold sr-only" for="email">
-						Email
-					</label>
-					<input
-						id="email"
-						type="email"
-						name="email"
-						class="input"
-						data-target="invite-to.emailInput"
-						placeholder="Email"
-						required
-						/>
-				</div>
-				<div class="mt-2 flex flex-col hidden" data-target="invite-to.phoneField">
-					<label class="font-bold sr-only" for="phone">
-						Phone
-					</label>
-					<input
-						id="phone"
-						type="tel"
-						minlength="7"
-						data-target="invite-to.phoneInput"
-						name="phone"
-						class="input"
-						required
-						placeholder="Phone"
-						/>
-				</div>
-			</div>
-			<div class="mt-2">
-				<label for="invite-message" class="font-bold">Add optional message to invite</label>
-				<div>
-					<textarea name="message" class="input w-full resize-none" id="invite-message" placeholder="Message"></textarea>
-				</div>
-			</div>
-			<div class="mt-4">
-				<button class="btn btn-green" type="submit">
-					Send Invite
-				</button>
-				<button class="btn btn-white" type="reset">
-					Cancel
-				</button>
-			</div>
-		</form>
-	</div>
-
-	<details class="">
-		<summary class="block btn-link btn-green cursor-pointer">{{icon("share", "mr-2")}}Share event</summary>
-		{%if isCreator%}
-			<div data-target="event.detail.shareableLink" data-controller="copy-to-clipboard" class="mt-2 lg:w-2/3 p-2 my-6 pl-4">
-				<p class="font-medium">Shareable link</p>
-				{{messages.messages("copy", classes="mb-2")}}
-				<div class="flex items-center">
-					<div class="w-full mr-2">
-						<input type="text" value="https://junipercity.com/events/{{event.slug}}?event_key={{event.secret_key}}" class="input w-full text-xs " data-target="copy-to-clipboard.input" readonly id="event-detail-shareable-link"/>
-					</div>
-					<button data-action="copy-to-clipboard#copy" class="px-2 py-1 rounded-lg border border-green-800 text-green-800 flex items-center hover:bg-green-800 hover:text-white"><span class="mr-2 font-bold">{{icon("clipboard")}}</span>Copy</button>
-				</div>
-			</div>
-		{%endif%}
-	</details>
-{%endblock%}
+	{%endblock%}
