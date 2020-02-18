@@ -13,31 +13,32 @@
 				{%endif%}
 		</div>
 		{%if loggedIn %}
-			<div class="ml-auto items-center mt-4 sm:mt-0">
+			<div class="sm:ml-auto items-center mt-4 sm:mt-0 sm:static fixed bottom-0 sm:bg-transparent bg-green-800 w-screen sm:w-auto left-0 py-2 sm:p-0 justify-center flex">
 				<ul class="items-center flex h-full" data-target="menu-dropdown.menu">
 				<li class="mr-4">
-					<a href="/" class="text-xs sm:text-sm text-green-800 flex items-center font-medium border-b-2 hover:border-green-800 border-transparent">
-						{{icon('home', "mr-1")}}Home
+					<a href="/" class="text-xs sm:text-sm sm:text-green-800 text-white flex flex-col sm:flex-row items-center font-medium border-b-2 hover:border-green-800 border-transparent text-center">
+
+						{{icon('home', "sm:mr-1")}}Home
 					</a>
 				</li>
 				<li class="mr-4">
-					<a href="/create" class="text-xs sm:text-sm flex items-center text-green-800 font-medium border-b-2 hover:border-green-800 border-transparent">
+					<a href="/create" class="text-xs sm:text-sm flex flex-col sm:flex-row items-center sm:text-green-800 text-white font-medium border-b-2 hover:border-green-800 border-transparent">
 						{{icon("plus", "mr-1")}}Create
 					</a>
 				</li>
 				<li class="mr-4">
-					<a href="/groups" class="text-xs sm:text-sm flex items-center text-green-800 font-medium border-b-2 hover:border-green-800 border-transparent">
+					<a href="/groups" class="text-xs sm:text-sm flex flex-col sm:flex-row items-center sm:text-green-800 text-white font-medium border-b-2 hover:border-green-800 border-transparent">
 						{{icon("group", "icon-fill mr-1")}}Groups</a>
 				</li>
 				<li class="mr-4">
-					<a href="/settings" class="text-xs sm:text-sm flex items-center text-green-800 font-medium border-b-2 hover:border-green-800 border-transparent">
+					<a href="/settings" class="text-xs sm:text-sm flex flex-col sm:flex-row items-center sm:text-green-800 text-white font-medium border-b-2 hover:border-green-800 border-transparent">
 						{{icon("settings", "icon-fill mr-1")}}Settings</a>
 				</li>
 				<li class="">
 					<button
 						data-controller="logout"
 						data-action="logout#logout"
-						class="text-xs sm:text-sm flex items-center text-green-800 font-medium border-b-2 hover:border-green-800 border-transparent"
+						class="text-xs sm:text-sm flex flex-col sm:flex-row items-center sm:text-green-800 text-white font-medium border-b-2 hover:border-green-800 border-transparent"
 						>
 						{{icon("signout", "mr-1")}}Logout
 					</button>

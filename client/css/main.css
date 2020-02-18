@@ -3,265 +3,265 @@
 @tailwind components;
 
 html {
-	@apply h-full;
+  @apply h-full;
 }
 body {
-	font-family: -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                Roboto,
-                Oxygen-Sans,
-                Ubuntu,
-                Cantarell,
-                "Helvetica Neue",
-                sans-serif;
-	@apply flex flex-col h-full;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  @apply flex flex-col h-full;
 }
 
-h1, h2, h3, h4, h5, h6 {
-	font-family: Arial Black, sans-serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: Arial Black, sans-serif;
 }
 
 .event-link:hover {
-	@apply underline;
+  @apply underline;
 }
 .content {
-	flex-grow: 1;
+  flex-grow: 1;
 }
 
 footer {
-	@apply bg-black text-white;
-
+  @apply bg-black text-white;
 }
 
 .twitter-login {
-	color: white;
-	background: #1DA1F2;
+  color: white;
+  background: #1da1f2;
 
-	&:hover {
-		@apply underline;
-	}
+  &:hover {
+    @apply underline;
+  }
 }
 
 .container {
-	@apply p-4
+  @apply p-4;
 }
 @screen sm {
-	.container {
-		@apply p-0
-	}
+  .container {
+    @apply p-0;
+  }
 }
 
 .login-container {
-	max-width: 300px;
+  max-width: 300px;
 }
 
 .turbolinks-progress-bar {
-	height: 5px;
-	background-color: green;
+  height: 5px;
+  background-color: green;
 }
 
 .hr-text {
-	display: block;
-	text-align: center;
-	overflow: hidden;
-	white-space: nowrap; 
+  display: block;
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .hr-text > span {
-	position: relative;
-	display: inline-block;
+  position: relative;
+  display: inline-block;
 }
 
 .hr-text > span:before,
 .hr-text > span:after {
-	content: "";
-	position: absolute;
-	top: 50%;
-	width: 9999px;
-	height: 1px;
-	@apply bg-gray-400;
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 9999px;
+  height: 1px;
+  @apply bg-gray-400;
 }
 
 .hr-text > span:before {
-	right: 100%;
-	margin-right: 15px;
+  right: 100%;
+  margin-right: 15px;
 }
 
 .hr-text > span:after {
-	left: 100%;
-	margin-left: 15px;
+  left: 100%;
+  margin-left: 15px;
 }
 
 .btn {
-	@apply rounded-lg p-1 px-5 shadow;
-	&.btn-large {
-		@apply px-10 py-2;
-	}
-	&.btn-green {
-		@apply bg-green-700 border border-green-600 text-white;
-		&:hover {
-			@apply bg-green-600;
-		}
-	}
-	&.btn-white {
-		@apply bg-white border border-gray-600;
-		&:hover {
-			@apply bg-gray-100 border border-gray-900;
-		}
-	}
-	&.btn-purple {
-		@apply bg-purple-800 text-white;
-		&:hover {
-			@apply bg-purple-700;
-		}
-	}
-	&:disabled {
-		@apply cursor-default bg-gray-300 border border-gray-700;
-		&:hover {
+  @apply rounded-lg p-1 px-5 shadow;
+  &.btn-large {
+    @apply px-10 py-2;
+  }
+  &.btn-green {
+    @apply bg-green-700 border border-green-600 text-white;
+    &:hover {
+      @apply bg-green-600;
+    }
+  }
+  &.btn-white {
+    @apply bg-white border border-gray-600;
+    &:hover {
+      @apply bg-gray-100 border border-gray-900;
+    }
+  }
+  &.btn-purple {
+    @apply bg-purple-800 text-white;
+    &:hover {
+      @apply bg-purple-700;
+    }
+  }
+  &:disabled {
+    @apply cursor-default bg-gray-300 border border-gray-700;
+    &:hover {
+      @apply bg-gray-300;
+    }
+  }
+  &.btn-blue {
+    @apply bg-blue-300 border border-blue-600;
+    &:hover {
+      @apply bg-blue-400 border border-blue-800;
+    }
+  }
 
-			@apply bg-gray-300;
-		}
-	}
-	&.btn-blue {
-		@apply bg-blue-300 border border-blue-600;
-		&:hover {
-			@apply bg-blue-400 border border-blue-800;
-		}
-	}
-
-	&.btn-red {
-		@apply bg-red-800 text-white;
-		&:hover {
-			@apply bg-red-700 text-white;
-		}
-	}
-	&.btn-pink {
-		@apply bg-pink-700 text-white;
-		&:hover {
-			@apply bg-pink-600;
-		}
-	}
+  &.btn-red {
+    @apply bg-red-800 text-white;
+    &:hover {
+      @apply bg-red-700 text-white;
+    }
+  }
+  &.btn-pink {
+    @apply bg-pink-700 text-white;
+    &:hover {
+      @apply bg-pink-600;
+    }
+  }
 }
 
 .btn-link {
-	@apply font-medium;
-	&.btn-purple {
-		@apply text-purple-800;
-		&:hover {
-			@apply text-purple-700 underline;
-		}
-	}
+  @apply font-medium;
+  &.btn-purple {
+    @apply text-purple-800;
+    &:hover {
+      @apply text-purple-700 underline;
+    }
+  }
 
-	&.btn-green {
-		@apply text-green-800;
-		&:hover {
-			@apply text-green-700 underline;
-		}
-
-	}
-	&.btn-red {
-		@apply text-red-800;
-		&:hover {
-			@apply text-red-700 underline;
-		}
-	}
-	&.btn-pink {
-		@apply text-pink-700;
-		&:hover {
-			@apply text-pink-600 underline;
-		}
-	}
+  &.btn-green {
+    @apply text-green-800;
+    &:hover {
+      @apply text-green-700 underline;
+    }
+  }
+  &.btn-red {
+    @apply text-red-800;
+    &:hover {
+      @apply text-red-700 underline;
+    }
+  }
+  &.btn-pink {
+    @apply text-pink-700;
+    &:hover {
+      @apply text-pink-600 underline;
+    }
+  }
 }
 
-
 .input {
-	@apply border-gray-700 border p-1;
-	min-width:0;
-	&:focus {
-		outline: solid theme("colors.purple.700") 1px;
-	}
+  @apply border-gray-700 border p-1;
+  min-width: 0;
+  &:focus {
+    outline: solid theme("colors.purple.700") 1px;
+  }
 }
 
 .required-text {
-	&::after {
-		content: "*";
-		@apply text-red-700;
-	}
+  &::after {
+    content: "*";
+    @apply text-red-700;
+  }
 }
 
 .icon {
-	width: 1em;
-	height: 1em;
-	display: inline;
-	fill: none;
-	stroke: currentcolor;
-	stroke-width: 7%;
-	vertical-align: middle;
-	&.icon-calendar, &.icon-clipboard {
-		position:relative;
-		bottom: .100em;
-	}
-	&.icon-fill {
-		fill: currentcolor;
-
-	}
-	&.octicon {
-		fill: currentcolor;
-		stroke: none;
-	}
-
+  width: 1em;
+  height: 1em;
+  display: inline;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 7%;
+  vertical-align: middle;
+  &.icon-calendar,
+  &.icon-clipboard {
+    position: relative;
+    bottom: 0.1em;
+  }
+  &.icon-fill {
+    fill: currentcolor;
+  }
+  &.octicon {
+    fill: currentcolor;
+    stroke: none;
+  }
 }
 
 .font-bold .icon {
-	stroke-width:10%;
-
+  stroke-width: 10%;
 }
 .top-welcome-image {
-	right: -5%;
-	top: -10%;
+  right: -5%;
+  top: -10%;
 }
 .welcome-section-bg-purple {
-	background: rgb(128,90,213);
-	background: linear-gradient(151deg, rgba(128,90,213,1) 32%, rgba(214,188,250,1) 95%); 
+  background: rgb(128, 90, 213);
+  background: linear-gradient(
+    151deg,
+    rgba(128, 90, 213, 1) 32%,
+    rgba(214, 188, 250, 1) 95%
+  );
 }
 .welcome-section-bg-white {
-
-	background: rgb(255,255,255);
-	background: linear-gradient(151deg, rgba(255,255,255,1) 32%, rgba(247,250,252,1) 67%); 
+  background: rgb(255, 255, 255);
+  background: linear-gradient(
+    151deg,
+    rgba(255, 255, 255, 1) 32%,
+    rgba(247, 250, 252, 1) 67%
+  );
 }
 .welcome-section-bg-pink {
-	background: rgb(246,135,179);
-	background: linear-gradient(151deg, rgba(246,135,179,1) 44%, rgba(251,182,206,1) 76%);
+  background: rgb(246, 135, 179);
+  background: linear-gradient(
+    151deg,
+    rgba(246, 135, 179, 1) 44%,
+    rgba(251, 182, 206, 1) 76%
+  );
 }
 
 @responsive {
+  .text-cutout {
+		background-clip: text;
+  }
 
-	.banner-green {
- background: rgb(168,226,195);
-background-color: #9ae6b4;
-background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23276749' fill-opacity='0.16' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E"), linear-gradient(151deg, rgba(168,226,195,1) 17%, rgba(128,231,176,1) 40%);
-	}
+  .banner-green {
+    background: rgb(168, 226, 195);
+    background-color: #9ae6b4;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23276749' fill-opacity='0.16' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E"),
+      linear-gradient(
+        151deg,
+        rgba(168, 226, 195, 1) 17%,
+        rgba(128, 231, 176, 1) 40%
+      );
+  }
 
-	.bg-juniper-city {
-		background-image: url("/img/junipercity.png");
-		background-size:contain;
-		background-repeat: no-repeat;
-		background-position: 50% 50%;
-		text-shadow: 2px 2px 0px white, -2px -2px 0px white;
-	}
-	.bg-juniper-city-repeat {
-		background-repeat:repeat;
-	}
-	.bg-juniper-city-none {
-		background: none;
-		text-shadow:none;
-	}
+  .bg-juniper-city {
+    background-image: url("/img/junipercity.png");
+    background-size: auto 120%;
+    background-repeat: repeat;
+		background-position: -50%;
+		box-shadow: inset 0 0 0 100vmax rgba(168, 226, 195, 0.7);
+  }
 }
-
-
-
-
 
 @import url("./md.css");
 

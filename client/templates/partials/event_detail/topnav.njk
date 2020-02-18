@@ -1,7 +1,7 @@
 {%macro event_nav(path, commentCount, active, allowDiscussion = false, canEdit=false, isCreator=false, canInvite=false)%}
 {% from "../icons.njk" import icon %}
-{%set inactiveClass = "text-purple-700 hover:bg-purple-500 hover:text-white"%}
-{%set activeClass = "bg-purple-800 text-white " %}
+{%set inactiveClass = "text-green-800 hover:bg-green-500 hover:text-white"%}
+{%set activeClass = "bg-green-800 text-white " %}
 {%set tabs = [
 {name: "Info", icon: "info", active: "base", path:"", show:true},
 {name: "Share", icon: "share", active: "share", path:"/share", show: canInvite},
@@ -10,7 +10,7 @@
 {name: "Settings", icon: "tools", active: "manage", path:"/settings", show: canEdit}
 ]%}
 
-<ul class="flex border-b-4 border-purple-800 text-sm mt-4 text-lg mt-8">
+<ul class="flex border-b-4 border-green-800 text-sm mt-4 text-lg mt-8">
 	{%for tab in tabs %}
 		{% if tab.show %}
 			<li class="text-center flex-1 md:flex-none">
