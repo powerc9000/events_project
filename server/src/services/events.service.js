@@ -477,6 +477,15 @@ async function canUserEditEvent(user, event) {
   if (!user) {
     return false;
   }
+  const between = await server.app.db.maybeOne(
+    sql`select * from events where (date >= to_timestamp(${~~(
+      Date.now() / 1000
+    )}) or end_date >= to_timestamp(${~~(Date.now() / 1000)})) and id=${event}`
+  );
+
+  if (!between) {
+    return false;
+  }
   const creator = await server.app.db.maybeOne(
     sql`select * from events where creator = ${user} and id=${event}`
   );
