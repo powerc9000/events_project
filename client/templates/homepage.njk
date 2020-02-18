@@ -49,11 +49,11 @@
 				{%set newGroup = true %}
 			{%endif%}
 		{%endif%}
-		<li class="flex {{"pl-8" if not showDate}} {{"border-t border-purple-700" if showDate and not newGroup}} pt-2 pb-2" data-target="event-list.event" data-date="{{event.date}}">
+		<li class="flex {{"pl-8" if not showDate}} {{"border-t border-pink-700" if showDate and not newGroup}} pt-2 pb-2" data-target="event-list.event" data-date="{{event.date}}">
 
 			{%- if showDate %}
 
-			<div class="flex items-center px-2 border-r-2  border-purple-700 w-3/12 justify-end text-purple-900">
+			<div class="flex items-center px-2 border-r-2  border-pink-700 w-3/12 justify-end text-gray-600 text-xs">
 				<span
 					data-controller="format-date"
 					data-format-date-epoch="{{event.date}}"

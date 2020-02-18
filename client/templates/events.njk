@@ -4,7 +4,7 @@
 	<div class="container mx-auto mt-4">
 		<div data-controller="filter-events">
 				<h1 class="mb-4 text-xl">Filter events</h1>
-			<form class="controls sm:flex items-end bg-purple-800 text-white" data-target="filter-events.controls" data-action="change->filter-events#updateFilters" autocomplete="off">
+			<form class="controls sm:flex items-end bg-pink-800 text-white" data-target="filter-events.controls" data-action="change->filter-events#updateFilters" autocomplete="off">
 				<div class="mr-2 p-2 w-full">
 					<label for="my-events-checkbox" class="cursor-pointer font-bold cursor-pointer">Only events I created</label>
 					<input type="checkbox" id="my-events-checkbox" name="creator_only" {{"checked" if query.creator}}/>
