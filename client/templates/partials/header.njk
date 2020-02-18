@@ -9,7 +9,7 @@
 			</a>
 			{%if not loggedIn %}
 				{%set thePath = __currentPath() if __currentPath else '' %}
-				<a href="/login?redirect_to={{thePath | urlencode}}" class="text-lg underline ml-auto">Login / Signup</a>
+				<a href="/login?redirect_to={{thePath | urlencode}}" class="text-lg ml-auto btn-link btn-green">{{icon("signin", "mr-2")}}Login / Signup</a>
 				{%endif%}
 		</div>
 		{%if loggedIn %}
