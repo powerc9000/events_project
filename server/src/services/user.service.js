@@ -25,7 +25,7 @@ async function createUser({ provider = {}, email, name = "", phone }) {
 
 async function generateLoginToken(userId) {
   const insert = await server.app.db.query(
-    sql`insert into logins (user_id, expires) VALUES (${userId}, now() + interval '2w') returning id, expires`
+    sql`insert into logins (user_id, expires) VALUES (${userId}, now() + interval '2y') returning id, expires`
   );
   const tokenData = insert.rows[0];
   const result = {

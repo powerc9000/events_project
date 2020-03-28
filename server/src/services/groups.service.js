@@ -311,6 +311,42 @@ async function canUserModerate(groupId, userId) {
   return !!mod;
 }
 
+async function canUserPostInGroup(userId, groupId) {
+  if (!groupId) {
+    return false;
+  }
+  if (!userId) {
+    return false;
+  }
+
+  const inGroup = await isUserInGroup(userId, groupId);
+
+  if (!inGroup) {
+    return false;
+  }
+  //Todo posting restrictions etc.
+  return inGroup;
+}
+
+async function getPostsForGroup(groupId) {
+  const posts = await server.app.db.any(sql`
+	select *, 
+		row_to_json((select d from (select users.name, users.id from users where id = p.user_id) d)) as user,
+		(select json_agg(e) from (select * from comments where comments.parent_comment = p.id) e) as comments
+	from comments p where entity_id=${groupId} and parent_comment is null order by created desc
+	`);
+
+  return posts;
+}
+
+async function createPost(userId, groupId, body) {
+  const create = await server.app.db.one(
+    sql`insert into comments (user_id, entity_id, body) values(${userId}, ${groupId}, ${body}) returning *`
+  );
+
+  return create;
+}
+
 function init(hapiServer) {
   server = hapiServer;
 }
@@ -334,5 +370,8 @@ module.exports = {
   canUserDeleteGroup,
   deleteGroup,
   canUserRemoveMember,
-  removeGroupMember
+  removeGroupMember,
+  getPostsForGroup,
+  canUserPostInGroup,
+  createPost
 };

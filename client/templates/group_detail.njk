@@ -1,67 +1,50 @@
-{%extends "layout.njk"%}
-{%import "partials/form_messages.njk" as messages%}
-{%from "partials/event_detail/invite_to_event.njk" import invite_form%}
-{%from "partials/group_topnav.njk" import group_nav%}
-{%block content%}
-	<div class="content container mx-auto h-full flex flex-col" data-controller="group-detail" data-group-detail-id="{{group.id}}">
-
-
-		<h1 class="text-2xl flex items-center justify-center mt-4">
-			<span id="group-name-span">{{group.name}}</span> 
-			<span class="ml-2 align-middle">
-				<span class="p-1 text-sm text-white bg-green-800 rounded align-middle">{{members.length}} {{"members" if members.length > 1 else "member"}}
-				</span>
-			</span>
-		</h1>
-		{{group_nav(path, role=role)}}
-		<div class="flex flex-col flex-1">
-			<div class="sm:flex flex-1">
-				<div class="sm:w-2/3">
-
-					{{invite_form(invitePath, canInvite, multiple=false, success_message="User added to group!")}}
-					<div class="trix-c my-2">
-						<details open>
-							<summary class="cursor-pointer text-xl">Description</summary>
-							{{description | safe}}
-						</details>
-					</div>
-				</div>
-				<div class="sm:w-1/3 mt-2 sm:pl-4 sm:border-l border-gray-200 sm:ml-2">
-					<h2 class="mb-2 text-xl">Group Members</h2>
-					<div id="management-message" data-turbolinks-permanent>
-						{{messages.messages("management")}}
-					</div>
-					<ul class="">
-						{%for member in members%}
-							{%set idx = loop.index%}
-							<li class="border-b border-gray-300">
-								<span class="text-lg">{{member.name | default(member.email, true) | default(member.phone, true)}}</span>
-								<span> - </span>
-								{% if role === "admin" or role === "owner"%}
-									<span class="italic">{{member.role}} </span>
-									<button data-action="group-detail#toggleUpdate" class="text-blue-700 hover:underline" data-for="edit-{{member.id}}" data-target="group-detail.roleButton">change</button>
-									<form data-action="input->group-detail#updateRole" data-user="{{member.id}}" class="hidden p-2 bg-gray-100 border-gray-500 border" id="edit-{{member.id}}" data-target="group-detail.roleForm">
-										<fieldset>
-											<legend class="font-bold">Select New Role</legend>
-											{%for role in ["member", "moderator", "admin", "owner"]%}
-											<div class="cursor-pointer">
-												<input type="radio" value="{{role}}" {{"checked" if member.role === role}} name="role" id="role-{{role}}-{{idx}}" class="cursor-pointer">
-												<label for="role-{{role}}-{{idx}}" class="cursor-pointer">
-													{{role | capitalize}}
-												</label>
-											</div>
-										{%endfor%}
-
-										<button class="btn btn-red mt-2 text-xs" data-action="group-detail#removeMember" data-user="{{member.id}}">Remove From Group</button>
-									</form>
-								{%else %}
-									<span class="italic">{{member.role}}</span>
-								{%endif%}
-							</li>
-						{%endfor%}
-					</ul>
-				</div>
+{%extends "group_layout.njk"%}
+{%block css%}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.0/trix.css"/>
+{%endblock%} 
+{%from "partials/form_messages.njk" import messages%}
+{%block layout%}
+	<div class="mt-4">
+		<form data-controller="group-post-creator" data-group-post-creator-group-id="{{group.id}}" class="p-4 border border-pink-100" data-action="group-post-creator#post" data-target="group-post-creator.form">
+			<div class="my-2">
+				{{messages("create")}}
 			</div>
+			<div class="" data-controller="trix">
+				<input type="hidden" id="new-post-body" value="{{event.description}}" name="body" />
+				<label class="font-bold cursor-pointer sr-only" for="editor">Create a post</label>
+				<trix-toolbar id="toolbar" class="purple-button"></trix-toolbar>
+				<trix-editor input="new-post-body" id="editor" data-target="trix.editor group-post-creator.trix" toolbar="toolbar" placeholder="Write your post"></trix-editor>
+			</div>
+			<div class="mt-2">
+				<button class="btn btn-pink" type="submit" data-target="group-post-creator.btn">Post to Group</button>
+			</div>
+		</form>
+		<div class="p-4">
+			{%for post in posts %}
+				<div class="border border-green-200 mb-4 border-l-4">
+					<div class="flex px-4 items-center">
+						<p class="text-sm font-bold">{{post.user.name}}</p>
+						<div data-controller="format-date" data-format-date-epoch="{{post.created}}" data-format-date-format-string="Pp" class="ml-2 italic">
+							<span data-target="format-date.date" class="text-gray-700 text-xs">{{post.created | tzOffset(user.settings.timezone, "Pp")}}</span>
+						</div>
+					</div>
+					<div class="py-2 px-4">
+						{{post.body | safe}}
+					</div>
+				</div>
+			{%else%}
+				No posts in this group.
+			{%endfor%}
 		</div>
 	</div>
 {%endblock%}
+{%block sidebar %}
+	<div class="mt-4 border border-pink-200">
+		<h3 class="text-md border-b border-pink-200 p-2 mb-2 text-gray-800 font-normal">
+			About
+		</h3>
+		<div class="p-2 border-b-4 border-pink-400">
+			{{group.description | safe}}
+		</div>
+	</div>
+	{%endblock%}

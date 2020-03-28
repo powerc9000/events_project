@@ -18,6 +18,15 @@ export default class extends ApplicationController {
     document.body.appendChild(script);
   }
   initTrix = () => {
+    const history = this.targets
+      .find("editor")
+      .editorController.toolbarController.element.querySelector(
+        "[data-trix-button-group='history-tools']"
+      );
+    if (this.data.get("showUndo") !== "1") {
+      history.parentNode.removeChild(history);
+    }
+    console.log(history);
     Trix.config.blockAttributes.heading1 = { tagName: "h2" };
   };
   trixAttach = (e) => {
