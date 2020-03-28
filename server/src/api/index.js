@@ -232,6 +232,20 @@ module.exports = {
 
     server.route({
       method: "POST",
+      path: "/groups/createPost",
+      handler: createPostInGroup,
+      options: {
+        validate: {
+          payload: joi.object({
+            groupId: joi.string().required(),
+            body: joi.string().required()
+          })
+        }
+      }
+    });
+
+    server.route({
+      method: "POST",
       path: "/invites/{id}/resend",
       handler: resendInvite
     });
@@ -282,6 +296,32 @@ module.exports = {
     });
   }
 };
+
+async function createPostInGroup(req, h) {
+  if (!req.loggedIn()) {
+    return Boom.unauthorized();
+  }
+
+  const groupService = server.getService("groups");
+  const canPost = await groupService.canUserPostInGroup(
+    req.userId(),
+    req.payload.groupId
+  );
+
+  console.log("can post", canPost);
+
+  if (!canPost) {
+    return Boom.unauthorized();
+  }
+
+  const post = await groupService.createPost(
+    req.userId(),
+    req.payload.groupId,
+    req.payload.body
+  );
+
+  return post;
+}
 
 async function deleteComment(req, h) {
   if (!req.loggedIn()) {

@@ -268,6 +268,12 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/groups/{idOrCustom}/posts/{postId}",
+      handler: () => {}
+    });
+
+    server.route({
+      method: "GET",
       path: "/settings",
       handler: userSettings
     });
@@ -518,12 +524,18 @@ async function groupDetail(req, h) {
       req.app.user,
       req.params.idOrCustom
     );
+    const posts = await server
+      .getService("groups")
+      .getPostsForGroup(data.group.id);
 
+    posts.forEach((post) => {
+      post.body = sanitize(post.body);
+    });
     if (err) {
       return err;
     }
 
-    return h.view("group_detail.njk", data);
+    return h.view("group_detail.njk", { posts: posts, ...data });
   } catch (e) {
     console.log(e);
     throw e;
