@@ -4,14 +4,17 @@
 {%endblock%} 
 {%from "partials/form_messages.njk" import messages%}
 {%block layout%}
-	<div class="mt-4">
-		<form data-controller="group-post-creator" data-group-post-creator-group-id="{{group.id}}" class="p-4 border border-pink-100" data-action="group-post-creator#post" data-target="group-post-creator.form">
+	<div class="mt-4 bg-pink-100">
+		<h2 class="px-4 mb-2 pt-2 text-xl text-gray-800">Activity in {{group.name}}</h2>
+		<form data-controller="group-post-creator" data-group-post-creator-group-id="{{group.id}}" class="p-4 mx-4 bg-white border border-pink-200" data-action="group-post-creator#post" data-target="group-post-creator.form" autocomplete="off">
 			<div class="my-2">
 				{{messages("create")}}
 			</div>
 			<div class="" data-controller="trix">
 				<input type="hidden" id="new-post-body" value="{{event.description}}" name="body" />
-				<label class="font-bold cursor-pointer sr-only" for="editor">Create a post</label>
+				<div class="pb-2">
+					<label class="font-bold cursor-pointer pb-2" for="editor" data-action="click->trix#focus">Create a post</label>
+				</div>
 				<trix-toolbar id="toolbar" class="purple-button"></trix-toolbar>
 				<trix-editor input="new-post-body" id="editor" data-target="trix.editor group-post-creator.trix" toolbar="toolbar" placeholder="Write your post"></trix-editor>
 			</div>
@@ -21,7 +24,7 @@
 		</form>
 		<div class="p-4">
 			{%for post in posts %}
-				<div class="border border-green-200 mb-4 border-l-4">
+				<div class="border-pink-200 mb-4 border-l-4 bg-white">
 					<div class="flex px-4 items-center">
 						<p class="text-sm font-bold">{{post.user.name}}</p>
 						<div data-controller="format-date" data-format-date-epoch="{{post.created}}" data-format-date-format-string="Pp" class="ml-2 italic">
@@ -38,13 +41,3 @@
 		</div>
 	</div>
 {%endblock%}
-{%block sidebar %}
-	<div class="mt-4 border border-pink-200">
-		<h3 class="text-md border-b border-pink-200 p-2 mb-2 text-gray-800 font-normal">
-			About
-		</h3>
-		<div class="p-2 border-b-4 border-pink-400">
-			{{group.description | safe}}
-		</div>
-	</div>
-	{%endblock%}

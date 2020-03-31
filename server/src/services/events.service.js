@@ -178,10 +178,10 @@ async function getGroupEventsForUser(groupId, userId) {
   const inGroup = await server.app.db.maybeOne(
     sql`select * from group_members where group_id=${groupId} and user_id=${userId}`
   );
-
+  console.log(group, inGroup);
   if (inGroup) {
     return server.app.db.any(
-      sql`select * from events where group_id = ${groupId} and date > now()`
+      sql`select * from events where group_id = ${groupId} and date >= now() or (end_date >= now() and date <= now())`
     );
   } else {
     if (!group.is_private) {
