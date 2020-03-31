@@ -17,6 +17,9 @@ export default class extends ApplicationController {
 
     document.body.appendChild(script);
   }
+  focus() {
+    this.targets.find("editor").focus();
+  }
   initTrix = () => {
     const history = this.targets
       .find("editor")
@@ -26,7 +29,6 @@ export default class extends ApplicationController {
     if (this.data.get("showUndo") !== "1") {
       history.parentNode.removeChild(history);
     }
-    console.log(history);
     Trix.config.blockAttributes.heading1 = { tagName: "h2" };
   };
   trixAttach = (e) => {
