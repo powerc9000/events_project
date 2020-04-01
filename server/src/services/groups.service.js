@@ -332,16 +332,45 @@ async function getPostsForGroup(groupId) {
   const posts = await server.app.db.any(sql`
 	select *, 
 		row_to_json((select d from (select users.name, users.id from users where id = p.user_id) d)) as user,
-		(select json_agg(e) from (select * from comments where comments.parent_comment = p.id) e) as comments
+		coalesce((select jsonb_agg(e) from (select * from comments where comments.parent_comment = p.id) e), '[]'::jsonb) as comments
 	from comments p where entity_id=${groupId} and parent_comment is null order by created desc
 	`);
 
   return posts;
 }
 
+async function getPost(groupId, postId) {
+  const post = await server.app.db.maybeOne(
+    sql`
+	select *, 
+		row_to_json((select d from (select users.name, users.id from users where id = p.user_id) d)) as user,
+		coalesce((select jsonb_agg(e) from (select *, extract(epoch from comments.created) as created,
+		row_to_json((select d from (select users.name, users.id from users where id = p.user_id) d)) as user
+		from comments where comments.parent_comment = p.id) e), '[]'::jsonb) as comments
+	from comments p where entity_id=${groupId} and parent_comment is null and id=${postId} order by created desc
+	`
+  );
+
+  return post;
+}
+
 async function createPost(userId, groupId, body) {
   const create = await server.app.db.one(
     sql`insert into comments (user_id, entity_id, body) values(${userId}, ${groupId}, ${body}) returning *`
+  );
+
+  return create;
+}
+
+async function createComment(userId, groupId, postId, body) {
+  const parent = await getPost(groupId, postId);
+
+  if (!parent) {
+    return null;
+  }
+
+  const create = await server.app.db.one(
+    sql`insert into comments (user_id, entity_id, parent_comment, body) values(${userId}, ${groupId}, ${postId}, ${body}) returning *`
   );
 
   return create;
@@ -373,5 +402,7 @@ module.exports = {
   removeGroupMember,
   getPostsForGroup,
   canUserPostInGroup,
-  createPost
+  createPost,
+  getPost,
+  createComment
 };
