@@ -1,0 +1,65 @@
+{%extends "group_layout.njk"%}
+{%block css%}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.0/trix.css"/>
+{%endblock%} 
+{%from "partials/form_messages.njk" import messages%}
+{%block layout%}
+	<div class="mt-4 bg-pink-100 p-4">
+		<div class="bg-white p-4">
+			<div>
+				<div class="flex items-center">
+					<p class="text-sm font-bold">{{post.user.name}} </p>
+					<div data-controller="format-date" data-format-date-epoch="{{post.created}}" data-format-date-format-string="Pp" class="ml-2 italic">
+						<span data-target="format-date.date" class="text-gray-700 text-xs">{{post.created | tzOffset(user.settings.timezone, "Pp")}}</span>
+					</div>
+				</div>
+				<div class="border-b border-pink-200 trix pb-4 pt-4">
+					{{post.body | safe}}
+				</div>
+			</div>
+			<div data-controller="trix group-post-creator" data-group-post-creator-style="open-on-click" data-group-post-creator-group-id="{{group.id}}" data-group-post-creator-post-id="{{post.id}}" class="ml-4 bg-gray-100 p-2 mt-4 mr-2">
+					{{messages("comment", "mb-2")}}
+				<div class="mb-1">
+					<label class="font-bold cursor-pointer pb-2 text-sm text-gray-700" for="placeholder-input" data-action="click->trix#focus">Add Comment</label>
+				</div>
+				<div data-target="group-post-creator.placeholder">
+					<input type="text" class="input w-full" placeholder="Comment" id="placeholder-input" data-action="focus->group-post-creator#placeholderClick"/>
+				</div>
+				<form class="hidden" data-target="group-post-creator.form" data-action="group-post-creator#comment reset->group-post-creator#reset" autocomplete="off">
+					<input type="hidden" id="new-post-body" value="{{event.description}}" name="body" />
+					<div class="pb-2">
+					</div>
+					<trix-toolbar id="toolbar" class="purple-button"></trix-toolbar>
+					<trix-editor input="new-post-body" id="editor" data-target="trix.editor group-post-creator.trix" toolbar="toolbar" placeholder="Write your comment"></trix-editor>
+
+					<div class="mt-2">
+						<button class="btn btn-pink" type="submit" data-target="group-post-creator.btn">Post Comment</button>
+						<button class="btn btn-white" type="reset" data-target="group-post-creator.reset">Cancel</button>
+					</div>
+				</form>
+
+			</div>
+			<div class="p-2 mt-2">
+				<h3 class="border-b border-pink-300 text-lg py-1">Comments</h3>
+				<ul class="mt-2">
+					{%for comment in post.comments %}
+						<div>
+							<div class="flex p-2 items-center">
+								<p class="text-sm font-bold">{{comment.user.name}} </p>
+								<div data-controller="format-date" data-format-date-epoch="{{post.created}}" data-format-date-format-string="Pp" class="ml-2 italic">
+									<span data-target="format-date.date" class="text-gray-700 text-xs">{{comment.created | tzOffset(user.settings.timezone, "Pp")}}</span>
+								</div>
+							</div>
+							<div class="m-2 border-b border-pink-200 trix">
+								{{comment.body | safe}}
+							</div>
+						</div>
+
+					{%else%}
+						No Comments
+					{%endfor%}
+				</ul>
+			</div>
+		</div>
+	</div>
+{%endblock%}

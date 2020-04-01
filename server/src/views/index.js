@@ -269,7 +269,7 @@ module.exports = {
     server.route({
       method: "GET",
       path: "/groups/{idOrCustom}/posts/{postId}",
-      handler: () => {}
+      handler: postDetail
     });
 
     server.route({
@@ -539,6 +539,38 @@ async function groupDetail(req, h) {
   } catch (e) {
     console.log(e);
     throw e;
+  }
+}
+
+async function postDetail(req, h) {
+  try {
+    const [err, data] = await commonGroupData(
+      req.app.user,
+      req.params.idOrCustom
+    );
+
+    if (err) {
+      return err;
+    }
+
+    const post = await server
+      .getService("groups")
+      .getPost(data.group.id, req.params.postId);
+
+    if (!post) {
+      return Boom.notFound();
+    }
+
+    console.log(post);
+
+    post.body = sanitize(post.body);
+    post.comments.forEach((comment) => {
+      comment.body = sanitize(comment.body);
+    });
+
+    return h.view("group_post_detail.njk", { post, ...data });
+  } catch (e) {
+    return Boom.serverError(e);
   }
 }
 

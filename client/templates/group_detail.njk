@@ -34,6 +34,9 @@
 					<div class="py-2 px-4">
 						{{post.body | safe}}
 					</div>
+					<div class="border-t border-pink-200 pl-2 ">
+						<a href="{{path}}/posts/{{post.id}}" class="text-sm text-green-800 hover:underline">{{post.comments.length}} comments</a>
+					</div>
 				</div>
 			{%else%}
 				No posts in this group.
