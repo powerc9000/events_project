@@ -1,0 +1,87 @@
+<html>
+	<head>
+		<title>SLC Mutual Aid Requests</title>
+		<link rel="stylesheet" href="{{cssPath}}" data-turbolinks-track="reload"/>
+		<script src="{{jsBundlePath}}" async data-turbolinks-track="reload"></script>
+		<style>
+.request-list-grid {
+	display:grid;
+	grid-template-columns: repeat(3, minmax(100px, 1fr));
+}
+							.extras-grid {
+								display: grid;
+								grid-gap:20px;
+								grid-template-columns: .2fr 1fr;
+							}
+		</style>
+	</head>
+	<body class="h-full">
+		<div class="bg-orange-200 h-full">
+			<main class="content container mx-auto">
+				<h1 class="text-2xl mt-4 mb-4">Salt Lake Valley COVID Mutal Aid Requests</h1>
+				<div class="bg-green-400 p-4">
+					<h2 class="text-xl">Current Unclaimed Requests</h2>
+					<div class="">
+						<div class="request-list-grid font-bold mb-2 border-b border-green-200">
+							<div class="mr-2 text-lg">
+								Area
+							</div>
+							<div class="text-lg">
+								Name
+							</div>
+							<div class="text-lg">
+								Contact Info
+							</div>
+						</div>
+						<ul>
+							{%for request in data %}
+								{% if loop.index0 % 2 == 0 %}
+									{%set bg="bg-green-300"%}
+								{%else%}
+									{%set bg=""%}
+								{%endif%}
+								<li class="border-b border-green-200 p-2 {{bg}}">
+									<div class="request-list-grid">
+										<div class="mr-2">
+											{{request.area}}
+										</div>
+										<div>
+											{{request.name}}
+										</div>
+										<div>
+											{{request.contact}}
+										</div>
+									</div>
+									<details class="ml-4">
+										<summary class="cursor-pointer text-blue-700">
+											Details
+										</summary>
+										<div class="bg-white p-2 mb-4">
+											{%for extra in request.extraItems %}
+												{%if request[extra.key] %}
+													{% if extra.important %}
+														{%set imp = "font-bold text-red-500"%}
+													{%else %}
+														{%set imp = "" %}
+													{%endif%}
+													<div class="extras-grid mb-2 {{imp}}">
+														<div class="bold text-sm text-gray-800 mr-4 {{imp}}">
+															{{extra.name}}
+														</div>
+														<div>
+															{{request[extra.key]}}
+														</div>
+													</div>
+												{%endif%}
+											{%endfor%}
+										</div>
+									</details>
+								</li>
+							{%endfor%}
+						</ul>
+					</div>
+				</div>
+			</main>
+		</div>
+	</body>
+</html>

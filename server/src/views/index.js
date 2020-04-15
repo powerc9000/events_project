@@ -286,6 +286,12 @@ module.exports = {
 
     server.route({
       method: "GET",
+      path: "/mutual-aid",
+      handler: mutualAid
+    });
+
+    server.route({
+      method: "GET",
       path: "/settings/validate/{code}",
       handler: validateContact
     });
@@ -368,6 +374,91 @@ module.exports = {
 
 async function notificationSettings(req, h) {
   return h.view("notification_settings");
+}
+
+async function mutualAid(req, h) {
+  try {
+    const req = await fetch(
+      "https://sheets.googleapis.com/v4/spreadsheets/17SqJhHFH1MZsDPy1Yxfu4pT6lVdOpRmpynuocxCJHZw/values/A2:AE999?key=AIzaSyDsamH3X-E8HkD6sUxIq2koZJb329hfPhU"
+    );
+
+    const data = await req.json();
+    const header = data.values[0];
+    const headerInverted = {};
+    header.forEach((item, index) => {
+      headerInverted[item] = index;
+    });
+
+    requests = data.values.slice(3);
+
+    result = requests
+      .filter((item) => {
+        return item[headerInverted["Overall Status"]] !== "";
+      })
+      .map((item) => {
+        return {
+          area: item[headerInverted["Area"]],
+          contact: item[headerInverted["Contact info"]],
+          name: item[headerInverted["Name"]],
+          extraItems: [
+            { name: "Medical Supplies", key: "medicalSupplies" },
+            { name: "Grocery List", key: "groceryList" },
+            { name: "Priority Items", key: "priorityItems" },
+            { name: "# of Children", key: "children" },
+            { name: "Finacial Support?", key: "financialSupport" },
+            { name: "Money Options", key: "howToReceiveMoney" },
+            { name: "Deliver Address", key: "deliveryAddress" },
+            { name: "Additional Info", key: "additionalInfo" },
+            {
+              name: "Dietary Restrictions",
+              key: "dietaryRestrictions",
+              important: true
+            },
+            { name: "Dropoff Instructions", key: "dropoff" }
+          ],
+          dropoff:
+            item[
+              headerInverted[
+                "Any accessibility needs, or drop off instructions?"
+              ]
+            ],
+          dietaryRestrictions:
+            item[headerInverted["Dietary restrictions or allergies?"]],
+          additionalInfo:
+            item[headerInverted["Is there anything else we should know?"]],
+          deliveryAddress: item[headerInverted["Delivery address"]],
+          groceryList: item[headerInverted["Grocery list"]],
+          children: parseInt(
+            item[headerInverted["Number of children in the home (age 3-18)"]],
+            10
+          ),
+          howToReceiveMoney: item[headerInverted["How can you receive money?"]],
+          priorityItems:
+            item[
+              headerInverted["What are the most important things you need?"]
+            ],
+          financialSupport:
+            item[
+              headerInverted[
+                "Do you need additional financial support? (We can provide up to $50 of cash support in addition to the groceries/supplies)"
+              ]
+            ] !== ""
+              ? "Yes"
+              : "",
+          medicalSupplies:
+            item[
+              headerInverted[
+                "Do you need someone to pick up medical or sanitation supplies for you?"
+              ]
+            ]
+        };
+      });
+
+    return h.view("mutual_aid", { data: result });
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
 }
 
 async function userCalendar(req, h) {
