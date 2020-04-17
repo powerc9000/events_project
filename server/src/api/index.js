@@ -2,6 +2,7 @@ const joi = require("@hapi/joi");
 const _ = require("lodash");
 const PhoneNumber = require("awesome-phonenumber");
 const crypto = require("crypto");
+const fetch = require("node-fetch");
 const { OAuth2Client } = require("google-auth-library");
 const CLIENT_ID =
   "634779035671-htqj3sdamedg2bldv6fa85dr9qv3hh0f.apps.googleusercontent.com";
@@ -309,8 +310,55 @@ module.exports = {
       path: "/settings/tz",
       handler: userTzPing
     });
+
+    server.route({
+      method: "POST",
+      path: "/mutual-aid/update-volunteer",
+      handler: updateMutualAidVolunteer
+    });
   }
 };
+
+async function updateMutualAidVolunteer(req, h) {
+  const [
+    { requests, headerInverted, dataRowStart },
+    err
+  ] = await server.getService("groups").getMutualAidRequests();
+
+  const volunteerIndex = headerInverted["Volunteer Working"];
+
+  let col = [];
+  let index = 0;
+  let n = volunteerIndex + 1;
+  while (n > 0) {
+    let remainder = n % 26;
+    if (remainder === 0) {
+      col[index] = "Z";
+      n = ~~(n / 26 - 1);
+    } else {
+      col[index] = String.fromCharCode(remainder - 1 + "A".charCodeAt(0));
+      n = ~~(n / 26);
+    }
+    index += 1;
+  }
+
+  let offset = 0;
+  requests.forEach((request, index) => {
+    if (request[headerInverted["Request ID"]] === req.payload.id) {
+      offset = index;
+    }
+  });
+  const row = offset + dataRowStart;
+
+  const cell = `${col.reverse().join("")}${row}`;
+  await server
+    .getService("groups")
+    .updateMutualAidCell(cell, req.payload.volunteer);
+
+  return {
+    status: "active"
+  };
+}
 
 async function createPostInGroup(req, h) {
   if (!req.loggedIn()) {

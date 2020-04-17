@@ -378,28 +378,47 @@ async function notificationSettings(req, h) {
 
 async function mutualAid(req, h) {
   try {
-    const req = await fetch(
-      "https://sheets.googleapis.com/v4/spreadsheets/17SqJhHFH1MZsDPy1Yxfu4pT6lVdOpRmpynuocxCJHZw/values/A2:AE999?key=AIzaSyDsamH3X-E8HkD6sUxIq2koZJb329hfPhU"
-    );
+    const [{ requests, headerInverted }, err] = await server
+      .getService("groups")
+      .getMutualAidRequests();
+    let active = "unclaimed";
+    if (req.query) {
+      if (req.query.status === "complete") {
+        active = "completed";
+        statusFilters = ["completed", "complete"];
+      }
 
-    const data = await req.json();
-    const header = data.values[0];
-    const headerInverted = {};
-    header.forEach((item, index) => {
-      headerInverted[item] = index;
-    });
+      if (req.query.status === "active") {
+        active = "pending";
+        statusFilters = ["pending"];
+      }
+    }
 
-    requests = data.values.slice(3);
-
-    result = requests
+    const result = requests
       .filter((item) => {
-        return item[headerInverted["Overall Status"]] !== "";
+        if (active === "completed") {
+          return ["completed", "complete"].includes(
+            item[headerInverted["Overall Status"]].toLowerCase().trim()
+          );
+        } else if (active === "pending") {
+          return (
+            item[headerInverted["Volunteer Working"]] !== "" &&
+            !["completed", "complete"].includes(
+              item[headerInverted["Overall Status"]].toLowerCase().trim()
+            )
+          );
+        } else {
+          return item[headerInverted["Volunteer Working"]] === "";
+        }
       })
       .map((item) => {
         return {
+          id: item[headerInverted["Request ID"]],
           area: item[headerInverted["Area"]],
+          volunteer: item[headerInverted["Volunteer Working"]],
           contact: item[headerInverted["Contact info"]],
           name: item[headerInverted["Name"]],
+          status: item[headerInverted["Overall Status"]],
           extraItems: [
             { name: "Medical Supplies", key: "medicalSupplies" },
             { name: "Grocery List", key: "groceryList" },
@@ -454,7 +473,7 @@ async function mutualAid(req, h) {
         };
       });
 
-    return h.view("mutual_aid", { data: result });
+    return h.view("mutual_aid", { data: result, active });
   } catch (e) {
     console.log(e);
     throw e;

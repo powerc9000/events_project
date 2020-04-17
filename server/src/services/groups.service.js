@@ -1,8 +1,11 @@
 let server;
+const fs = require("fs");
 
 const crypto = require("crypto");
 const _ = require("lodash");
 const sql = require("slonik").sql;
+const fetch = require("node-fetch");
+const gapis = require("googleapis");
 
 async function createGroup(options) {
   const values = [options.name, options.creator];
@@ -375,6 +378,91 @@ async function createComment(userId, groupId, postId, body) {
 
   return create;
 }
+const sheet = "17SqJhHFH1MZsDPy1Yxfu4pT6lVdOpRmpynuocxCJHZw";
+const key = "AIzaSyDsamH3X-E8HkD6sUxIq2koZJb329hfPhU";
+const sheetsPath = "https://sheets.googleapis.com/v4/spreadsheets";
+async function getMutualAidRequests() {
+  try {
+    const docReq = await fetch(
+      `${sheetsPath}/${sheet}/values/A2:AE999?key=${key}`
+    );
+
+    const data = await docReq.json();
+    const header = data.values[0];
+    const headerInverted = {};
+    header.forEach((item, index) => {
+      headerInverted[item] = index;
+    });
+
+    const requests = data.values.slice(3);
+    let statusFilters = [""];
+    let active = "unclaimed";
+
+    requests.forEach((request, index) => {
+      request.index = index;
+    });
+
+    const result = {
+      dataRowStart: 5,
+      headerInverted,
+      requests
+    };
+
+    return [result, null];
+  } catch (e) {
+    return [{}, e];
+  }
+}
+let gKeys = null;
+
+async function getKeys() {
+  return new Promise((resolve, reject) => {
+    if (gKeys) {
+      return resolve(gKeys);
+    }
+    fs.readFile("server/mutual-aid.json", (err, content) => {
+      if (err) {
+        reject(err);
+      } else {
+        gKeys = JSON.parse(content);
+        resolve(gKeys);
+      }
+    });
+  });
+}
+let auth = null;
+async function getAuth() {
+  if (auth) {
+    return auth;
+  }
+  const scopes = ["https://www.googleapis.com/auth/spreadsheets"];
+  const keys = await getKeys();
+  const client = new gapis.google.auth.JWT(
+    keys.client_email,
+    null,
+    keys.private_key,
+    scopes,
+    null
+  );
+  await client.authorize();
+  auth = client;
+  return client;
+}
+async function updateMutualAidCell(cell, value) {
+  const path = `${sheetsPath}/${sheet}/values/${cell}?valueInputOption=USER_ENTERED&key=${key}`;
+  const sheets = gapis.google.sheets("v4");
+  const request = {
+    spreadsheetId: sheet,
+    range: cell,
+    valueInputOption: "USER_ENTERED",
+    auth: await getAuth(),
+    resource: {
+      range: cell,
+      values: [[value]]
+    }
+  };
+  await sheets.spreadsheets.values.update(request);
+}
 
 function init(hapiServer) {
   server = hapiServer;
@@ -404,5 +492,7 @@ module.exports = {
   canUserPostInGroup,
   createPost,
   getPost,
-  createComment
+  createComment,
+  getMutualAidRequests,
+  updateMutualAidCell
 };

@@ -13,9 +13,5 @@ RUN cd server && npm install --verbose --only=prod
 COPY ./server/src server/src
 COPY ./client/templates templates
 COPY ./client/build client
-
-
-
-RUN cd server && ls node_modules
-
+COPY ./server/mutual-aid.json server
 
