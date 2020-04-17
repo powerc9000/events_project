@@ -1,4 +1,5 @@
 let server;
+let redisClient;
 const fs = require("fs");
 
 const crypto = require("crypto");
@@ -6,6 +7,7 @@ const _ = require("lodash");
 const sql = require("slonik").sql;
 const fetch = require("node-fetch");
 const gapis = require("googleapis");
+const redis = require("redis");
 
 async function createGroup(options) {
   const values = [options.name, options.creator];
@@ -381,8 +383,54 @@ async function createComment(userId, groupId, postId, body) {
 const sheet = "17SqJhHFH1MZsDPy1Yxfu4pT6lVdOpRmpynuocxCJHZw";
 const key = "AIzaSyDsamH3X-E8HkD6sUxIq2koZJb329hfPhU";
 const sheetsPath = "https://sheets.googleapis.com/v4/spreadsheets";
+
+async function getRedisCacheJson(key) {
+  return new Promise((resolve, reject) => {
+    redisClient.get([key], (err, value) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(JSON.parse(value));
+      }
+    });
+  });
+}
+async function setRedisCacheJson(key, value, expires) {
+  const args = [key, JSON.stringify(value)];
+  if (expires) {
+    args.push("EX", expires);
+  }
+
+  return new Promise((resolve, reject) => {
+    redisClient.set(args, (err, value) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(value);
+      }
+    });
+  });
+}
+async function deleteRedisCache(key) {
+  return new Promise((resolve, reject) => {
+    redisClient.del(key, (err, value) => {
+      console.log(err, value);
+      if (err) {
+        reject(err);
+      } else {
+        resolve(value);
+      }
+    });
+  });
+}
 async function getMutualAidRequests() {
   try {
+    const cache = await getRedisCacheJson("mutual_aid_requests");
+    if (cache) {
+      console.log("Was cached");
+      return [cache, null];
+    }
+    console.log("was not cached");
     const docReq = await fetch(
       `${sheetsPath}/${sheet}/values/A2:AE999?key=${key}`
     );
@@ -407,9 +455,11 @@ async function getMutualAidRequests() {
       headerInverted,
       requests
     };
+    await setRedisCacheJson("mutual_aid_requests", result, 60);
 
     return [result, null];
   } catch (e) {
+    console.log(e);
     return [{}, e];
   }
 }
@@ -462,9 +512,23 @@ async function updateMutualAidCell(cell, value) {
     }
   };
   await sheets.spreadsheets.values.update(request);
+  await deleteRedisCache("mutual_aid_requests");
 }
 
 function init(hapiServer) {
+  redisClient = redis.createClient({
+    port: process.env.REDIS_PORT,
+    host: process.env.REDIS_HOST,
+    prefix: "cache",
+    connectTimeout: 30000,
+    ...(process.env.NODE_ENV === "production"
+      ? {
+          tls: {},
+          username: process.env.REDIS_USERNAME,
+          password: process.env.REDIS_PASSWORD
+        }
+      : {})
+  });
   server = hapiServer;
 }
 
