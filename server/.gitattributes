@@ -1,1 +1,2 @@
 prod.env filter=git-crypt diff=git-crypt
+mutual-aid.json filter=git-crypt diff=git-crypt

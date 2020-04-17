@@ -6,7 +6,7 @@
 		<style>
 .request-list-grid {
 	display:grid;
-	grid-template-columns: repeat(3, minmax(100px, 1fr));
+	grid-template-columns: repeat(5, minmax(100px, 1fr));
 }
 							.extras-grid {
 								display: grid;
@@ -20,9 +20,17 @@
 			<main class="content container mx-auto">
 				<h1 class="text-2xl mt-4 mb-4">Salt Lake Valley COVID Mutal Aid Requests</h1>
 				<div class="bg-green-400 p-4">
-					<h2 class="text-xl">Current Unclaimed Requests</h2>
+					{%set activeClass = "bg-green-100 text-black font-bold" %}
+					<ul class="flex border-b border-white mb-4 text-lg">
+						<li class="mr-2 border border-white {{activeClass if active == "unclaimed"}}"><a class="p-2" href="/mutual-aid">Unclaimed Requests</a></li>
+						<li class="mr-2 border border-white {{activeClass if active == "pending"}}"><a class="p-2" href="/mutual-aid?status=active">Active Requests</a></li>
+						<li class="border border-white {{activeClass if active == "completed"}}"><a class="p-2" href="/mutual-aid?status=complete">Complete Requests</a></li>
+					</ul>
 					<div class="">
 						<div class="request-list-grid font-bold mb-2 border-b border-green-200">
+							<div class="mr-2 text-lg">
+								Volunteer
+							</div>
 							<div class="mr-2 text-lg">
 								Area
 							</div>
@@ -32,16 +40,23 @@
 							<div class="text-lg">
 								Contact Info
 							</div>
+							<div class="text-lg">
+								Status
+							</div>
 						</div>
-						<ul>
+						<ul >
 							{%for request in data %}
 								{% if loop.index0 % 2 == 0 %}
 									{%set bg="bg-green-300"%}
 								{%else%}
 									{%set bg=""%}
 								{%endif%}
-								<li class="border-b border-green-200 p-2 {{bg}}">
+								<li class="border-b border-green-200 p-2 {{bg}}" data-controller="mutual-aid-request" data-mutual-aid-request-data="{{request | dump}}" id="request-id-{{request.id}}">
 									<div class="request-list-grid">
+										<div class="mr-2 text-lg">
+											<input type="text" value="{{request.volunteer}}" class="input w-full" placeholder="Put name here to claim" data-action="input->mutual-aid-request#updateName" autocomplete="off" data-target="mutual-aid-request.name" {{"disabled" if active == "completed"}}/>
+											<button class="hidden btn btn-blue mt-2 mb-2" data-target="mutual-aid-request.saveName" data-action="mutual-aid-request#save">Save</button>
+										</div>
 										<div class="mr-2">
 											{{request.area}}
 										</div>
@@ -50,6 +65,9 @@
 										</div>
 										<div>
 											{{request.contact}}
+										</div>
+										<div>
+											{{request.status}}
 										</div>
 									</div>
 									<details class="ml-4">
