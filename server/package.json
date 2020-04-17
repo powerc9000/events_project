@@ -37,6 +37,7 @@
     "nunjucks": "^3.2.0",
     "pg": "7.12.1",
     "postmark": "^2.3.0",
+    "redis": "^3.0.2",
     "sanitize-html": "^1.20.1",
     "shortid": "^2.2.15",
     "slonik": "19.0.1",
