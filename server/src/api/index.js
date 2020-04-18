@@ -11,6 +11,7 @@ const LoginWithTwitter = require("login-with-twitter");
 const Boom = require("@hapi/boom");
 const sql = require("slonik").sql;
 const { emailOrPhone } = require("../utils");
+const date_tz = require("date-fns-tz");
 let server;
 module.exports = {
   name: "Api",
@@ -316,20 +317,18 @@ module.exports = {
       path: "/mutual-aid/update-volunteer",
       handler: updateMutualAidVolunteer
     });
+
+    server.route({
+      method: "POST",
+      path: "/mutual-aid/update-status",
+      handler: updateMutualAidStatus
+    });
   }
 };
-
-async function updateMutualAidVolunteer(req, h) {
-  const [
-    { requests, headerInverted, dataRowStart },
-    err
-  ] = await server.getService("groups").getMutualAidRequests();
-
-  const volunteerIndex = headerInverted["Volunteer Working"];
-
+function indexToColumn(columnIndex) {
   let col = [];
   let index = 0;
-  let n = volunteerIndex + 1;
+  let n = columnIndex + 1;
   while (n > 0) {
     let remainder = n % 26;
     if (remainder === 0) {
@@ -342,21 +341,65 @@ async function updateMutualAidVolunteer(req, h) {
     index += 1;
   }
 
+  return col.reverse().join("");
+}
+function findRequestRow(requests, id, start) {
   let offset = 0;
   requests.forEach((request, index) => {
-    if (request[headerInverted["Request ID"]] === req.payload.id) {
-      offset = index;
+    if (request.id === id) {
+      offset = request.index;
     }
   });
-  const row = offset + dataRowStart;
+  return offset + start;
+}
+async function updateMutualAidVolunteer(req, h) {
+  const [
+    { requests, headerIndexes, dataRowStart },
+    err
+  ] = await server.getService("groups").getMutualAidRequests();
 
-  const cell = `${col.reverse().join("")}${row}`;
+  const volunteerIndex = headerIndexes.volunteer;
+
+  const cell = `${indexToColumn(volunteerIndex)}${findRequestRow(
+    requests,
+    req.payload.id,
+    dataRowStart
+  )}`;
   await server
     .getService("groups")
     .updateMutualAidCell(cell, req.payload.volunteer);
 
   return {
     status: "active"
+  };
+}
+
+async function updateMutualAidStatus(req, h) {
+  const [
+    { requests, headerIndexes, dataRowStart },
+    err
+  ] = await server.getService("groups").getMutualAidRequests();
+  const status = req.payload.status;
+  const row = findRequestRow(requests, req.payload.id, dataRowStart);
+  const cell = `${indexToColumn(headerIndexes.overallStatus)}${row}`;
+  const map = { pending: "Pending", complete: "Complete" };
+
+  await server.getService("groups").updateMutualAidCell(cell, map[status]);
+  if (status === "complete") {
+    const date = date_tz.format(
+      date_tz.utcToZonedTime(Date.now(), "America/Denver"),
+      "L/d/yyyy"
+    );
+    await server
+      .getService("groups")
+      .updateMutualAidCell(
+        `${indexToColumn(headerIndexes.dateCompleted)}${row}`,
+        date
+      );
+  }
+
+  return {
+    status: status === "pending" ? "active" : "complete"
   };
 }
 
