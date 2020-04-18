@@ -6,7 +6,7 @@
 		<style>
 .request-list-grid {
 	display:grid;
-	grid-template-columns: repeat(5, minmax(100px, 1fr));
+	grid-template-columns:.2fr .5fr .5fr .5fr 1fr .5fr;
 }
 							.extras-grid {
 								display: grid;
@@ -28,6 +28,9 @@
 					</ul>
 					<div class="">
 						<div class="request-list-grid font-bold mb-2 border-b border-green-200">
+							<div class="mr-2">
+								Request ID
+							</div>
 							<div class="mr-2 text-lg">
 								Volunteer
 							</div>
@@ -53,22 +56,35 @@
 								{%endif%}
 								<li class="border-b border-green-200 p-2 {{bg}}" data-controller="mutual-aid-request" data-mutual-aid-request-data="{{request | dump}}" id="request-id-{{request.id}}">
 									<div class="request-list-grid">
-										<div class="mr-2 text-lg">
-											<input type="text" value="{{request.volunteer}}" class="input w-full" placeholder="Put name here to claim" data-action="input->mutual-aid-request#updateName" autocomplete="off" data-target="mutual-aid-request.name" {{"disabled" if active == "completed"}}/>
-											<button class="hidden btn btn-blue mt-2 mb-2" data-target="mutual-aid-request.saveName" data-action="mutual-aid-request#save">Save</button>
-										</div>
 										<div class="mr-2">
-											{{request.area}}
+											{{request.id}}
 										</div>
-										<div>
-											{{request.name}}
-										</div>
-										<div>
-											{{request.contact}}
-										</div>
-										<div>
-											{{request.status}}
-										</div>
+							<div class="mr-2 text-lg">
+								<input type="text" value="{{request.volunteer}}" class="input w-full" placeholder="Put name here to claim" data-action="input->mutual-aid-request#updateName" autocomplete="off" data-target="mutual-aid-request.name" {{"disabled" if active == "completed"}}/>
+								<button class="hidden btn btn-blue mt-2 mb-2" data-target="mutual-aid-request.saveName" data-action="mutual-aid-request#save">Save</button>
+							</div>
+							<div class="mr-2">
+								{{request.area}}
+							</div>
+							<div>
+								{{request.name}}
+							</div>
+							<div>
+								{{request.contact}}
+							</div>
+							<form data-target="mutual-aid-request.statusForm">
+								<div>
+									<label for="status-pending-radio">Pending</label>
+									<input type="radio" name="status" value="pending" {{"checked" if request.isPending}} id="status-pending-radio" data-action="mutual-aid-request#updateStatus" autocomplete="off"/>
+								</div>
+								<div>
+									<label for="status-complete-radio">Complete</label>
+									<input type="radio" name="status" value="complete" {{"checked" if request.isComplete}} id="status-complete-radio" data-action="mutual-aid-request#updateStatus" autocomplete="off"/>
+								</div>
+								<div>
+									<button class="btn btn-blue hidden" data-action="mutual-aid-request#saveStatus" data-target="mutual-aid-request.saveStatus">Save</button>
+								</div>
+							</form>
 									</div>
 									<details class="ml-4">
 										<summary class="cursor-pointer text-blue-700">

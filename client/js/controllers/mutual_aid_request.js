@@ -27,7 +27,34 @@ export default class extends ApplicationController {
       }
     }
   }
+  async saveStatus(e) {
+    e.preventDefault();
+    const val = this.status.value;
+    const req = await this.api.Post("/api/mutual-aid/update-status", {
+      status: val,
+      id: this.requestData.id
+    });
+    const result = await req.json();
+    let status = result.status;
+    this.page.visit(
+      `/mutual-aid?status=${status}#request-id-${this.requestData.id}`
+    );
+  }
+  async updateStatus(e) {
+    const value = e.target.value;
+    const statusChange =
+      (value === "pending" && !this.requestData.isPending) ||
+      (value === "complete" && !this.requestData.isComplete);
+    if (statusChange) {
+      this.showTarget("saveStatus");
+    } else {
+      this.hideTarget("saveStatus");
+    }
+  }
 
+  get status() {
+    return this.targets.find("statusForm").status;
+  }
   get name() {
     return this.targets.find("name");
   }

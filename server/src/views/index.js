@@ -376,25 +376,10 @@ async function notificationSettings(req, h) {
   return h.view("notification_settings");
 }
 
-function getKey(item, map, key) {
-  const keys = Object.keys(map);
-
-  const match = keys.find((tryKey) => {
-    return tryKey === key || tryKey.indexOf(key) > -1;
-  });
-
-  if (match) {
-    return item[map[match]];
-  } else {
-    return "";
-  }
-}
-
 async function mutualAid(req, h) {
   try {
-    const [{ requests, headerInverted }, err] = await server
-      .getService("groups")
-      .getMutualAidRequests();
+    const groupService = server.getService("groups");
+    const [{ requests }, err] = await groupService.getMutualAidRequests();
     let active = "unclaimed";
     if (req.query) {
       if (req.query.status === "complete") {
@@ -407,33 +392,33 @@ async function mutualAid(req, h) {
         statusFilters = ["pending"];
       }
     }
-
     const result = requests
       .filter((item) => {
-        const volunteer = getKey(item, headerInverted, "Volunteer Working");
+        const volunteer = item["volunteer"];
+        const status = item["overallStatus"];
+        const isCompleted = ["completed", "complete"].includes(
+          status.toLowerCase().trim()
+        );
         if (active === "completed") {
-          return ["completed", "complete"].includes(
-            item[headerInverted["Overall Status"]].toLowerCase().trim()
-          );
+          return isCompleted;
         } else if (active === "pending") {
-          return (
-            volunteer !== "" &&
-            !["completed", "complete"].includes(
-              item[headerInverted["Overall Status"]].toLowerCase().trim()
-            )
-          );
+          const result = volunteer !== "" && !isCompleted;
+          return result;
         } else {
           return volunteer === "";
         }
       })
       .map((item) => {
+        const support = item["financialSupport"];
+        const status = item["overallStatus"];
+        const isComplete = ["completed", "complete"].includes(
+          status.toLowerCase().trim()
+        );
+        const isPending = status.toLowerCase().trim() === "pending";
         return {
-          id: item[headerInverted["Request ID"]],
-          area: item[headerInverted["Area"]],
-          volunteer: getKey(item, headerInverted, "Volunteer Working"),
-          contact: item[headerInverted["Contact info"]],
-          name: item[headerInverted["Name"]],
-          status: item[headerInverted["Overall Status"]],
+          ...item,
+          isPending,
+          isComplete,
           extraItems: [
             { name: "Medical Supplies", key: "medicalSupplies" },
             { name: "Grocery List", key: "groceryList" },
@@ -449,42 +434,7 @@ async function mutualAid(req, h) {
               important: true
             },
             { name: "Dropoff Instructions", key: "dropoff" }
-          ],
-          dropoff:
-            item[
-              headerInverted[
-                "Any accessibility needs, or drop off instructions?"
-              ]
-            ],
-          dietaryRestrictions:
-            item[headerInverted["Dietary restrictions or allergies?"]],
-          additionalInfo:
-            item[headerInverted["Is there anything else we should know?"]],
-          deliveryAddress: item[headerInverted["Delivery address"]],
-          groceryList: item[headerInverted["Grocery list"]],
-          children: parseInt(
-            item[headerInverted["Number of children in the home (age 3-18)"]],
-            10
-          ),
-          howToReceiveMoney: item[headerInverted["How can you receive money?"]],
-          priorityItems:
-            item[
-              headerInverted["What are the most important things you need?"]
-            ],
-          financialSupport:
-            item[
-              headerInverted[
-                "Do you need additional financial support? (We can provide up to $50 of cash support in addition to the groceries/supplies)"
-              ]
-            ] !== ""
-              ? "Yes"
-              : "",
-          medicalSupplies:
-            item[
-              headerInverted[
-                "Do you need someone to pick up medical or sanitation supplies for you?"
-              ]
-            ]
+          ]
         };
       });
 

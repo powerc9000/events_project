@@ -425,35 +425,41 @@ async function deleteRedisCache(key) {
 }
 async function getMutualAidRequests() {
   try {
+    await loadKeyMap();
     const cache = await getRedisCacheJson("mutual_aid_requests");
     if (cache) {
-      console.log("Was cached");
       return [cache, null];
     }
-    console.log("was not cached");
     const docReq = await fetch(
       `${sheetsPath}/${sheet}/values/A2:AE999?key=${key}`
     );
 
     const data = await docReq.json();
     const header = data.values[0];
-    const headerInverted = {};
+    const headerIndexes = {};
     header.forEach((item, index) => {
-      headerInverted[item] = index;
+      headerIndexes[keyMap[item]] = index;
     });
 
     const requests = data.values.slice(3);
     let statusFilters = [""];
     let active = "unclaimed";
 
-    requests.forEach((request, index) => {
-      request.index = index;
+    const mappedData = requests.map((request, index) => {
+      const res = {};
+      request.forEach((col, index) => {
+        res[keyMap[header[index]]] = col;
+      });
+
+      res.index = index;
+
+      return res;
     });
 
     const result = {
       dataRowStart: 5,
-      headerInverted,
-      requests
+      headerIndexes,
+      requests: mappedData
     };
     await setRedisCacheJson("mutual_aid_requests", result, 60);
 
@@ -514,6 +520,41 @@ async function updateMutualAidCell(cell, value) {
   await sheets.spreadsheets.values.update(request);
   await deleteRedisCache("mutual_aid_requests");
 }
+let keyMap = {};
+
+async function loadKeyMap() {
+  const req = await fetch(
+    "https://a.dropconfig.com/74b9011f-1d9b-4d19-8db9-53cf992ed7ba.json"
+  );
+
+  keyMap = await req.json();
+}
+function getKey(item, map, key, backup) {
+  const keys = Object.keys(map);
+  const matchWith = (key) => {
+    return keys.find((tryKey) => {
+      return (
+        tryKey.toLowerCase() === key.toLowerCase() ||
+        tryKey.toLowerCase().indexOf(key.toLowerCase()) > -1
+      );
+    });
+  };
+  let match;
+  if (keyMap[key]) {
+    match = keyMap[key];
+  } else {
+    match = matchWith(key);
+    if (match === null || match === undefined) {
+      match = matchWith(backup);
+    }
+  }
+
+  if (match !== null && match !== undefined) {
+    return item[map[match]];
+  } else {
+    return "";
+  }
+}
 
 function init(hapiServer) {
   redisClient = redis.createClient({
@@ -558,5 +599,7 @@ module.exports = {
   getPost,
   createComment,
   getMutualAidRequests,
-  updateMutualAidCell
+  updateMutualAidCell,
+  loadKeyMap,
+  getKey
 };
