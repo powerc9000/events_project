@@ -376,6 +376,20 @@ async function notificationSettings(req, h) {
   return h.view("notification_settings");
 }
 
+function getKey(item, map, key) {
+  const keys = Object.keys(map);
+
+  const match = keys.find((tryKey) => {
+    return tryKey === key || tryKey.indexOf(key) > -1;
+  });
+
+  if (match) {
+    return item[map[match]];
+  } else {
+    return "";
+  }
+}
+
 async function mutualAid(req, h) {
   try {
     const [{ requests, headerInverted }, err] = await server
@@ -396,26 +410,27 @@ async function mutualAid(req, h) {
 
     const result = requests
       .filter((item) => {
+        const volunteer = getKey(item, headerInverted, "Volunteer Working");
         if (active === "completed") {
           return ["completed", "complete"].includes(
             item[headerInverted["Overall Status"]].toLowerCase().trim()
           );
         } else if (active === "pending") {
           return (
-            item[headerInverted["Volunteer Working"]] !== "" &&
+            volunteer !== "" &&
             !["completed", "complete"].includes(
               item[headerInverted["Overall Status"]].toLowerCase().trim()
             )
           );
         } else {
-          return item[headerInverted["Volunteer Working"]] === "";
+          return volunteer === "";
         }
       })
       .map((item) => {
         return {
           id: item[headerInverted["Request ID"]],
           area: item[headerInverted["Area"]],
-          volunteer: item[headerInverted["Volunteer Working"]],
+          volunteer: getKey(item, headerInverted, "Volunteer Working"),
           contact: item[headerInverted["Contact info"]],
           name: item[headerInverted["Name"]],
           status: item[headerInverted["Overall Status"]],
