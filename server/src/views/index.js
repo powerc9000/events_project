@@ -394,8 +394,12 @@ async function mutualAid(req, h) {
     }
     const result = requests
       .filter((item) => {
+        if (!item.id) {
+          return;
+        }
         const volunteer = item["volunteer"];
         const status = item["overallStatus"];
+        console.log(item);
         const isCompleted = ["completed", "complete"].includes(
           status.toLowerCase().trim()
         );
